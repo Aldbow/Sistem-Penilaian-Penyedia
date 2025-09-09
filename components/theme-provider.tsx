@@ -34,15 +34,20 @@ export function ThemeProvider({
   React.useEffect(() => {
     setMounted(true)
     
-    // Only read from localStorage after mounting
+    // Sync with the theme that was already applied by the blocking script
     if (typeof window !== 'undefined') {
       try {
         const storedTheme = localStorage.getItem(storageKey) as Theme
         if (storedTheme) {
           setTheme(storedTheme)
+        } else {
+          // If no stored theme, check what the blocking script applied
+          const currentTheme = document.documentElement.classList.contains('dark') ? 'dark' : 'light'
+          setTheme(currentTheme)
         }
       } catch (e) {
-        // Ignore localStorage errors
+        // Fallback to light theme
+        setTheme('light')
       }
     }
   }, [storageKey])
@@ -57,9 +62,13 @@ export function ThemeProvider({
       appliedTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
     }
 
-    // Clean approach - only modify classes after hydration
-    root.classList.remove('light', 'dark')
-    root.classList.add(appliedTheme)
+    // Only update if the current theme is different from what should be applied
+    const currentTheme = root.classList.contains('dark') ? 'dark' : 'light'
+    if (currentTheme !== appliedTheme) {
+      root.classList.remove('light', 'dark')
+      root.classList.add(appliedTheme)
+      root.setAttribute('data-theme', appliedTheme)
+    }
   }, [theme, mounted])
 
   const value = React.useMemo(() => ({
