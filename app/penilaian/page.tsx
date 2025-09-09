@@ -67,7 +67,11 @@ export default function PenilaianPage() {
   );
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [currentStep, setCurrentStep] = useState(1); // 1: search, 2: info, 3: rating
+  const [currentStep, setCurrentStep] = useState(1); // 1: search, 2: info, 3: termination, 4: rating
+
+  // Contract termination state
+  const [contractTerminated, setContractTerminated] = useState<boolean | null>(null);
+  const [terminationComment, setTerminationComment] = useState("");
 
   // Form data untuk penilaian
   const [formData, setFormData] = useState({
@@ -229,6 +233,8 @@ export default function PenilaianPage() {
     setSelectedPenyedia(null);
     setSearchQuery("");
     setPenyediaList([]);
+    setContractTerminated(null);
+    setTerminationComment("");
     setFormData({
       kualitasKuantitasBarangJasa: 1,
       komentarKualitasKuantitasBarangJasa: "",
@@ -282,6 +288,36 @@ export default function PenilaianPage() {
       [field]: value,
     }));
   };
+
+  // Effect to auto-set scores to 0 when contract is terminated
+  useEffect(() => {
+    if (contractTerminated === true) {
+      setFormData({
+        kualitasKuantitasBarangJasa: 0,
+        komentarKualitasKuantitasBarangJasa: "",
+        biaya: 0,
+        komentarBiaya: "",
+        waktu: 0,
+        komentarWaktu: "",
+        layanan: 0,
+        komentarLayanan: "",
+        keterangan: terminationComment,
+      });
+    } else if (contractTerminated === false) {
+      // Reset to default values when contract is not terminated
+      setFormData({
+        kualitasKuantitasBarangJasa: 1,
+        komentarKualitasKuantitasBarangJasa: "",
+        biaya: 1,
+        komentarBiaya: "",
+        waktu: 1,
+        komentarWaktu: "",
+        layanan: 1,
+        komentarLayanan: "",
+        keterangan: "",
+      });
+    }
+  }, [contractTerminated, terminationComment]);
 
   // Calculate weighted score based on LKPP formula
   const calculateWeightedScore = () => {
@@ -351,6 +387,8 @@ export default function PenilaianPage() {
         alert("Penilaian berhasil disimpan!");
         // Reset form
         setSelectedPenyedia(null);
+        setContractTerminated(null);
+        setTerminationComment("");
         setFormData({
           kualitasKuantitasBarangJasa: 1,
           komentarKualitasKuantitasBarangJasa: "",
@@ -378,7 +416,7 @@ export default function PenilaianPage() {
 
   // Navigation functions
   const goToNextStep = () => {
-    if (currentStep < 3) {
+    if (currentStep < 4) {
       setCurrentStep(currentStep + 1);
     }
   };
@@ -670,7 +708,7 @@ export default function PenilaianPage() {
         transition={{ duration: 0.5, delay: 0.3 }}
       >
         <div className="flex items-center space-x-4">
-          {[1, 2, 3].map((step) => (
+          {[1, 2, 3, 4].map((step) => (
             <div key={step} className="flex items-center">
               <div
                 className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm ${
@@ -683,7 +721,7 @@ export default function PenilaianPage() {
               >
                 {step}
               </div>
-              {step < 3 && (
+              {step < 4 && (
                 <div
                   className={`w-16 h-1 mx-2 ${
                     currentStep > step
@@ -926,6 +964,156 @@ export default function PenilaianPage() {
                     onClick={goToNextStep}
                     className="px-8 py-3 text-base font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
                   >
+                    Lanjut ke Pertanyaan
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+
+        {/* Step 3: Contract Termination Question */}
+        {currentStep === 3 && selectedPenyedia && (
+          <motion.div
+            key="step3"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.3 }}
+          >
+            <Card className="border-2 border-dashed border-orange-300/50 bg-gradient-to-br from-white/80 to-orange-50/30 dark:from-slate-800/80 dark:to-slate-900/30 shadow-xl rounded-3xl overflow-hidden backdrop-blur-sm">
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-3 text-xl lg:text-2xl">
+                  <div className="flex items-center justify-center w-10 h-10 rounded-full bg-orange-100 text-orange-600 font-bold text-base">
+                    3
+                  </div>
+                  <span>Pertanyaan Pemutusan Kontrak</span>
+                </CardTitle>
+                <CardDescription className="text-base">
+                  Jawab pertanyaan berikut sebelum melanjutkan ke penilaian
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="bg-orange-50 dark:bg-orange-900/20 p-6 rounded-2xl border border-orange-200 dark:border-orange-700">
+                  <h3 className="text-lg font-semibold text-orange-800 dark:text-orange-200 mb-4">
+                    Pertanyaan Wajib
+                  </h3>
+                  <p className="text-base text-slate-700 dark:text-slate-300 mb-6">
+                    Apakah terjadi pemutusan kontrak secara sepihak oleh Pejabat Pembuat Komitmen (PPK) karena kesalahan Penyedia?
+                  </p>
+                  
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <motion.button
+                      type="button"
+                      onClick={() => setContractTerminated(true)}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className={`flex-1 px-6 py-4 rounded-xl border-2 font-semibold text-base transition-all duration-300 ${
+                        contractTerminated === true
+                          ? "bg-red-500 border-red-500 text-white shadow-lg"
+                          : "bg-white dark:bg-slate-700 border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:border-red-300 dark:hover:border-red-500 shadow-sm"
+                      }`}
+                    >
+                      Ya, terjadi pemutusan kontrak
+                    </motion.button>
+                    
+                    <motion.button
+                      type="button"
+                      onClick={() => setContractTerminated(false)}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className={`flex-1 px-6 py-4 rounded-xl border-2 font-semibold text-base transition-all duration-300 ${
+                        contractTerminated === false
+                          ? "bg-green-500 border-green-500 text-white shadow-lg"
+                          : "bg-white dark:bg-slate-700 border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:border-green-300 dark:hover:border-green-500 shadow-sm"
+                      }`}
+                    >
+                      Tidak, kontrak berjalan normal
+                    </motion.button>
+                  </div>
+                </div>
+
+                {/* Show comment field if contract was terminated */}
+                <AnimatePresence>
+                  {contractTerminated === true && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="space-y-3"
+                    >
+                      <div className="bg-red-50 dark:bg-red-900/20 p-6 rounded-2xl border border-red-200 dark:border-red-700">
+                        <div className="flex items-start space-x-3 mb-4">
+                          <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <span className="text-white text-sm font-bold">!</span>
+                          </div>
+                          <div>
+                            <h4 className="font-semibold text-red-800 dark:text-red-200 mb-2">
+                              Pemutusan Kontrak Terdeteksi
+                            </h4>
+                            <p className="text-red-700 dark:text-red-300 text-sm">
+                              Karena terjadi pemutusan kontrak sepihak, semua aspek penilaian akan otomatis mendapat skor 0 dan penilaian akhir akan menjadi "Buruk". Silakan berikan keterangan mengenai pemutusan kontrak tersebut.
+                            </p>
+                          </div>
+                        </div>
+                        
+                        <Label className="text-sm font-medium text-red-800 dark:text-red-200 mb-2 block">
+                          Keterangan Pemutusan Kontrak (Wajib diisi) *
+                        </Label>
+                        <Textarea
+                          value={terminationComment}
+                          onChange={(e) => setTerminationComment(e.target.value)}
+                          placeholder="Jelaskan alasan dan detail pemutusan kontrak secara sepihak..."
+                          className="min-h-[120px] text-base rounded-xl border-red-300 focus:border-red-500 focus:ring-red-500"
+                          required
+                        />
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* Show confirmation if no termination */}
+                <AnimatePresence>
+                  {contractTerminated === false && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <div className="bg-green-50 dark:bg-green-900/20 p-6 rounded-2xl border border-green-200 dark:border-green-700">
+                        <div className="flex items-center space-x-3">
+                          <CheckCircle className="h-6 w-6 text-green-600 flex-shrink-0" />
+                          <div>
+                            <h4 className="font-semibold text-green-800 dark:text-green-200 mb-1">
+                              Kontrak Berjalan Normal
+                            </h4>
+                            <p className="text-green-700 dark:text-green-300 text-sm">
+                              Anda dapat melanjutkan ke tahap penilaian untuk memberikan skor berdasarkan kinerja penyedia.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                <div className="flex justify-between mt-8">
+                  <Button
+                    onClick={goToPrevStep}
+                    variant="outline"
+                    className="px-6 py-3 text-base font-semibold rounded-xl"
+                  >
+                    <ArrowLeft className="mr-2 h-5 w-5" />
+                    Kembali
+                  </Button>
+                  <Button
+                    onClick={goToNextStep}
+                    disabled={contractTerminated === null || (contractTerminated === true && !terminationComment.trim())}
+                    className="px-8 py-3 text-base font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50"
+                  >
                     Lanjut ke Penilaian
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
@@ -935,10 +1123,10 @@ export default function PenilaianPage() {
           </motion.div>
         )}
 
-        {/* Step 3: Rating Form */}
-        {currentStep === 3 && selectedPenyedia && (
+        {/* Step 4: Rating Form */}
+        {currentStep === 4 && selectedPenyedia && (
           <motion.div
-            key="step3"
+            key="step4"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
@@ -948,7 +1136,7 @@ export default function PenilaianPage() {
               <CardHeader>
                 <CardTitle className="flex items-center space-x-3 text-xl lg:text-2xl">
                   <div className="flex items-center justify-center w-10 h-10 rounded-full bg-purple-100 text-purple-600 font-bold text-base">
-                    3
+                    4
                   </div>
                   <span>Berikan Penilaian</span>
                 </CardTitle>
@@ -957,6 +1145,33 @@ export default function PenilaianPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-8">
+                {/* Show warning if contract was terminated */}
+                {contractTerminated === true && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4 }}
+                    className="bg-red-50 dark:bg-red-900/20 p-6 rounded-2xl border border-red-200 dark:border-red-700"
+                  >
+                    <div className="flex items-start space-x-3">
+                      <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <span className="text-white text-sm font-bold">!</span>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-red-800 dark:text-red-200 mb-2">
+                          Penilaian Otomatis: Kontrak Diputus
+                        </h4>
+                        <p className="text-red-700 dark:text-red-300 text-sm mb-3">
+                          Karena terjadi pemutusan kontrak sepihak, semua aspek penilaian telah otomatis diset ke skor 0. Penilaian akhir: <strong>Buruk</strong>
+                        </p>
+                        <p className="text-red-600 dark:text-red-400 text-xs">
+                          Keterangan: {terminationComment}
+                        </p>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
                 {kriteriaPenilaian.map((criteria, index) => (
                   <motion.div
                     key={criteria.key}
@@ -986,18 +1201,20 @@ export default function PenilaianPage() {
                           key={skala.value}
                           type="button"
                           onClick={() =>
-                            handleInputChange(criteria.key, skala.value)
+                            !contractTerminated && handleInputChange(criteria.key, skala.value)
                           }
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
+                          whileHover={!contractTerminated ? { scale: 1.05 } : {}}
+                          whileTap={!contractTerminated ? { scale: 0.95 } : {}}
+                          disabled={contractTerminated === true}
                           className={`px-6 py-3 rounded-xl border-2 font-semibold text-base transition-all duration-300 ${
-                            formData[criteria.key as keyof typeof formData] ===
-                            skala.value
+                            contractTerminated === true
+                              ? "bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                              : formData[criteria.key as keyof typeof formData] === skala.value
                               ? `${skala.color} border-transparent text-white shadow-lg`
                               : "bg-white dark:bg-slate-700 border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:border-blue-300 dark:hover:border-blue-500 shadow-sm"
                           }`}
                         >
-                          {skala.value}
+                          {contractTerminated === true ? 0 : skala.value}
                         </motion.button>
                       ))}
                       <div className="ml-2">
@@ -1039,14 +1256,17 @@ export default function PenilaianPage() {
                           );
                         })()}
                         onChange={(e) => {
-                          const commentKey = `komentar${
-                            criteria.key.charAt(0).toUpperCase() +
-                            criteria.key.slice(1)
-                          }`;
-                          handleInputChange(commentKey, e.target.value);
+                          if (contractTerminated !== true) {
+                            const commentKey = `komentar${
+                              criteria.key.charAt(0).toUpperCase() +
+                              criteria.key.slice(1)
+                            }`;
+                            handleInputChange(commentKey, e.target.value);
+                          }
                         }}
-                        placeholder={`Berikan komentar tambahan untuk aspek ${criteria.label.toLowerCase()}...`}
+                        placeholder={contractTerminated === true ? "Tidak dapat diisi karena kontrak diputus" : `Berikan komentar tambahan untuk aspek ${criteria.label.toLowerCase()}...`}
                         className="min-h-[100px] text-base rounded-xl border-slate-300 focus:border-blue-500 focus:ring-blue-500"
+                        disabled={contractTerminated === true}
                       />
                     </div>
 
@@ -1091,11 +1311,14 @@ export default function PenilaianPage() {
                   </Label>
                   <Textarea
                     value={formData.keterangan}
-                    onChange={(e) =>
-                      handleInputChange("keterangan", e.target.value)
-                    }
-                    placeholder="Berikan keterangan tambahan mengenai penilaian ini..."
+                    onChange={(e) => {
+                      if (contractTerminated !== true) {
+                        handleInputChange("keterangan", e.target.value);
+                      }
+                    }}
+                    placeholder={contractTerminated === true ? "Keterangan otomatis diisi dari pemutusan kontrak" : "Berikan keterangan tambahan mengenai penilaian ini..."}
                     className="min-h-[120px] text-base rounded-xl border-slate-300 focus:border-blue-500 focus:ring-blue-500"
+                    disabled={contractTerminated === true}
                   />
                 </motion.div>
 
