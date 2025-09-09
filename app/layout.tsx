@@ -6,6 +6,7 @@ import { ThemeProvider } from '@/components/theme-provider'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { ThemeScript } from './theme-script'
 import { AnimatedLayout } from '@/components/animated-layout'
+import { Toaster } from '@/components/ui/toaster'
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -100,6 +101,7 @@ export default function RootLayout({
             </div>
           </footer>
           </div>
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>

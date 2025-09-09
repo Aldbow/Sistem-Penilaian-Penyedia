@@ -35,6 +35,7 @@ import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { Penyedia, PPK } from "@/lib/google-sheets";
 import { SearchableSelect } from "@/components/ui/searchable-select";
+import { useToast } from "@/components/ui/use-toast";
 
 interface PPKOptions {
   eselonI: { value: string; label: string }[];
@@ -42,6 +43,9 @@ interface PPKOptions {
 }
 
 export default function PenilaianPage() {
+  // Toast hook for notifications
+  const { toast } = useToast();
+
   // PPK Authentication State
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authenticatedPPK, setAuthenticatedPPK] = useState<PPK | null>(null);
@@ -353,7 +357,11 @@ export default function PenilaianPage() {
   // Submit penilaian
   const submitPenilaian = async () => {
     if (!canSubmit) {
-      alert("Mohon lengkapi semua field yang wajib diisi");
+      toast({
+        title: "⚠️ Form Tidak Lengkap",
+        description: "Mohon lengkapi semua field yang wajib diisi sebelum menyimpan penilaian.",
+        variant: "destructive",
+      });
       return;
     }
 
@@ -384,31 +392,44 @@ export default function PenilaianPage() {
       });
 
       if (response.ok) {
-        alert("Penilaian berhasil disimpan!");
-        // Reset form
-        setSelectedPenyedia(null);
-        setContractTerminated(null);
-        setTerminationComment("");
-        setFormData({
-          kualitasKuantitasBarangJasa: 1,
-          komentarKualitasKuantitasBarangJasa: "",
-          biaya: 1,
-          komentarBiaya: "",
-          waktu: 1,
-          komentarWaktu: "",
-          layanan: 1,
-          komentarLayanan: "",
-          keterangan: "",
+        // Show success toast with modern styling
+        toast({
+          title: "✅ Penilaian Berhasil Disimpan!",
+          description: `Penilaian untuk ${selectedPenyedia!.namaPerusahaan} telah berhasil disimpan dengan skor ${calculateWeightedScore()} (${getFinalEvaluation()}).`,
+          className: "bg-green-50 border-green-200 text-green-800 dark:bg-green-900/20 dark:border-green-700 dark:text-green-200",
         });
-        setSearchQuery("");
-        setPenyediaList([]);
-        setCurrentStep(1);
+
+        // Reset form with animation delay
+        setTimeout(() => {
+          setSelectedPenyedia(null);
+          setContractTerminated(null);
+          setTerminationComment("");
+          setFormData({
+            kualitasKuantitasBarangJasa: 1,
+            komentarKualitasKuantitasBarangJasa: "",
+            biaya: 1,
+            komentarBiaya: "",
+            waktu: 1,
+            komentarWaktu: "",
+            layanan: 1,
+            komentarLayanan: "",
+            keterangan: "",
+          });
+          setSearchQuery("");
+          setPenyediaList([]);
+          setCurrentStep(1);
+        }, 1500);
       } else {
-        throw new Error("Gagal menyimpan penilaian");
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || "Gagal menyimpan penilaian");
       }
     } catch (error) {
       console.error("Error submitting penilaian:", error);
-      alert("Terjadi kesalahan saat menyimpan penilaian");
+      toast({
+        title: "❌ Gagal Menyimpan Penilaian",
+        description: error instanceof Error ? error.message : "Terjadi kesalahan saat menyimpan penilaian. Silakan coba lagi.",
+        variant: "destructive",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -1381,23 +1402,51 @@ export default function PenilaianPage() {
                     Kembali
                   </Button>
                   
-                  <Button
-                    onClick={submitPenilaian}
-                    disabled={isSubmitting}
-                    className="px-8 py-3 text-base font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-70"
+                  <motion.div
+                    whileHover={{ scale: isSubmitting ? 1 : 1.02 }}
+                    whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
+                    transition={{ duration: 0.2 }}
                   >
-                    {isSubmitting ? (
-                      <div className="flex items-center justify-center space-x-3">
-                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                        <span>Menyimpan...</span>
-                      </div>
-                    ) : (
-                      <div className="flex items-center space-x-3">
-                        <Send className="h-5 w-5" />
-                        <span>Simpan Penilaian</span>
-                      </div>
-                    )}
-                  </Button>
+                    <Button
+                      onClick={submitPenilaian}
+                      disabled={isSubmitting}
+                      className="px-8 py-4 text-base font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-70 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white border-0 min-w-[200px]"
+                    >
+                      {isSubmitting ? (
+                        <div className="flex items-center justify-center space-x-3">
+                          <motion.div
+                            className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                          />
+                          <span>Menyimpan Penilaian...</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center space-x-3">
+                          <motion.div
+                            initial={{ scale: 1 }}
+                            whileHover={{ scale: 1.1, rotate: 5 }}
+                            transition={{ duration: 0.2 }}
+                          >
+                            <Send className="h-5 w-5" />
+                          </motion.div>
+                          <span>Simpan Penilaian</span>
+                          <motion.div
+                            className="w-2 h-2 bg-white rounded-full"
+                            animate={{ 
+                              scale: [1, 1.2, 1],
+                              opacity: [0.7, 1, 0.7]
+                            }}
+                            transition={{ 
+                              duration: 2,
+                              repeat: Infinity,
+                              ease: "easeInOut"
+                            }}
+                          />
+                        </div>
+                      )}
+                    </Button>
+                  </motion.div>
                 </div>
               </CardContent>
             </Card>
