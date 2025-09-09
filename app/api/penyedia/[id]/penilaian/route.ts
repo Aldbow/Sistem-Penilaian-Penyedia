@@ -3,10 +3,11 @@ import { googleSheetsService } from '@/lib/google-sheets';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const penilaian = await googleSheetsService.getPenilaianByPenyedia(params.id);
+    const { id } = await params;
+    const penilaian = await googleSheetsService.getPenilaianByPenyedia(id);
     return NextResponse.json(penilaian);
   } catch (error) {
     console.error('Error fetching penilaian:', error);

@@ -1,96 +1,25 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Building2, ArrowRight, ShieldCheck, TrendingUp, Award, Star, Zap, Globe } from "lucide-react";
+import { Building2, ArrowRight, ShieldCheck, TrendingUp, Award, Star, Zap } from "lucide-react";
 import { FaArrowRight } from "react-icons/fa";
 
 export function HeroSection() {
   return (
     <div className="relative rounded-3xl bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 p-6 md:p-10 lg:p-14 xl:p-20 shadow-2xl">
-      {/* Animated background elements */}
+      {/* Static background elements - no infinite animations */}
       <div className="absolute inset-0 overflow-hidden rounded-3xl">
-        {/* Large gradient circle */}
-        <motion.div
-          className="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] bg-gradient-radial from-blue-500/20 via-indigo-500/10 to-transparent rounded-full"
-          animate={{
-            scale: [1, 1.2, 1],
-            rotate: [0, 90, 180, 270, 360],
-          }}
-          transition={{
-            duration: 30,
-            repeat: Infinity,
-            ease: "linear"
-          }}
-        />
+        {/* Static gradient circle */}
+        <div className="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] bg-gradient-radial from-blue-500/20 via-indigo-500/10 to-transparent rounded-full" />
         
-        {/* Floating elements */}
-        <motion.div
-          className="absolute top-1/4 right-1/4 w-64 h-64 bg-blue-400/15 rounded-full blur-3xl"
-          animate={{
-            x: [0, 60, 0, -60, 0],
-            y: [0, -40, 0, 40, 0],
-            scale: [1, 1.2, 1, 0.8, 1],
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
+        {/* Static floating elements */}
+        <div className="absolute top-1/4 right-1/4 w-64 h-64 bg-blue-400/15 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 left-1/4 w-48 h-48 bg-indigo-400/15 rounded-full blur-3xl" />
+        <div className="absolute top-1/3 left-1/3 w-32 h-32 bg-cyan-300/10 rounded-full blur-2xl" />
         
-        <motion.div
-          className="absolute bottom-1/4 left-1/4 w-48 h-48 bg-indigo-400/15 rounded-full blur-3xl"
-          animate={{
-            x: [0, -50, 0, 50, 0],
-            y: [0, 50, 0, -50, 0],
-            scale: [1, 0.8, 1, 1.2, 1],
-          }}
-          transition={{
-            duration: 22,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
-        
-        <motion.div
-          className="absolute top-1/3 left-1/3 w-32 h-32 bg-cyan-300/10 rounded-full blur-2xl"
-          animate={{
-            x: [0, 40, 0, -40, 0],
-            y: [0, -20, 0, 20, 0],
-          }}
-          transition={{
-            duration: 15,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
-        
-        {/* Geometric shapes */}
-        <motion.div
-          className="absolute top-1/2 left-1/4 w-16 h-16 border border-blue-400/20 rotate-45"
-          animate={{
-            rotate: [45, 135, 225, 315, 405],
-            scale: [1, 1.2, 1, 0.8, 1],
-          }}
-          transition={{
-            duration: 25,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
-        
-        <motion.div
-          className="absolute bottom-1/3 right-1/3 w-12 h-12 bg-indigo-500/20 rounded-full"
-          animate={{
-            y: [0, -30, 0],
-            scale: [1, 1.3, 1],
-          }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
+        {/* Static geometric shapes */}
+        <div className="absolute top-1/2 left-1/4 w-16 h-16 border border-blue-400/20 rotate-45" />
+        <div className="absolute bottom-1/3 right-1/3 w-12 h-12 bg-indigo-500/20 rounded-full" />
       </div>
 
       {/* Content */}
@@ -149,16 +78,7 @@ export function HeroSection() {
                 className="px-6 py-3 sm:px-8 sm:py-4 bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-bold rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 flex items-center justify-center gap-3 group text-sm sm:text-base"
               >
                 <span>Mulai Penilaian</span>
-                <motion.div
-                  animate={{ x: [0, 5, 0] }}
-                  transition={{ 
-                    duration: 1.5, 
-                    repeat: Infinity,
-                    repeatType: "reverse"
-                  }}
-                >
-                  <FaArrowRight className="text-white group-hover:translate-x-1 transition-transform" />
-                </motion.div>
+                <FaArrowRight className="text-white group-hover:translate-x-1 transition-transform" />
               </motion.button>
               <motion.button
                 whileHover={{ 
@@ -170,16 +90,7 @@ export function HeroSection() {
                 className="px-6 py-3 sm:px-8 sm:py-4 bg-transparent border-2 border-white/30 text-white font-bold rounded-2xl hover:bg-white/10 transition-all duration-300 flex items-center justify-center gap-3 group text-sm sm:text-base"
               >
                 <span>Lihat Laporan</span>
-                <motion.div
-                  animate={{ x: [0, 5, 0] }}
-                  transition={{ 
-                    duration: 1.5, 
-                    repeat: Infinity,
-                    repeatType: "reverse"
-                  }}
-                >
-                  <ArrowRight className="text-white group-hover:translate-x-1 transition-transform" />
-                </motion.div>
+                <ArrowRight className="text-white group-hover:translate-x-1 transition-transform" />
               </motion.button>
             </motion.div>
           </motion.div>
@@ -229,37 +140,14 @@ export function HeroSection() {
                 </div>
               </motion.div>
               
-              {/* Floating icons */}
-              <motion.div
-                className="absolute -top-6 -right-6 w-20 h-20 bg-gradient-to-br from-amber-400 to-orange-400 rounded-full flex items-center justify-center shadow-xl"
-                animate={{ 
-                  y: [0, -15, 0],
-                  rotate: [0, 10, 0],
-                }}
-                transition={{ 
-                  duration: 4, 
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                }}
-              >
+              {/* Static floating icons - no infinite animations */}
+              <div className="absolute -top-6 -right-6 w-20 h-20 bg-gradient-to-br from-amber-400 to-orange-400 rounded-full flex items-center justify-center shadow-xl">
                 <Star className="h-10 w-10 text-white" />
-              </motion.div>
+              </div>
               
-              <motion.div
-                className="absolute -bottom-6 -left-6 w-20 h-20 bg-gradient-to-br from-emerald-400 to-teal-400 rounded-full flex items-center justify-center shadow-xl"
-                animate={{ 
-                  y: [0, 15, 0],
-                  rotate: [0, -10, 0],
-                }}
-                transition={{ 
-                  duration: 3.5, 
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: 0.5
-                }}
-              >
+              <div className="absolute -bottom-6 -left-6 w-20 h-20 bg-gradient-to-br from-emerald-400 to-teal-400 rounded-full flex items-center justify-center shadow-xl">
                 <Zap className="h-10 w-10 text-white" />
-              </motion.div>
+              </div>
             </div>
           </motion.div>
         </div>
