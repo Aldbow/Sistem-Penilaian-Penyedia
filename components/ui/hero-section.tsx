@@ -3,8 +3,19 @@
 import { motion } from "framer-motion";
 import { Building2, ArrowRight, ShieldCheck, TrendingUp, Award, Star, Zap } from "lucide-react";
 import { FaArrowRight } from "react-icons/fa";
+import { useRouter } from "next/navigation";
 
 export function HeroSection() {
+  const router = useRouter();
+
+  const handlePenilaianClick = () => {
+    router.push('/penilaian');
+  };
+
+  const handleLaporanClick = () => {
+    router.push('/laporan');
+  };
+
   return (
     <div className="relative rounded-3xl bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 p-6 md:p-10 lg:p-14 xl:p-20 shadow-2xl">
       {/* Static background elements - no infinite animations */}
@@ -70,6 +81,7 @@ export function HeroSection() {
               className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
             >
               <motion.button
+                onClick={handlePenilaianClick}
                 whileHover={{ 
                   scale: 1.05,
                   boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.1)"
@@ -81,6 +93,7 @@ export function HeroSection() {
                 <FaArrowRight className="text-white group-hover:translate-x-1 transition-transform" />
               </motion.button>
               <motion.button
+                onClick={handleLaporanClick}
                 whileHover={{ 
                   scale: 1.05,
                   backgroundColor: "rgba(255, 255, 255, 0.15)",
