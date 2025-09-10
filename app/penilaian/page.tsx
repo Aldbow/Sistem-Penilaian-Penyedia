@@ -33,7 +33,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
-import { Penyedia, PPK } from "@/lib/google-sheets";
+import { Penyedia, PPK, Paket } from "@/lib/google-sheets";
 import { SearchableSelect } from "@/components/ui/searchable-select";
 import { useToast } from "@/components/ui/use-toast";
 
@@ -63,14 +63,11 @@ export default function PenilaianPage() {
   const [isLoadingOptions, setIsLoadingOptions] = useState(false);
 
   // Evaluation State
-  const [searchQuery, setSearchQuery] = useState("");
-  const [penyediaList, setPenyediaList] = useState<Penyedia[]>([]);
-  const [selectedPenyedia, setSelectedPenyedia] = useState<Penyedia | null>(
-    null
-  );
+  const [paketList, setPaketList] = useState<Paket[]>([]);
+  const [selectedPaket, setSelectedPaket] = useState<Paket | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [currentStep, setCurrentStep] = useState(1); // 1: search, 2: info, 3: termination, 4: rating
+  const [currentStep, setCurrentStep] = useState(1); // 1: select provider, 2: info, 3: termination, 4: rating
 
   // Contract termination state
   const [contractTerminated, setContractTerminated] = useState<boolean | null>(null);
@@ -226,14 +223,34 @@ export default function PenilaianPage() {
     }
   };
 
+  // Load paket data after PPK authentication
+  useEffect(() => {
+    if (isAuthenticated && authenticatedPPK?.satuanKerjaDetail) {
+      const loadPaketData = async () => {
+        setIsLoading(true);
+        try {
+          const response = await fetch(`/api/paket?satuanKerjaDetail=${encodeURIComponent(authenticatedPPK.satuanKerjaDetail)}`);
+          if (response.ok) {
+            const data = await response.json();
+            setPaketList(data);
+          }
+        } catch (error) {
+          console.error("Error loading paket data:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      loadPaketData();
+    }
+  }, [isAuthenticated, authenticatedPPK]);
+
   // Logout function
   const logout = () => {
     setIsAuthenticated(false);
     setAuthenticatedPPK(null);
     setAuthForm({ nip: "", eselonI: "", satuanKerja: "" });
-    setSelectedPenyedia(null);
-    setSearchQuery("");
-    setPenyediaList([]);
+    setSelectedPaket(null);
+    setPaketList([]);
     setContractTerminated(null);
     setTerminationComment("");
     setFormData({
@@ -250,37 +267,6 @@ export default function PenilaianPage() {
     setCurrentStep(1);
   };
 
-  // Fetch penyedia berdasarkan search
-  const searchPenyedia = async (query: string) => {
-    if (!query.trim()) {
-      setPenyediaList([]);
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      const response = await fetch(
-        `/api/penyedia?search=${encodeURIComponent(query)}`
-      );
-      if (response.ok) {
-        const data = await response.json();
-        setPenyediaList(data);
-      }
-    } catch (error) {
-      console.error("Error searching penyedia:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Handle search input change
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      searchPenyedia(searchQuery);
-    }, 300);
-
-    return () => clearTimeout(timeoutId);
-  }, [searchQuery]);
 
   // Handle form input change
   const handleInputChange = (field: string, value: any) => {
@@ -349,7 +335,7 @@ export default function PenilaianPage() {
   };
 
   // Check if form can be submitted
-  const canSubmit = selectedPenyedia && authenticatedPPK;
+  const canSubmit = selectedPaket && authenticatedPPK;
 
   // Submit penilaian
   const submitPenilaian = async () => {
@@ -365,7 +351,7 @@ export default function PenilaianPage() {
     setIsSubmitting(true);
     try {
       const penilaianData = {
-        idPenyedia: selectedPenyedia!.id,
+        idPenyedia: selectedPaket!.kodePenyedia,
         nipPPK: authenticatedPPK!.nip,
         tanggalPenilaian: new Date().toISOString().split("T")[0],
         kualitasKuantitasBarangJasa: formData.kualitasKuantitasBarangJasa,
@@ -378,6 +364,8 @@ export default function PenilaianPage() {
         layanan: formData.layanan,
         komentarLayanan: formData.komentarLayanan,
         keterangan: formData.keterangan,
+        kodePaket: selectedPaket!.kodePaket,
+        kodePenyedia: selectedPaket!.kodePenyedia,
       };
 
       const response = await fetch("/api/penilaian", {
@@ -392,13 +380,13 @@ export default function PenilaianPage() {
         // Show success toast with modern styling
         toast({
           title: "✅ Penilaian Berhasil Disimpan!",
-          description: `Penilaian untuk ${selectedPenyedia!.namaPerusahaan} telah berhasil disimpan dengan skor ${calculateWeightedScore()} (${getFinalEvaluation()}).`,
+          description: `Penilaian untuk ${selectedPaket!.namaPenyedia} telah berhasil disimpan dengan skor ${calculateWeightedScore()} (${getFinalEvaluation()}).`,
           className: "bg-green-50 border-green-200 text-green-800 dark:bg-green-900/20 dark:border-green-700 dark:text-green-200",
         });
 
         // Reset form with animation delay
         setTimeout(() => {
-          setSelectedPenyedia(null);
+          setSelectedPaket(null);
           setContractTerminated(null);
           setTerminationComment("");
           setFormData({
@@ -412,9 +400,25 @@ export default function PenilaianPage() {
             komentarLayanan: "",
             keterangan: "",
           });
-          setSearchQuery("");
-          setPenyediaList([]);
           setCurrentStep(1);
+          // Reload paket data to refresh status
+          if (authenticatedPPK?.satuanKerjaDetail) {
+            const loadPaketData = async () => {
+              setIsLoading(true);
+              try {
+                const response = await fetch(`/api/paket?satuanKerjaDetail=${encodeURIComponent(authenticatedPPK.satuanKerjaDetail)}`);
+                if (response.ok) {
+                  const data = await response.json();
+                  setPaketList(data);
+                }
+              } catch (error) {
+                console.error("Error reloading paket data:", error);
+              } finally {
+                setIsLoading(false);
+              }
+            };
+            loadPaketData();
+          }
         }, 1500);
       } else {
         const errorData = await response.json().catch(() => ({}));
@@ -787,82 +791,104 @@ export default function PenilaianPage() {
                   <span>Pilih Penyedia</span>
                 </CardTitle>
                 <CardDescription className="text-base">
-                  Cari dan pilih penyedia yang akan dinilai
+                  Pilih penyedia yang berkontrak dengan satuan kerja Anda
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="relative group">
-                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5 group-focus-within:text-blue-500 transition-colors" />
-                  <input
-                    type="text"
-                    placeholder="Cari nama perusahaan atau NPWP..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-12 pr-6 py-5 text-base border border-slate-300 dark:border-slate-600 rounded-2xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-400 transition-all duration-300 dark:bg-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 shadow-sm hover:shadow-md"
-                  />
-                </div>
-
                 {isLoading && (
                   <div className="flex items-center justify-center py-8">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
                     <span className="ml-3 text-muted-foreground text-lg">
-                      Mencari penyedia...
+                      Memuat data penyedia...
                     </span>
                   </div>
                 )}
 
+                {!isLoading && paketList.length === 0 && (
+                  <div className="text-center py-8">
+                    <Building2 className="h-12 w-12 text-slate-400 mx-auto mb-4" />
+                    <p className="text-slate-600 dark:text-slate-400">
+                      Tidak ada penyedia yang berkontrak dengan satuan kerja Anda
+                    </p>
+                  </div>
+                )}
+
                 <AnimatePresence>
-                  {penyediaList.length > 0 && (
+                  {paketList.length > 0 && (
                     <motion.div
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: "auto" }}
                       exit={{ opacity: 0, height: 0 }}
                       transition={{ duration: 0.3 }}
-                      className="max-h-96 overflow-y-auto space-y-3 pr-2 scrollbar-thin scrollbar-thumb-blue-300 scrollbar-track-transparent rounded-lg"
+                      className="space-y-4"
                     >
-                      <div className="text-sm text-slate-600 dark:text-slate-400 mb-2">
-                        Ditemukan {penyediaList.length} penyedia
+                      <div className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+                        Ditemukan {paketList.length} penyedia yang berkontrak dengan satuan kerja Anda
                       </div>
                       
-                      {penyediaList.map((penyedia) => (
-                        <motion.div
-                          key={penyedia.id}
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.2 }}
-                          whileHover={{ 
-                            scale: 1.02,
-                            y: -3,
-                            transition: { duration: 0.2 }
-                          }}
-                          onClick={() => {
-                            setSelectedPenyedia(penyedia);
-                            setCurrentStep(2);
-                          }}
-                          className={`p-5 rounded-2xl border-2 cursor-pointer transition-all duration-300 ${
-                            selectedPenyedia?.id === penyedia.id
-                              ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 ring-2 ring-blue-500 ring-opacity-50 shadow-lg"
-                              : "border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-500 shadow-sm"
-                          }`}
-                        >
-                          <div className="flex items-center justify-between">
-                            <div className="flex-1 min-w-0">
-                              <h3 className="font-bold text-lg text-slate-800 dark:text-slate-100 truncate">
-                                {penyedia.namaPerusahaan}
-                              </h3>
-                              <p className="text-sm text-slate-600 dark:text-slate-300 mt-1">
-                                {penyedia.jenisUsaha}
-                              </p>
-                              <p className="text-sm text-slate-500 dark:text-slate-400 mt-2 break-all">
-                                NPWP: {penyedia.npwp}
-                              </p>
+                      <div className="grid gap-4 max-h-96 overflow-y-auto pr-2">
+                        {paketList.map((paket) => (
+                          <motion.div
+                            key={`${paket.kodePaket}-${paket.kodePenyedia}`}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.2 }}
+                            whileHover={{ 
+                              scale: 1.02,
+                              y: -2,
+                              transition: { duration: 0.2 }
+                            }}
+                            onClick={() => {
+                              setSelectedPaket(paket);
+                              setCurrentStep(2);
+                            }}
+                            className={`p-5 rounded-2xl border-2 cursor-pointer transition-all duration-300 ${
+                              selectedPaket?.kodePaket === paket.kodePaket && selectedPaket?.kodePenyedia === paket.kodePenyedia
+                                ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 ring-2 ring-blue-500 ring-opacity-50 shadow-lg"
+                                : "border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-500 shadow-sm"
+                            }`}
+                          >
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1 min-w-0 space-y-3">
+                                <div>
+                                  <h3 className="font-bold text-lg text-slate-800 dark:text-slate-100 truncate">
+                                    {paket.namaPenyedia}
+                                  </h3>
+                                  <p className="text-sm text-slate-600 dark:text-slate-300">
+                                    NPWP: {paket.npwpPenyedia}
+                                  </p>
+                                </div>
+                                
+                                <div className="bg-slate-50 dark:bg-slate-800 p-3 rounded-lg">
+                                  <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                                    Paket: {paket.kodePaket}
+                                  </p>
+                                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                                    Nilai Kontrak: {new Intl.NumberFormat('id-ID', { 
+                                      style: 'currency', 
+                                      currency: 'IDR' 
+                                    }).format(Number(paket.nilaiKontrak) || 0)}
+                                  </p>
+                                </div>
+
+                                <div className="flex items-center space-x-2">
+                                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                    paket.penilaian === 'Sudah' 
+                                      ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
+                                      : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300'
+                                  }`}>
+                                    {paket.penilaian === 'Sudah' ? 'Sudah Dinilai' : 'Belum Dinilai'}
+                                  </span>
+                                </div>
+                              </div>
+                              
+                              {selectedPaket?.kodePaket === paket.kodePaket && selectedPaket?.kodePenyedia === paket.kodePenyedia && (
+                                <CheckCircle className="h-6 w-6 text-blue-500 flex-shrink-0 ml-3" />
+                              )}
                             </div>
-                            {selectedPenyedia?.id === penyedia.id && (
-                              <CheckCircle className="h-6 w-6 text-blue-500 flex-shrink-0 ml-3" />
-                            )}
-                          </div>
-                        </motion.div>
-                      ))}
+                          </motion.div>
+                        ))}
+                      </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -870,7 +896,7 @@ export default function PenilaianPage() {
                 <div className="flex justify-end">
                   <Button
                     onClick={goToNextStep}
-                    disabled={!selectedPenyedia}
+                    disabled={!selectedPaket}
                     className="px-8 py-3 text-base font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50"
                   >
                     Lanjut
@@ -883,7 +909,7 @@ export default function PenilaianPage() {
         )}
 
         {/* Step 2: Informasi Penyedia */}
-        {currentStep === 2 && (
+        {currentStep === 2 && selectedPaket && (
           <motion.div
             key="step2"
             initial={{ opacity: 0, x: 20 }}
@@ -898,11 +924,14 @@ export default function PenilaianPage() {
                     <div className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-100 text-blue-600 font-bold text-base">
                       2
                     </div>
-                    <span>Informasi Penyedia Terpilih</span>
+                    <span>Informasi Penyedia & Paket Terpilih</span>
                   </CardTitle>
                   <Button
                     variant="outline"
-                    onClick={() => setSelectedPenyedia(null)}
+                    onClick={() => {
+                      setSelectedPaket(null);
+                      setCurrentStep(1);
+                    }}
                     className="rounded-xl"
                   >
                     <X className="h-4 w-4 mr-2" />
@@ -915,23 +944,23 @@ export default function PenilaianPage() {
                   <div className="space-y-6">
                     <div className="bg-white/70 dark:bg-slate-800/70 p-5 rounded-2xl shadow-sm">
                       <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-4">
-                        Data Perusahaan
+                        Data Penyedia
                       </h3>
                       <div className="space-y-4">
                         <div>
                           <p className="text-sm font-medium text-slate-600 dark:text-slate-300">
-                            Nama Perusahaan
+                            Nama Penyedia
                           </p>
                           <p className="text-lg font-semibold text-slate-800 dark:text-slate-100">
-                            {selectedPenyedia?.namaPerusahaan}
+                            {selectedPaket.namaPenyedia}
                           </p>
                         </div>
                         <div>
                           <p className="text-sm font-medium text-slate-600 dark:text-slate-300">
-                            Jenis Usaha
+                            Kode Penyedia
                           </p>
                           <p className="text-lg font-semibold text-slate-800 dark:text-slate-100">
-                            {selectedPenyedia?.jenisUsaha}
+                            {selectedPaket.kodePenyedia}
                           </p>
                         </div>
                         <div>
@@ -939,7 +968,7 @@ export default function PenilaianPage() {
                             NPWP
                           </p>
                           <p className="text-lg font-semibold text-slate-800 dark:text-slate-100">
-                            {selectedPenyedia?.npwp}
+                            {selectedPaket.npwpPenyedia}
                           </p>
                         </div>
                       </div>
@@ -949,34 +978,39 @@ export default function PenilaianPage() {
                   <div className="space-y-6">
                     <div className="bg-white/70 dark:bg-slate-800/70 p-5 rounded-2xl shadow-sm">
                       <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-4">
-                        Informasi Kontak
+                        Informasi Paket
                       </h3>
                       <div className="space-y-4">
                         <div>
                           <p className="text-sm font-medium text-slate-600 dark:text-slate-300">
-                            Kontak
+                            Kode Paket
                           </p>
                           <p className="text-lg font-semibold text-slate-800 dark:text-slate-100">
-                            {selectedPenyedia?.kontak || "-"}
+                            {selectedPaket.kodePaket}
                           </p>
                         </div>
                         <div>
                           <p className="text-sm font-medium text-slate-600 dark:text-slate-300">
-                            Alamat
+                            Nilai Kontrak
                           </p>
                           <p className="text-lg font-semibold text-slate-800 dark:text-slate-100">
-                            {selectedPenyedia?.alamat || "-"}
+                            {new Intl.NumberFormat('id-ID', { 
+                              style: 'currency', 
+                              currency: 'IDR' 
+                            }).format(Number(selectedPaket.nilaiKontrak) || 0)}
                           </p>
                         </div>
                         <div>
                           <p className="text-sm font-medium text-slate-600 dark:text-slate-300">
-                            Tanggal Registrasi
+                            Status Penilaian
                           </p>
-                          <p className="text-lg font-semibold text-slate-800 dark:text-slate-100">
-                            {selectedPenyedia?.tanggalRegistrasi 
-                              ? new Date(selectedPenyedia.tanggalRegistrasi).toLocaleDateString("id-ID")
-                              : "-"}
-                          </p>
+                          <span className={`inline-flex px-3 py-1 rounded-full text-sm font-medium ${
+                            selectedPaket.penilaian === 'Sudah' 
+                              ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
+                              : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300'
+                          }`}>
+                            {selectedPaket.penilaian === 'Sudah' ? 'Sudah Dinilai' : 'Belum Dinilai'}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -1006,7 +1040,7 @@ export default function PenilaianPage() {
         )}
 
         {/* Step 3: Contract Termination Question */}
-        {currentStep === 3 && selectedPenyedia && (
+        {currentStep === 3 && selectedPaket && (
           <motion.div
             key="step3"
             initial={{ opacity: 0, x: 20 }}
@@ -1156,7 +1190,7 @@ export default function PenilaianPage() {
         )}
 
         {/* Step 4: Rating Form */}
-        {currentStep === 4 && selectedPenyedia && (
+        {currentStep === 4 && selectedPaket && (
           <motion.div
             key="step4"
             initial={{ opacity: 0, x: 20 }}

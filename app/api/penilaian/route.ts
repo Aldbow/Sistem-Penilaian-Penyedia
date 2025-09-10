@@ -25,7 +25,15 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+    
+    // Add penilaian
     await googleSheetsService.addPenilaian(body);
+    
+    // Update paket status from "Belum" to "Sudah" if kodePaket and kodePenyedia are provided
+    if (body.kodePaket && body.kodePenyedia) {
+      await googleSheetsService.updatePenilaianStatus(body.kodePaket, body.kodePenyedia, 'Sudah');
+    }
+    
     return NextResponse.json({ message: 'Penilaian berhasil disimpan' });
   } catch (error) {
     console.error('Error adding penilaian:', error);

@@ -25,6 +25,26 @@ export interface PPK {
   noHp: string;
 }
 
+// Interface untuk data paket
+export interface Paket {
+  tahunAnggaran: string;
+  kodeSatuanKerja: string;
+  namaSatuanKerja: string;
+  kodePaket: string;
+  kodeRupPaket: string;
+  pagu: string;
+  hps: string;
+  nilaiPenawaran: string;
+  nilaiTerkoreksi: string;
+  nilaiNegosiasi: string;
+  nilaiKontrak: string;
+  kodePenyedia: string;
+  namaPenyedia: string;
+  npwpPenyedia: string;
+  npwp16Penyedia: string;
+  penilaian: string; // "Belum" or "Sudah"
+}
+
 // Interface untuk data penilaian
 export interface Penilaian {
   id: string;
@@ -319,6 +339,77 @@ class GoogleSheetsService {
     return allPenilaian.filter(penilaian => penilaian.idPenyedia === idPenyedia);
   }
 
+  // Mendapatkan semua data paket
+  async getPaket(): Promise<Paket[]> {
+    try {
+      const response = await this.sheets.spreadsheets.values.get({
+        spreadsheetId: process.env.GOOGLE_SHEET_ID,
+        range: 'Paket!A2:P', // A2 to P to include all columns
+      });
+
+      const rows = response.data.values || [];
+      return rows.map((row: any[]) => ({
+        tahunAnggaran: row[0] || '',
+        kodeSatuanKerja: row[1] || '',
+        namaSatuanKerja: row[2] || '',
+        kodePaket: row[3] || '',
+        kodeRupPaket: row[4] || '',
+        pagu: row[5] || '',
+        hps: row[6] || '',
+        nilaiPenawaran: row[7] || '',
+        nilaiTerkoreksi: row[8] || '',
+        nilaiNegosiasi: row[9] || '',
+        nilaiKontrak: row[10] || '',
+        kodePenyedia: row[11] || '',
+        namaPenyedia: row[12] || '',
+        npwpPenyedia: row[13] || '',
+        npwp16Penyedia: row[14] || '',
+        penilaian: row[15] || 'Belum', // Default to "Belum"
+      }));
+    } catch (error) {
+      console.error('Error getting paket data:', error);
+      throw error;
+    }
+  }
+
+  // Mendapatkan paket berdasarkan satuan kerja PPK
+  async getPaketBySatuanKerja(satuanKerjaDetail: string): Promise<Paket[]> {
+    const allPaket = await this.getPaket();
+    return allPaket.filter(paket => 
+      paket.namaSatuanKerja.toLowerCase() === satuanKerjaDetail.toLowerCase()
+    );
+  }
+
+  // Update status penilaian paket
+  async updatePenilaianStatus(kodePaket: string, kodePenyedia: string, status: string): Promise<void> {
+    try {
+      // Get all paket data to find the row to update
+      const response = await this.sheets.spreadsheets.values.get({
+        spreadsheetId: process.env.GOOGLE_SHEET_ID,
+        range: 'Paket!A2:P',
+      });
+
+      const rows = response.data.values || [];
+      const rowIndex = rows.findIndex((row: any[]) => 
+        row[3] === kodePaket && row[11] === kodePenyedia
+      );
+
+      if (rowIndex !== -1) {
+        // Update the status in column P (index 15, but in A1 notation it's column P)
+        const actualRowNumber = rowIndex + 2; // +2 because we started from A2 and arrays are 0-indexed
+        await this.sheets.spreadsheets.values.update({
+          spreadsheetId: process.env.GOOGLE_SHEET_ID,
+          range: `Paket!P${actualRowNumber}`,
+          valueInputOption: 'RAW',
+          resource: { values: [[status]] },
+        });
+      }
+    } catch (error) {
+      console.error('Error updating penilaian status:', error);
+      throw error;
+    }
+  }
+
   // Optimized search method that combines penyedia with ratings
   async searchPenyediaWithRatings(query: string): Promise<any[]> {
     try {
@@ -368,6 +459,13 @@ class GoogleSheetsService {
         'No', 'Eselon I', 'Satuan Kerja', 'Satuan Kerja Detail', 'TA', 'Nama', 'NIP', 'No. HP'
       ];
 
+      // Header untuk sheet Paket
+      const paketHeaders = [
+        'Tahun Anggaran', 'Kode Satuan Kerja', 'Nama Satuan Kerja', 'Kode Paket', 'Kode RUP Paket',
+        'Pagu', 'HPS', 'Nilai Penawaran', 'Nilai Terkoreksi', 'Nilai Negosiasi', 'Nilai Kontrak',
+        'Kode Penyedia', 'Nama Penyedia', 'NPWP Penyedia', 'NPWP 16 Penyedia', 'Penilaian'
+      ];
+
       // Header untuk sheet Penilaian
       const penilaianHeaders = [
         'ID Penilaian', 'ID Penyedia', 'Nama PPK', 'Tanggal Penilaian',
@@ -389,6 +487,13 @@ class GoogleSheetsService {
         range: 'PPK!A1:H1', // Updated range to include new column
         valueInputOption: 'RAW',
         resource: { values: [ppkHeaders] },
+      });
+
+      await this.sheets.spreadsheets.values.update({
+        spreadsheetId: process.env.GOOGLE_SHEET_ID,
+        range: 'Paket!A1:P1',
+        valueInputOption: 'RAW',
+        resource: { values: [paketHeaders] },
       });
 
       await this.sheets.spreadsheets.values.update({

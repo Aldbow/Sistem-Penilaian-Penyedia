@@ -71,9 +71,6 @@ export function FeaturesSection() {
                     y: -15,
                     transition: { duration: 0.3, type: "spring", stiffness: 300 }
                   }}
-                  transition={{ 
-                    y: { duration: 0.2, type: "spring", stiffness: 300 }
-                  }}
                 >
                   <div className="relative h-full">
                     <motion.div 
