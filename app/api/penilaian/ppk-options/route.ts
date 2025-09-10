@@ -6,7 +6,7 @@ export async function GET() {
     // Get all PPK data
     const allPPK = await googleSheetsService.getPPK()
     
-    // Extract unique Eselon I values
+    // Extract unique values
     const eselonISet = new Set<string>()
     const satuanKerjaSet = new Set<string>()
     

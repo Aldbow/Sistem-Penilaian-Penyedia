@@ -50,7 +50,6 @@ export default function PenilaianPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authenticatedPPK, setAuthenticatedPPK] = useState<PPK | null>(null);
   const [authForm, setAuthForm] = useState({
-    nama: "",
     nip: "",
     eselonI: "",
     satuanKerja: "",
@@ -171,13 +170,12 @@ export default function PenilaianPage() {
   // PPK Authentication function
   const authenticatePPK = async () => {
     if (
-      !authForm.nama.trim() ||
       !authForm.nip.trim() ||
       !authForm.eselonI.trim() ||
       !authForm.satuanKerja.trim()
     ) {
       setAuthError(
-        "Semua field harus diisi (Nama, NIP, Eselon I, dan Satuan Kerja)"
+        "Semua field harus diisi (NIP, Eselon I, dan Satuan Kerja)"
       );
       return;
     }
@@ -192,7 +190,6 @@ export default function PenilaianPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          nama: authForm.nama.trim(),
           nip: authForm.nip.trim(),
           eselonI: authForm.eselonI.trim(),
           satuanKerja: authForm.satuanKerja.trim(),
@@ -233,7 +230,7 @@ export default function PenilaianPage() {
   const logout = () => {
     setIsAuthenticated(false);
     setAuthenticatedPPK(null);
-    setAuthForm({ nama: "", nip: "", eselonI: "", satuanKerja: "" });
+    setAuthForm({ nip: "", eselonI: "", satuanKerja: "" });
     setSelectedPenyedia(null);
     setSearchQuery("");
     setPenyediaList([]);
@@ -369,7 +366,7 @@ export default function PenilaianPage() {
     try {
       const penilaianData = {
         idPenyedia: selectedPenyedia!.id,
-        namaPPK: authenticatedPPK!.nama,
+        nipPPK: authenticatedPPK!.nip,
         tanggalPenilaian: new Date().toISOString().split("T")[0],
         kualitasKuantitasBarangJasa: formData.kualitasKuantitasBarangJasa,
         komentarKualitasKuantitasBarangJasa:
@@ -473,7 +470,7 @@ export default function PenilaianPage() {
                 Validasi PPK
               </h1>
               <p className="mt-3 text-lg sm:text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
-                Masukkan nama lengkap dan NIP Anda untuk mengakses sistem penilaian penyedia
+                Masukkan NIP dan informasi lainnya untuk mengakses sistem penilaian penyedia
               </p>
             </div>
           </div>
@@ -495,34 +492,11 @@ export default function PenilaianPage() {
                 <span>Autentikasi PPK</span>
               </CardTitle>
               <CardDescription className="text-base">
-                Silakan masukkan nama lengkap dan NIP sesuai dengan data PPK yang terdaftar
+                Silakan masukkan NIP dan informasi lainnya sesuai dengan data PPK yang terdaftar
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="nama"
-                    className="text-sm font-medium text-slate-700 dark:text-slate-300"
-                  >
-                    Nama Lengkap *
-                  </Label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                    <Input
-                      id="nama"
-                      type="text"
-                      placeholder="Masukkan nama lengkap Anda"
-                      value={authForm.nama}
-                      onChange={(e) =>
-                        handleAuthInputChange("nama", e.target.value)
-                      }
-                      className="pl-10 py-5 text-base rounded-xl border-slate-300 focus:border-blue-500 focus:ring-blue-500"
-                      disabled={isAuthenticating}
-                    />
-                  </div>
-                </div>
-
                 <div className="space-y-2">
                   <Label
                     htmlFor="nip"
@@ -531,7 +505,7 @@ export default function PenilaianPage() {
                     NIP *
                   </Label>
                   <div className="relative">
-                    <FileText className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                    <FileText className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5 group-focus-within:text-blue-500 transition-colors" />
                     <Input
                       id="nip"
                       type="text"
@@ -607,7 +581,6 @@ export default function PenilaianPage() {
                 onClick={authenticatePPK}
                 disabled={
                   isAuthenticating ||
-                  !authForm.nama.trim() ||
                   !authForm.nip.trim() ||
                   !authForm.eselonI.trim() ||
                   !authForm.satuanKerja.trim() ||
@@ -671,50 +644,88 @@ export default function PenilaianPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.2 }}
       >
-        <Card className="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 border-green-200 dark:border-green-700 rounded-2xl shadow-lg">
-          <CardHeader>
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <CardTitle className="flex items-center space-x-3 text-xl">
-                <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-xl">
-                  <CheckCircle className="h-6 w-6 text-green-600" />
+        <Card className="mb-8 border-0 shadow-xl bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-slate-800 dark:via-slate-700 dark:to-slate-800">
+          <CardHeader className="pb-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                  <User className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                 </div>
-                <span>PPK Terautentikasi</span>
-              </CardTitle>
+                <div>
+                  <CardTitle className="text-xl font-bold text-slate-800 dark:text-slate-100">
+                    PPK Terautentikasi
+                  </CardTitle>
+                  <CardDescription className="text-slate-600 dark:text-slate-400">
+                    Informasi Pejabat Pembuat Komitmen
+                  </CardDescription>
+                </div>
+              </div>
               <Button
-                onClick={logout}
                 variant="outline"
-                className="text-red-600 border-red-300 hover:bg-red-50 dark:border-red-700 dark:hover:bg-red-900/30 rounded-xl"
+                size="sm"
+                onClick={logout}
+                className="text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300 dark:text-red-400 dark:border-red-800 dark:hover:bg-red-900/20"
               >
-                <LogOut className="h-4 w-4 mr-2" />
+                <X className="h-4 w-4 mr-2" />
                 Keluar
               </Button>
             </div>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="bg-white/50 dark:bg-slate-800/50 p-4 rounded-xl">
-                <p className="text-sm text-slate-600 dark:text-slate-300">Nama</p>
-                <p className="font-semibold text-slate-800 dark:text-slate-100 truncate">
-                  {authenticatedPPK?.nama}
+            <div className="space-y-6">
+              {/* Primary Info - Nama */}
+              <div className="bg-white/70 dark:bg-slate-800/70 p-6 rounded-xl border border-slate-200/50 dark:border-slate-600/50">
+                <div className="flex items-center space-x-3 mb-2">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                  <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100">
+                    {authenticatedPPK?.nama}
+                  </h3>
+                </div>
+                <p className="text-sm text-slate-600 dark:text-slate-400 ml-5">
+                  Nama Lengkap PPK
                 </p>
               </div>
-              <div className="bg-white/50 dark:bg-slate-800/50 p-4 rounded-xl">
-                <p className="text-sm text-slate-600 dark:text-slate-300">NIP</p>
-                <p className="font-semibold text-slate-800 dark:text-slate-100">
-                  {authenticatedPPK?.nip}
-                </p>
-              </div>
-              <div className="bg-white/50 dark:bg-slate-800/50 p-4 rounded-xl">
-                <p className="text-sm text-slate-600 dark:text-slate-300">Satuan Kerja</p>
-                <p className="font-semibold text-slate-800 dark:text-slate-100 truncate">
-                  {authenticatedPPK?.satuanKerja}
-                </p>
-              </div>
-              <div className="bg-white/50 dark:bg-slate-800/50 p-4 rounded-xl">
-                <p className="text-sm text-slate-600 dark:text-slate-300">Eselon I</p>
-                <p className="font-semibold text-slate-800 dark:text-slate-100 truncate">
-                  {authenticatedPPK?.eselonI}
-                </p>
+
+              {/* Secondary Info Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* NIP */}
+                <div className="bg-white/50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200/30 dark:border-slate-600/30">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
+                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">
+                      NIP
+                    </p>
+                  </div>
+                  <p className="font-semibold text-slate-800 dark:text-slate-100 text-sm">
+                    {authenticatedPPK?.nip}
+                  </p>
+                </div>
+
+                {/* Satuan Kerja */}
+                <div className="bg-white/50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200/30 dark:border-slate-600/30">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <div className="w-1.5 h-1.5 bg-purple-500 rounded-full"></div>
+                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">
+                      Satuan Kerja
+                    </p>
+                  </div>
+                  <p className="font-semibold text-slate-800 dark:text-slate-100 text-sm truncate">
+                    {authenticatedPPK?.satuanKerja}
+                  </p>
+                </div>
+
+                {/* TA */}
+                <div className="bg-white/50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200/30 dark:border-slate-600/30">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <div className="w-1.5 h-1.5 bg-orange-500 rounded-full"></div>
+                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">
+                      Tahun
+                    </p>
+                  </div>
+                  <p className="font-semibold text-slate-800 dark:text-slate-100 text-sm">
+                    {authenticatedPPK?.ta}
+                  </p>
+                </div>
               </div>
             </div>
           </CardContent>
@@ -831,7 +842,7 @@ export default function PenilaianPage() {
                           className={`p-5 rounded-2xl border-2 cursor-pointer transition-all duration-300 ${
                             selectedPenyedia?.id === penyedia.id
                               ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 ring-2 ring-blue-500 ring-opacity-50 shadow-lg"
-                              : "border-slate-200 dark:border-slate-700 hover:border-blue-300 hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100 dark:hover:from-blue-900/10 dark:hover:to-blue-800/10 bg-white dark:bg-slate-800 shadow-sm hover:shadow-md"
+                              : "border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-500 shadow-sm"
                           }`}
                         >
                           <div className="flex items-center justify-between">
@@ -1183,7 +1194,7 @@ export default function PenilaianPage() {
                           Penilaian Otomatis: Kontrak Diputus
                         </h4>
                         <p className="text-red-700 dark:text-red-300 text-sm mb-3">
-                          Karena terjadi pemutusan kontrak sepihak, semua aspek penilaian telah otomatis diset ke skor 0. Penilaian akhir: <strong>Buruk</strong>
+                          Karena terjadi pemutusan kontrak sepihak, semua aspek penilaian akan otomatis mendapat skor 0 dan penilaian akhir akan menjadi "Buruk". Silakan berikan keterangan mengenai pemutusan kontrak tersebut.
                         </p>
                         <p className="text-red-600 dark:text-red-400 text-xs">
                           Keterangan: {terminationComment}
@@ -1199,7 +1210,7 @@ export default function PenilaianPage() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: index * 0.1 }}
-                    className="space-y-5 p-6 border border-slate-200 dark:border-slate-700 rounded-2xl bg-white/50 dark:bg-slate-800/50 shadow-sm"
+                    className="space-y-5 p-6 border border-slate-200/50 dark:border-slate-600/50 bg-white/50 dark:bg-slate-800/50 shadow-sm"
                   >
                     <div>
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
@@ -1357,7 +1368,7 @@ export default function PenilaianPage() {
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                       <div className="bg-white/70 dark:bg-slate-800/70 p-5 rounded-xl">
-                        <p className="text-slate-600 dark:text-slate-300 mb-2">
+                        <p className="text-slate-600 dark:text-slate-400 mb-2">
                           Skor Total (Berbobot)
                         </p>
                         <div className="text-4xl font-bold text-blue-600 dark:text-blue-400">
@@ -1366,7 +1377,7 @@ export default function PenilaianPage() {
                       </div>
 
                       <div className="bg-white/70 dark:bg-slate-800/70 p-5 rounded-xl">
-                        <p className="text-slate-600 dark:text-slate-300 mb-2">
+                        <p className="text-slate-600 dark:text-slate-400 mb-2">
                           Penilaian Akhir
                         </p>
                         <div

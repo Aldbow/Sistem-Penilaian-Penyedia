@@ -18,6 +18,7 @@ export interface PPK {
   no: string;
   eselonI: string;
   satuanKerja: string;
+  satuanKerjaDetail: string;
   ta: string;
   nama: string;
   nip: string;
@@ -192,7 +193,7 @@ class GoogleSheetsService {
     try {
       const response = await this.sheets.spreadsheets.values.get({
         spreadsheetId: process.env.GOOGLE_SHEET_ID,
-        range: 'PPK!A2:G', // Mulai dari baris 2 (skip header)
+        range: 'PPK!A2:H', // Updated range to include new column
       });
 
       const rows = response.data.values || [];
@@ -200,10 +201,11 @@ class GoogleSheetsService {
         no: row[0] || '',
         eselonI: row[1] || '',
         satuanKerja: row[2] || '',
-        ta: row[3] || '',
-        nama: row[4] || '',
-        nip: row[5] || '',
-        noHp: row[6] || '',
+        satuanKerjaDetail: row[3] || '', // New column
+        ta: row[4] || '',
+        nama: row[5] || '',
+        nip: row[6] || '',
+        noHp: row[7] || '',
       }));
     } catch (error) {
       console.error('Error getting PPK data:', error);
@@ -363,7 +365,7 @@ class GoogleSheetsService {
 
       // Header untuk sheet PPK
       const ppkHeaders = [
-        'No', 'Eselon I', 'Satuan Kerja', 'TA', 'Nama', 'NIP', 'No. HP'
+        'No', 'Eselon I', 'Satuan Kerja', 'Satuan Kerja Detail', 'TA', 'Nama', 'NIP', 'No. HP'
       ];
 
       // Header untuk sheet Penilaian
@@ -384,7 +386,7 @@ class GoogleSheetsService {
 
       await this.sheets.spreadsheets.values.update({
         spreadsheetId: process.env.GOOGLE_SHEET_ID,
-        range: 'PPK!A1:G1',
+        range: 'PPK!A1:H1', // Updated range to include new column
         valueInputOption: 'RAW',
         resource: { values: [ppkHeaders] },
       });

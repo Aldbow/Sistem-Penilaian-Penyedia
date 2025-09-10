@@ -48,6 +48,7 @@ export function PPKSelector({ selectedPPK, onSelectPPK, placeholder = "Pilih PPK
         ppk.nama.toLowerCase().includes(searchQuery.toLowerCase()) ||
         ppk.nip.includes(searchQuery) ||
         ppk.satuanKerja.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        ppk.satuanKerjaDetail.toLowerCase().includes(searchQuery.toLowerCase()) ||
         ppk.eselonI.toLowerCase().includes(searchQuery.toLowerCase())
       )
       setFilteredPPK(filtered)
