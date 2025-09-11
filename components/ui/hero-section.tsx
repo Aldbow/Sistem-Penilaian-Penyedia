@@ -18,19 +18,97 @@ export function HeroSection() {
 
   return (
     <div className="relative rounded-3xl bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 p-6 md:p-10 lg:p-14 xl:p-20 shadow-2xl">
-      {/* Static background elements - no infinite animations */}
+      {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden rounded-3xl">
-        {/* Static gradient circle */}
-        <div className="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] bg-gradient-radial from-blue-500/20 via-indigo-500/10 to-transparent rounded-full" />
+        {/* Animated gradient circle with slow rotation */}
+        <motion.div 
+          className="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] bg-gradient-radial from-blue-500/20 via-indigo-500/10 to-transparent rounded-full"
+          animate={{ 
+            rotate: [0, 360],
+          }}
+          transition={{ 
+            duration: 40,
+            repeat: Infinity,
+            ease: "linear"
+          }}
+        />
         
-        {/* Static floating elements */}
-        <div className="absolute top-1/4 right-1/4 w-64 h-64 bg-blue-400/15 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 left-1/4 w-48 h-48 bg-indigo-400/15 rounded-full blur-3xl" />
-        <div className="absolute top-1/3 left-1/3 w-32 h-32 bg-cyan-300/10 rounded-full blur-2xl" />
+        {/* Floating animated elements with different timings */}
+        <motion.div 
+          className="absolute top-1/4 right-1/4 w-64 h-64 bg-blue-400/15 rounded-full blur-3xl"
+          animate={{ 
+            y: [0, -20, 0],
+            x: [0, 10, 0],
+            scale: [1, 1.05, 1]
+          }}
+          transition={{ 
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+        <motion.div 
+          className="absolute bottom-1/4 left-1/4 w-48 h-48 bg-indigo-400/15 rounded-full blur-3xl"
+          animate={{ 
+            y: [0, 20, 0],
+            x: [0, -15, 0],
+            scale: [1, 1.1, 1]
+          }}
+          transition={{ 
+            duration: 12,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 1
+          }}
+        />
+        <motion.div 
+          className="absolute top-1/3 left-1/3 w-32 h-32 bg-cyan-300/10 rounded-full blur-2xl"
+          animate={{ 
+            y: [0, -15, 0],
+            x: [0, 15, 0],
+            scale: [1, 1.15, 1]
+          }}
+          transition={{ 
+            duration: 9,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 0.5
+          }}
+        />
         
-        {/* Static geometric shapes */}
-        <div className="absolute top-1/2 left-1/4 w-16 h-16 border border-blue-400/20 rotate-45" />
-        <div className="absolute bottom-1/3 right-1/3 w-12 h-12 bg-indigo-500/20 rounded-full" />
+        {/* Geometric shapes with rotation and floating animations */}
+        <motion.div 
+          className="absolute top-1/2 left-1/4 w-16 h-16 border border-blue-400/20 rotate-45"
+          animate={{ 
+            rotate: [45, 405],
+            y: [0, -10, 0]
+          }}
+          transition={{ 
+            rotate: {
+              duration: 25,
+              repeat: Infinity,
+              ease: "linear"
+            },
+            y: {
+              duration: 5,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }
+          }}
+        />
+        <motion.div 
+          className="absolute bottom-1/3 right-1/3 w-12 h-12 bg-indigo-500/20 rounded-full"
+          animate={{ 
+            y: [0, 15, 0],
+            scale: [1, 1.2, 1]
+          }}
+          transition={{ 
+            duration: 7,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 2
+          }}
+        />
       </div>
 
       {/* Content */}
