@@ -1,6 +1,6 @@
-import React, { memo, useEffect, useState } from 'react'
+import React, { memo, useEffect, useState, useRef } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
-import { motion, useAnimation } from 'framer-motion'
+import { motion, useAnimation, animate } from 'framer-motion'
 import { LucideIcon } from 'lucide-react'
 
 interface StatCardProps {
@@ -42,17 +42,61 @@ const colorClasses = {
   }
 }
 
+// Animated number component with count-up effect
+const AnimatedNumber = ({ value }: { value: string | number }) => {
+  const [displayValue, setDisplayValue] = useState(0)
+  const nodeRef = useRef<HTMLSpanElement>(null)
+  const targetValueRef = useRef(0)
+
+  useEffect(() => {
+    const node = nodeRef.current
+    if (!node) return
+
+    // Convert value to number for animation
+    const numericValue = typeof value === 'string' ? parseFloat(value) || 0 : value
+    const isNumeric = !isNaN(numericValue)
+
+    if (isNumeric) {
+      // Store the target value for formatting decisions
+      targetValueRef.current = numericValue
+      
+      // Animate from 0 to the target value
+      const controls = animate(0, numericValue, {
+        duration: 1.5,
+        ease: "easeOut",
+        onUpdate(latest) {
+          setDisplayValue(latest)
+        }
+      })
+
+      return () => controls.stop()
+    } else {
+      // For non-numeric values (like "-/3"), set directly
+      setDisplayValue(value as any)
+    }
+  }, [value])
+
+  // Format display value for final output
+  const formatDisplayValue = () => {
+    if (typeof displayValue === 'number') {
+      // Check if the target value is a whole number
+      if (Number.isInteger(targetValueRef.current)) {
+        // For whole numbers, display as integer
+        return Math.round(displayValue).toString()
+      } else {
+        // For decimal numbers, show 1 decimal place
+        return displayValue.toFixed(1)
+      }
+    }
+    return displayValue
+  }
+
+  return <span ref={nodeRef}>{formatDisplayValue()}</span>
+}
+
 export const StatCard = memo<StatCardProps>(({ title, value, icon: Icon, color, isLoading = false }) => {
   const classes = colorClasses[color]
-  const [displayValue, setDisplayValue] = useState<string | number>(value);
   
-  // Update display value when value changes
-  useEffect(() => {
-    if (!isLoading) {
-      setDisplayValue(value);
-    }
-  }, [value, isLoading]);
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -93,24 +137,27 @@ export const StatCard = memo<StatCardProps>(({ title, value, icon: Icon, color, 
                     visibility: 'visible'
                   }}
                 >
-                  {displayValue}
+                  {typeof value === 'string' && value.includes('/') ? (
+                    // Handle values like "2.5/3"
+                    <>
+                      <AnimatedNumber value={value.split('/')[0]} />
+                      /{value.split('/')[1]}
+                    </>
+                  ) : typeof value === 'number' || (typeof value === 'string' && !isNaN(parseFloat(value))) ? (
+                    // Handle numeric values with animation
+                    <AnimatedNumber value={value} />
+                  ) : (
+                    // Handle non-numeric values without animation
+                    <span>{value}</span>
+                  )}
                 </div>
               )}
             </div>
-            <motion.div 
+            <div 
               className={`p-4 bg-gradient-to-br ${classes.iconBg} rounded-xl shadow-lg group-hover:shadow-xl transition-all duration-300 flex items-center justify-center`}
-              whileHover={{ 
-                scale: 1.15,
-                rotate: [0, 5, -5, 0],
-                transition: { duration: 0.4 }
-              }}
-              whileTap={{ scale: 0.9 }}
-              initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.4, type: "spring", stiffness: 300 }}
             >
               <Icon className="h-6 w-6 text-white" />
-            </motion.div>
+            </div>
           </div>
           
           {/* Bottom accent bar */}
