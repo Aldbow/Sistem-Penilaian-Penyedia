@@ -37,6 +37,7 @@ interface DashboardStats {
   totalPenilaian: number;
   totalPPK: number;
   rataRataSkor: string;
+  peningkatan: string;
 }
 
 interface PenyediaWithRatings extends Penyedia {
@@ -86,6 +87,7 @@ export default function HomePage() {
           totalPenilaian: 0,
           totalPPK: 0,
           rataRataSkor: "-",
+          peningkatan: "+0%",
         },
         topPenyedia: [],
       };
@@ -97,6 +99,8 @@ export default function HomePage() {
     const totalPenyedia = penyedia.length;
     const totalPenilaian = penilaian.length;
     const totalPPK = ppk.length; // Get PPK count from PPK sheet
+    
+    // Calculate current average score
     const rataRataSkor =
       penilaian.length > 0
         ? (
@@ -104,6 +108,35 @@ export default function HomePage() {
             penilaian.length
           ).toFixed(1)
         : "-";
+
+    // Calculate improvement percentage
+    let peningkatan = "+0%";
+    if (penilaian.length > 1) {
+      // Sort penilaian by date
+      const sortedPenilaian = [...penilaian].sort((a, b) => 
+        new Date(a.tanggalPenilaian).getTime() - new Date(b.tanggalPenilaian).getTime()
+      );
+      
+      // Split data into two halves for comparison
+      const midIndex = Math.floor(sortedPenilaian.length / 2);
+      const firstHalf = sortedPenilaian.slice(0, midIndex);
+      const secondHalf = sortedPenilaian.slice(midIndex);
+      
+      // Calculate average for each half
+      const avgFirstHalf = firstHalf.length > 0 
+        ? firstHalf.reduce((sum, p) => sum + p.skorTotal, 0) / firstHalf.length 
+        : 0;
+        
+      const avgSecondHalf = secondHalf.length > 0 
+        ? secondHalf.reduce((sum, p) => sum + p.skorTotal, 0) / secondHalf.length 
+        : 0;
+      
+      // Calculate percentage improvement
+      if (avgFirstHalf > 0) {
+        const improvement = ((avgSecondHalf - avgFirstHalf) / avgFirstHalf) * 100;
+        peningkatan = `${improvement >= 0 ? '+' : ''}${improvement.toFixed(1)}%`;
+      }
+    }
 
     // Calculate top penyedia
     const penyediaWithRatings = penyedia
@@ -135,6 +168,7 @@ export default function HomePage() {
         totalPenilaian,
         totalPPK,
         rataRataSkor,
+        peningkatan,
       },
       topPenyedia: penyediaWithRatings,
     };
@@ -256,8 +290,8 @@ export default function HomePage() {
                     <TrendingUp className="h-5 w-5 text-purple-600 mr-2" />
                     <h3 className="font-semibold text-slate-700 dark:text-slate-300">Peningkatan</h3>
                   </div>
-                  <p className="text-2xl font-bold text-purple-600">+12%</p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">Dari bulan lalu</p>
+                  <p className="text-2xl font-bold text-purple-600">{stats.peningkatan || "+0%"}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Dari periode sebelumnya</p>
                 </div>
               </div>
             </CardContent>
