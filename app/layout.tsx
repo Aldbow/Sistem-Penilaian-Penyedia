@@ -7,6 +7,7 @@ import { ThemeToggle } from '@/components/theme-toggle'
 import { ThemeScript } from './theme-script'
 import { AnimatedLayout } from '@/components/animated-layout'
 import { Toaster } from '@/components/ui/toaster'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -102,6 +103,7 @@ export default function RootLayout({
           </footer>
           </div>
           <Toaster />
+          <SpeedInsights />
         </ThemeProvider>
       </body>
     </html>
