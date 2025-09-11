@@ -50,7 +50,7 @@ export function HeroSection() {
               className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6 border border-white/20"
             >
               <ShieldCheck className="h-4 w-4 text-blue-300" />
-              <span className="text-blue-100 text-sm font-medium">Sistem Terintegrasi UKPBJ Kemnaker</span>
+              <span className="text-blue-100 text-sm font-medium">Sistem UKPBJ Kementerian Ketenagakerjaan</span>
             </motion.div>
             
             <motion.h1
@@ -71,7 +71,7 @@ export function HeroSection() {
               transition={{ duration: 0.7, delay: 0.3, ease: "easeOut" }}
               className="text-base sm:text-lg md:text-xl lg:text-2xl text-blue-100 max-w-2xl mx-auto lg:mx-0 leading-relaxed mb-10 font-body"
             >
-              Platform digital terintegrasi untuk PPK memberikan penilaian terhadap penyedia barang/jasa sesuai dengan standar dan kriteria yang ditetapkan LKPP
+              Platform digital untuk memberikan penilaian terhadap penyedia barang/jasa sesuai dengan standar dan kriteria yang ditetapkan LKPP
             </motion.p>
 
             <motion.div
