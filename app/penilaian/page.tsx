@@ -164,6 +164,39 @@ export default function PenilaianPage() {
     loadPPKOptions();
   }, []);
 
+  // Load filtered satuan kerja options when eselonI changes
+  useEffect(() => {
+    const loadFilteredSatuanKerja = async () => {
+      if (authForm.eselonI) {
+        setIsLoadingOptions(true);
+        try {
+          const response = await fetch(`/api/penilaian/ppk-options?eselonI=${encodeURIComponent(authForm.eselonI)}`);
+          if (response.ok) {
+            const data = await response.json();
+            setPpkOptions(prev => ({
+              ...prev,
+              satuanKerja: data.satuanKerja
+            }));
+            
+            // Reset satuan kerja selection if it's not in the filtered list
+            if (authForm.satuanKerja && !data.satuanKerja.some(option => option.value === authForm.satuanKerja)) {
+              setAuthForm(prev => ({
+                ...prev,
+                satuanKerja: ""
+              }));
+            }
+          }
+        } catch (error) {
+          console.error("Error loading filtered satuan kerja options:", error);
+        } finally {
+          setIsLoadingOptions(false);
+        }
+      }
+    };
+
+    loadFilteredSatuanKerja();
+  }, [authForm.eselonI]);
+
   // PPK Authentication function
   const authenticatePPK = async () => {
     if (

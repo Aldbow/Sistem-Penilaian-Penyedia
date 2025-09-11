@@ -1,10 +1,13 @@
 import { NextResponse } from 'next/server'
 import { googleSheetsService } from '@/lib/google-sheets'
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     // Get all PPK data
     const allPPK = await googleSheetsService.getPPK()
+    
+    // Get SATKER data for filtering
+    const allSATKER = await googleSheetsService.getSATKER()
     
     // Extract unique values
     const eselonISet = new Set<string>()
@@ -24,9 +27,31 @@ export async function GET() {
       .sort()
       .map(value => ({ value, label: value }))
     
-    const satuanKerjaOptions = Array.from(satuanKerjaSet)
+    // Get query parameters
+    const { searchParams } = new URL(request.url)
+    const eselonIParam = searchParams.get('eselonI')
+    
+    let satuanKerjaOptions = Array.from(satuanKerjaSet)
       .sort()
       .map(value => ({ value, label: value }))
+
+    // If eselonI is provided, filter satuan kerja based on SATKER data
+    if (eselonIParam) {
+      const filteredSATKER = allSATKER.filter(item => 
+        item.eselonI.trim().toLowerCase() === eselonIParam.trim().toLowerCase()
+      )
+      
+      const filteredSatuanKerjaSet = new Set<string>()
+      filteredSATKER.forEach(item => {
+        if (item.satuanKerja && item.satuanKerja.trim()) {
+          filteredSatuanKerjaSet.add(item.satuanKerja.trim())
+        }
+      })
+      
+      satuanKerjaOptions = Array.from(filteredSatuanKerjaSet)
+        .sort()
+        .map(value => ({ value, label: value }))
+    }
 
     return NextResponse.json({
       eselonI: eselonIOptions,

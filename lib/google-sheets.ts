@@ -64,6 +64,14 @@ export interface Penilaian {
   keterangan: string;
 }
 
+// Interface untuk data SATKER
+export interface SATKER {
+  eselonI: string;
+  no: string;
+  satuanKerja: string;
+  satuanKerjaDetail: string;
+}
+
 class GoogleSheetsService {
   private auth: any;
   private sheets: any;
@@ -410,6 +418,27 @@ class GoogleSheetsService {
     }
   }
 
+  // Mendapatkan semua data SATKER
+  async getSATKER(): Promise<SATKER[]> {
+    try {
+      const response = await this.sheets.spreadsheets.values.get({
+        spreadsheetId: process.env.GOOGLE_SHEET_ID,
+        range: 'SATKER!A2:D', // Mulai dari baris 2 (skip header)
+      });
+
+      const rows = response.data.values || [];
+      return rows.map((row: any[]) => ({
+        eselonI: row[0] || '',
+        no: row[1] || '',
+        satuanKerja: row[2] || '',
+        satuanKerjaDetail: row[3] || '',
+      }));
+    } catch (error) {
+      console.error('Error getting SATKER data:', error);
+      throw error;
+    }
+  }
+
   // Optimized search method that combines penyedia with ratings
   async searchPenyediaWithRatings(query: string): Promise<any[]> {
     try {
@@ -474,6 +503,11 @@ class GoogleSheetsService {
         'Layanan', 'Komentar Layanan', 'Penilaian Akhir', 'Skor Total', 'Keterangan'
       ];
 
+      // Header untuk sheet SATKER
+      const satkerHeaders = [
+        'Eselon I', 'No', 'Satuan Kerja', 'Satuan Kerja Detail'
+      ];
+
       // Cek apakah header sudah ada, jika belum tambahkan
       await this.sheets.spreadsheets.values.update({
         spreadsheetId: process.env.GOOGLE_SHEET_ID,
@@ -501,6 +535,13 @@ class GoogleSheetsService {
         range: 'Penilaian!A1:O1',
         valueInputOption: 'RAW',
         resource: { values: [penilaianHeaders] },
+      });
+
+      await this.sheets.spreadsheets.values.update({
+        spreadsheetId: process.env.GOOGLE_SHEET_ID,
+        range: 'SATKER!A1:D1',
+        valueInputOption: 'RAW',
+        resource: { values: [satkerHeaders] },
       });
 
     } catch (error) {
