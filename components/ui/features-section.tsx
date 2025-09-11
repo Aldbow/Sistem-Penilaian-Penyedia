@@ -66,7 +66,11 @@ export function FeaturesSection() {
                   className="text-center group"
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 * (index + 3), duration: 0.6 }}
+                  transition={{
+                    delay: 0.2 * (index + 3),
+                    duration: 0.6,
+                    y: { type: "spring", stiffness: 300, damping: 100 }
+                  }}
                   whileHover={{ 
                     y: -15,
                     transition: { duration: 0.3, type: "spring", stiffness: 300 }
