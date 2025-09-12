@@ -921,7 +921,7 @@ export default function LaporanPage() {
                             </div>
                             
                             <div className="flex justify-between items-center">
-                              <span className="text-sm text-muted-foreground">Skor Bayesian</span>
+                              <span className="text-sm text-muted-foreground">Skor Rating</span>
                               <div className="flex items-center">
                                 <Star className="h-4 w-4 text-amber-500 fill-amber-500 mr-2" />
                                 <span className="font-bold text-gray-900 dark:text-gray-100">
