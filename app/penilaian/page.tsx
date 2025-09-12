@@ -179,7 +179,7 @@ export default function PenilaianPage() {
             }));
             
             // Reset satuan kerja selection if it's not in the filtered list
-            if (authForm.satuanKerja && !data.satuanKerja.some(option => option.value === authForm.satuanKerja)) {
+            if (authForm.satuanKerja && !data.satuanKerja.some((option: { value: string }) => option.value === authForm.satuanKerja)) {
               setAuthForm(prev => ({
                 ...prev,
                 satuanKerja: ""
