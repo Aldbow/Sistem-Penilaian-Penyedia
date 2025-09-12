@@ -528,7 +528,7 @@ export default function LaporanPage() {
                     placeholder="Cari penyedia..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent dark:bg-slate-700 dark:text-white w-full text-base transition-all duration-300 hover:border-emerald-400 hover:shadow-lg hover:shadow-emerald-500/10 dark:hover:border-emerald-400"
+                    className="pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none dark:bg-slate-700 dark:text-white w-full text-base transition-all duration-300 hover:border-emerald-500 hover:shadow-sm hover:shadow-emerald-500/20 dark:hover:border-emerald-500 focus:hover:shadow-emerald-500/30"
                   />
                 </div>
                 
@@ -537,7 +537,7 @@ export default function LaporanPage() {
                     <select
                       value={filterStatus}
                       onChange={(e) => setFilterStatus(e.target.value)}
-                      className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent dark:bg-slate-700 dark:text-white text-base"
+                      className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none dark:bg-slate-700 dark:text-white text-base transition-all duration-300 hover:border-emerald-500 hover:shadow-sm hover:shadow-emerald-500/20"
                     >
                       <option value="all">Semua Status</option>
                       <option value="excellent">Sangat Baik (3.0)</option>
@@ -549,7 +549,7 @@ export default function LaporanPage() {
                     <select
                       value={sortOption}
                       onChange={(e) => setSortOption(e.target.value)}
-                      className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent dark:bg-slate-700 dark:text-white text-base"
+                      className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none dark:bg-slate-700 dark:text-white text-base transition-all duration-300 hover:border-emerald-500 hover:shadow-sm hover:shadow-emerald-500/20"
                     >
                       <option value="a-z">A-Z</option>
                       <option value="z-a">Z-A</option>
@@ -558,7 +558,7 @@ export default function LaporanPage() {
                     <select
                       value={starFilter}
                       onChange={(e) => setStarFilter(e.target.value)}
-                      className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent dark:bg-slate-700 dark:text-white text-base"
+                      className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none dark:bg-slate-700 dark:text-white text-base transition-all duration-300 hover:border-emerald-500 hover:shadow-sm hover:shadow-emerald-500/20"
                     >
                       <option value="all">Semua Penyedia</option>
                       <option value="rated">Sudah Dinilai</option>
@@ -568,7 +568,7 @@ export default function LaporanPage() {
                     <select
                       value={starSort}
                       onChange={(e) => setStarSort(e.target.value)}
-                      className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent dark:bg-slate-700 dark:text-white text-base"
+                      className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none dark:bg-slate-700 dark:text-white text-base transition-all duration-300 hover:border-emerald-500 hover:shadow-sm hover:shadow-emerald-500/20"
                     >
                       <option value="none">Tanpa Sortir Bintang</option>
                       <option value="high-low">Bintang Tinggi-Rendah</option>
@@ -732,7 +732,7 @@ export default function LaporanPage() {
                     <select
                       value={itemsPerPage}
                       onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
-                      className="px-2 py-1 sm:px-3 sm:py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent dark:bg-slate-700 dark:text-white text-sm w-full sm:w-auto"
+                      className="px-2 py-1 sm:px-3 sm:py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none dark:bg-slate-700 dark:text-white text-sm w-full sm:w-auto transition-all duration-300 hover:border-emerald-500 hover:shadow-sm hover:shadow-emerald-500/20"
                     >
                       <option value={5}>5</option>
                       <option value={10}>10</option>
