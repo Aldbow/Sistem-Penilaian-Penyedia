@@ -12,6 +12,8 @@ export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [isDashboardLoading, setIsDashboardLoading] = useState(true)
   const [dashboardError, setDashboardError] = useState(false)
+  const [dashboardKey, setDashboardKey] = useState(0)
+  const [loadTimeout, setLoadTimeout] = useState(false)
 
   // Google Looker Studio dashboard URL
   const dashboardUrl = "https://lookerstudio.google.com/embed/reporting/aac7740e-c054-4026-a27b-90cae85d64d2/page/fgQWF"
@@ -20,10 +22,24 @@ export default function DashboardPage() {
     setIsLoading(true)
     setIsDashboardLoading(true)
     setDashboardError(false)
+    setLoadTimeout(false)
+    
+    // Force refresh by changing the key to remount the iframe
+    setDashboardKey(prev => prev + 1)
+    
     // Simulate refresh
     setTimeout(() => {
       setIsLoading(false)
-      window.location.reload()
+      // Set timeout for dashboard loading
+      const timeout = setTimeout(() => {
+        if (isDashboardLoading) {
+          setLoadTimeout(true)
+          setDashboardError(true)
+        }
+      }, 10000) // 10 seconds timeout
+      
+      // Clear timeout when component unmounts or when loading finishes
+      return () => clearTimeout(timeout)
     }, 1500)
   }
 
@@ -39,6 +55,23 @@ export default function DashboardPage() {
 
     return () => clearTimeout(timer)
   }, [])
+
+  // Handle dashboard loading timeout
+  useEffect(() => {
+    let timeout: NodeJS.Timeout;
+    
+    if (isDashboardLoading) {
+      timeout = setTimeout(() => {
+        setLoadTimeout(true)
+        setDashboardError(true)
+        setIsDashboardLoading(false)
+      }, 15000) // 15 seconds timeout
+    }
+    
+    return () => {
+      if (timeout) clearTimeout(timeout)
+    }
+  }, [isDashboardLoading])
 
   return (
     <motion.div
@@ -93,7 +126,7 @@ export default function DashboardPage() {
               <Button 
                 onClick={handleRefreshDashboard}
                 disabled={isLoading}
-                className="flex items-center space-x-2 bg-purple-600 hover:bg-purple-700 text-sm lg:text-base py-3 px-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+                className="inline-flex items-center space-x-2 bg-purple-600 hover:bg-purple-700 text-sm lg:text-base py-3 px-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
               >
                 {isLoading ? (
                   <Loader2 className="h-4 w-4 lg:h-5 lg:w-5 animate-spin" />
@@ -106,7 +139,7 @@ export default function DashboardPage() {
               <Button 
                 onClick={openInNewTab}
                 variant="outline"
-                className="flex items-center space-x-2 text-sm lg:text-base py-3 px-4 rounded-xl border-purple-300 text-purple-700 hover:bg-purple-50 hover:text-purple-700 dark:border-purple-600 dark:text-purple-400 dark:hover:bg-purple-900/30 dark:hover:text-purple-400"
+                className="inline-flex items-center space-x-2 text-sm lg:text-base py-3 px-4 rounded-xl border-purple-300 text-purple-700 hover:bg-purple-50 hover:text-purple-700 dark:border-purple-600 dark:text-purple-400 dark:hover:bg-purple-900/30 dark:hover:text-purple-400"
               >
                 <ExternalLink className="h-4 w-4 lg:h-5 lg:w-5" />
                 <span className="hidden sm:inline">Buka di Tab Baru</span>
@@ -231,14 +264,20 @@ export default function DashboardPage() {
               {/* Error overlay */}
               {dashboardError && (
                 <div className="absolute inset-0 bg-white dark:bg-gray-800 z-10 flex items-center justify-center rounded-b-2xl">
-                  <div className="text-center p-6">
+                  <div className="text-center p-6 max-w-md">
                     <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">Gagal memuat dashboard</h3>
-                    <p className="text-gray-600 dark:text-gray-300 mb-4">Terjadi kesalahan saat memuat dashboard. Silakan coba refresh.</p>
+                    <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
+                      {loadTimeout ? "Waktu pemuatan habis" : "Gagal memuat dashboard"}
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-300 mb-4">
+                      {loadTimeout 
+                        ? "Dashboard memakan waktu terlalu lama untuk dimuat. Silakan coba refresh atau periksa koneksi internet Anda." 
+                        : "Terjadi kesalahan saat memuat dashboard. Silakan coba refresh."}
+                    </p>
                     <Button 
                       onClick={handleRefreshDashboard}
                       disabled={isLoading}
-                      className="bg-purple-600 hover:bg-purple-700 text-white"
+                      className="inline-flex items-center bg-purple-600 hover:bg-purple-700 text-white"
                     >
                       {isLoading ? (
                         <Loader2 className="h-4 w-4 animate-spin mr-2" />
@@ -253,6 +292,7 @@ export default function DashboardPage() {
               
               {/* Google Looker Studio Dashboard Embed */}
               <iframe
+                key={dashboardKey}
                 src={dashboardUrl}
                 width="100%"
                 height="100%"
@@ -261,10 +301,14 @@ export default function DashboardPage() {
                 allowFullScreen
                 sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
                 className="rounded-b-2xl absolute inset-0"
-                onLoad={() => setIsDashboardLoading(false)}
+                onLoad={() => {
+                  setIsDashboardLoading(false)
+                  setLoadTimeout(false)
+                }}
                 onError={() => {
                   setIsDashboardLoading(false)
                   setDashboardError(true)
+                  setLoadTimeout(false)
                 }}
               ></iframe>
             </div>
@@ -300,19 +344,19 @@ export default function DashboardPage() {
                     </h3>
                     <ul className="text-sm lg:text-base text-slate-600 dark:text-slate-300 space-y-2 text-left">
                       <li className="flex items-start">
-                        <span className="inline-block w-5 h-5 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-full text-xs flex items-center justify-center mr-2 mt-0.5 flex-shrink-0">1</span>
+                        <span className="w-5 h-5 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-full text-xs flex items-center justify-center mr-2 mt-0.5 flex-shrink-0">1</span>
                         <span>Total penyedia terdaftar</span>
                       </li>
                       <li className="flex items-start">
-                        <span className="inline-block w-5 h-5 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-full text-xs flex items-center justify-center mr-2 mt-0.5 flex-shrink-0">2</span>
+                        <span className="w-5 h-5 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-full text-xs flex items-center justify-center mr-2 mt-0.5 flex-shrink-0">2</span>
                         <span>Jumlah penilaian yang telah diberikan</span>
                       </li>
                       <li className="flex items-start">
-                        <span className="inline-block w-5 h-5 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-full text-xs flex items-center justify-center mr-2 mt-0.5 flex-shrink-0">3</span>
+                        <span className="w-5 h-5 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-full text-xs flex items-center justify-center mr-2 mt-0.5 flex-shrink-0">3</span>
                         <span>Rata-rata skor keseluruhan</span>
                       </li>
                       <li className="flex items-start">
-                        <span className="inline-block w-5 h-5 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-full text-xs flex items-center justify-center mr-2 mt-0.5 flex-shrink-0">4</span>
+                        <span className="w-5 h-5 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-full text-xs flex items-center justify-center mr-2 mt-0.5 flex-shrink-0">4</span>
                         <span>Distribusi kategori penilaian</span>
                       </li>
                     </ul>
@@ -325,19 +369,19 @@ export default function DashboardPage() {
                     </h3>
                     <ul className="text-sm lg:text-base text-slate-600 dark:text-slate-300 space-y-2 text-left">
                       <li className="flex items-start">
-                        <span className="inline-block w-5 h-5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-full text-xs flex items-center justify-center mr-2 mt-0.5 flex-shrink-0">1</span>
+                        <span className="w-5 h-5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-full text-xs flex items-center justify-center mr-2 mt-0.5 flex-shrink-0">1</span>
                         <span>Tren penilaian per periode</span>
                       </li>
                       <li className="flex items-start">
-                        <span className="inline-block w-5 h-5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-full text-xs flex items-center justify-center mr-2 mt-0.5 flex-shrink-0">2</span>
+                        <span className="w-5 h-5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-full text-xs flex items-center justify-center mr-2 mt-0.5 flex-shrink-0">2</span>
                         <span>Perbandingan antar penyedia</span>
                       </li>
                       <li className="flex items-start">
-                        <span className="inline-block w-5 h-5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-full text-xs flex items-center justify-center mr-2 mt-0.5 flex-shrink-0">3</span>
+                        <span className="w-5 h-5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-full text-xs flex items-center justify-center mr-2 mt-0.5 flex-shrink-0">3</span>
                         <span>Analisis per kriteria penilaian</span>
                       </li>
                       <li className="flex items-start">
-                        <span className="inline-block w-5 h-5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-full text-xs flex items-center justify-center mr-2 mt-0.5 flex-shrink-0">4</span>
+                        <span className="w-5 h-5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-full text-xs flex items-center justify-center mr-2 mt-0.5 flex-shrink-0">4</span>
                         <span>Top performers dan insights</span>
                       </li>
                     </ul>
