@@ -15,6 +15,8 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuLabel,
+  DropdownMenuSeparator
 } from '@/components/ui/dropdown-menu'
 import { Penyedia, Penilaian } from '@/lib/google-sheets'
 
@@ -39,6 +41,7 @@ export default function LaporanPage() {
   const [sortOption, setSortOption] = useState('a-z')
   const [starFilter, setStarFilter] = useState('all')
   const [starSort, setStarSort] = useState('none')
+  const [mostRatedFilter, setMostRatedFilter] = useState(false) // New state for most rated filter
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage, setItemsPerPage] = useState(10)
   const [screenSize, setScreenSize] = useState<'sm' | 'md' | 'lg'>('lg')
@@ -119,11 +122,6 @@ export default function LaporanPage() {
   // Filter data based on search, status, and star rating
   // (Moved after mapScoreToStars function definition)
 
-  // Reset to first page when search, filter, sort, star filter, or star sort changes
-  useEffect(() => {
-    setCurrentPage(1)
-  }, [searchQuery, filterStatus, sortOption, starFilter, starSort])
-
   // Handle page change
   const handlePageChange = (page: number) => {
     setCurrentPage(page)
@@ -170,7 +168,12 @@ export default function LaporanPage() {
     
     return true
   }).sort((a, b) => {
-    // Apply star rating sorting first
+    // Apply most rated filter first (if enabled, sort by totalPenilaian descending)
+    if (mostRatedFilter) {
+      return b.totalPenilaian - a.totalPenilaian;
+    }
+    
+    // Apply star rating sorting
     if (starSort === 'high-low') {
       // Sort by mapped star rating (highest first), then by total evaluations
       const aStars = mapScoreToStars(a.rataRataSkor);
@@ -527,53 +530,204 @@ export default function LaporanPage() {
                     type="text"
                     placeholder="Cari penyedia..."
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      setCurrentPage(1);
+                    }}
                     className="pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none dark:bg-slate-700 dark:text-white w-full text-base transition-all duration-300 hover:border-emerald-500 hover:shadow-sm hover:shadow-emerald-500/20 dark:hover:border-emerald-500 focus:hover:shadow-emerald-500/30"
                   />
                 </div>
                 
                 <div className="flex flex-col sm:flex-row justify-between gap-3">
-                  <div className="flex flex-col sm:flex-row gap-3">
-                    <select
-                      value={filterStatus}
-                      onChange={(e) => setFilterStatus(e.target.value)}
-                      className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none dark:bg-slate-700 dark:text-white text-base transition-all duration-300 hover:border-emerald-500 hover:shadow-sm hover:shadow-emerald-500/20"
-                    >
-                      <option value="all">Semua Status</option>
-                      <option value="excellent">Sangat Baik (3.0)</option>
-                      <option value="good">Baik (≥2.0)</option>
-                      <option value="average">Cukup (≥1.0)</option>
-                      <option value="poor">Buruk (0)</option>
-                    </select>
+                  <div className="flex flex-wrap gap-2">
+                    {/* Status Filter Dropdown */}
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" className="flex items-center space-x-2 text-base px-4 py-3 rounded-xl">
+                          <Filter className="h-5 w-5" />
+                          <span>Status</span>
+                          <ChevronDown className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start" className="w-56">
+                        <DropdownMenuItem onSelect={() => {
+                          setFilterStatus('all');
+                          setCurrentPage(1);
+                        }}>
+                          <div className="flex items-center">
+                            <div className={`w-3 h-3 rounded-full mr-2 ${filterStatus === 'all' ? 'bg-emerald-500' : 'bg-gray-300'}`}></div>
+                            <span>Semua Status</span>
+                          </div>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onSelect={() => {
+                          setFilterStatus('excellent');
+                          setCurrentPage(1);
+                        }}>
+                          <div className="flex items-center">
+                            <div className={`w-3 h-3 rounded-full mr-2 ${filterStatus === 'excellent' ? 'bg-emerald-500' : 'bg-gray-300'}`}></div>
+                            <span>Sangat Baik (3.0)</span>
+                          </div>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onSelect={() => {
+                          setFilterStatus('good');
+                          setCurrentPage(1);
+                        }}>
+                          <div className="flex items-center">
+                            <div className={`w-3 h-3 rounded-full mr-2 ${filterStatus === 'good' ? 'bg-emerald-500' : 'bg-gray-300'}`}></div>
+                            <span>Baik (≥2.0)</span>
+                          </div>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onSelect={() => {
+                          setFilterStatus('average');
+                          setCurrentPage(1);
+                        }}>
+                          <div className="flex items-center">
+                            <div className={`w-3 h-3 rounded-full mr-2 ${filterStatus === 'average' ? 'bg-emerald-500' : 'bg-gray-300'}`}></div>
+                            <span>Cukup (≥1.0)</span>
+                          </div>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onSelect={() => {
+                          setFilterStatus('poor');
+                          setCurrentPage(1);
+                        }}>
+                          <div className="flex items-center">
+                            <div className={`w-3 h-3 rounded-full mr-2 ${filterStatus === 'poor' ? 'bg-emerald-500' : 'bg-gray-300'}`}></div>
+                            <span>Buruk (0)</span>
+                          </div>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
 
-                    <select
-                      value={sortOption}
-                      onChange={(e) => setSortOption(e.target.value)}
-                      className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none dark:bg-slate-700 dark:text-white text-base transition-all duration-300 hover:border-emerald-500 hover:shadow-sm hover:shadow-emerald-500/20"
-                    >
-                      <option value="a-z">A-Z</option>
-                      <option value="z-a">Z-A</option>
-                    </select>
+                    {/* Star Filter Dropdown */}
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" className="flex items-center space-x-2 text-base px-4 py-3 rounded-xl">
+                          <Star className="h-5 w-5" />
+                          <span>Penilaian</span>
+                          <ChevronDown className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start" className="w-56">
+                        <DropdownMenuItem onSelect={() => {
+                          setStarFilter('all');
+                          setCurrentPage(1);
+                        }}>
+                          <div className="flex items-center">
+                            <div className={`w-3 h-3 rounded-full mr-2 ${starFilter === 'all' ? 'bg-emerald-500' : 'bg-gray-300'}`}></div>
+                            <span>Semua Penyedia</span>
+                          </div>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onSelect={() => {
+                          setStarFilter('rated');
+                          setCurrentPage(1);
+                        }}>
+                          <div className="flex items-center">
+                            <div className={`w-3 h-3 rounded-full mr-2 ${starFilter === 'rated' ? 'bg-emerald-500' : 'bg-gray-300'}`}></div>
+                            <span>Sudah Dinilai</span>
+                          </div>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onSelect={() => {
+                          setStarFilter('unrated');
+                          setCurrentPage(1);
+                        }}>
+                          <div className="flex items-center">
+                            <div className={`w-3 h-3 rounded-full mr-2 ${starFilter === 'unrated' ? 'bg-emerald-500' : 'bg-gray-300'}`}></div>
+                            <span>Belum Dinilai</span>
+                          </div>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
 
-                    <select
-                      value={starFilter}
-                      onChange={(e) => setStarFilter(e.target.value)}
-                      className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none dark:bg-slate-700 dark:text-white text-base transition-all duration-300 hover:border-emerald-500 hover:shadow-sm hover:shadow-emerald-500/20"
-                    >
-                      <option value="all">Semua Penyedia</option>
-                      <option value="rated">Sudah Dinilai</option>
-                      <option value="unrated">Belum Dinilai</option>
-                    </select>
+                    {/* Sort Options Dropdown */}
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" className="flex items-center space-x-2 text-base px-4 py-3 rounded-xl">
+                          <TrendingUp className="h-5 w-5" />
+                          <span>Urutkan</span>
+                          <ChevronDown className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start" className="w-56">
+                        <DropdownMenuLabel>Urutkan Berdasarkan Nama</DropdownMenuLabel>
+                        <DropdownMenuItem onSelect={() => {
+                          setSortOption('a-z');
+                          setCurrentPage(1);
+                        }}>
+                          <div className="flex items-center">
+                            <div className={`w-3 h-3 rounded-full mr-2 ${sortOption === 'a-z' ? 'bg-emerald-500' : 'bg-gray-300'}`}></div>
+                            <span>A-Z</span>
+                          </div>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onSelect={() => {
+                          setSortOption('z-a');
+                          setCurrentPage(1);
+                        }}>
+                          <div className="flex items-center">
+                            <div className={`w-3 h-3 rounded-full mr-2 ${sortOption === 'z-a' ? 'bg-emerald-500' : 'bg-gray-300'}`}></div>
+                            <span>Z-A</span>
+                          </div>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuLabel>Urutkan Berdasarkan Rating</DropdownMenuLabel>
+                        <DropdownMenuItem onSelect={() => {
+                          setStarSort('none');
+                          setCurrentPage(1);
+                        }}>
+                          <div className="flex items-center">
+                            <div className={`w-3 h-3 rounded-full mr-2 ${starSort === 'none' ? 'bg-emerald-500' : 'bg-gray-300'}`}></div>
+                            <span>Tanpa Sortir Bintang</span>
+                          </div>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onSelect={() => {
+                          setStarSort('high-low');
+                          setCurrentPage(1);
+                        }}>
+                          <div className="flex items-center">
+                            <div className={`w-3 h-3 rounded-full mr-2 ${starSort === 'high-low' ? 'bg-emerald-500' : 'bg-gray-300'}`}></div>
+                            <span>Bintang Tinggi-Rendah</span>
+                          </div>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onSelect={() => {
+                          setStarSort('low-high');
+                          setCurrentPage(1);
+                        }}>
+                          <div className="flex items-center">
+                            <div className={`w-3 h-3 rounded-full mr-2 ${starSort === 'low-high' ? 'bg-emerald-500' : 'bg-gray-300'}`}></div>
+                            <span>Bintang Rendah-Tinggi</span>
+                          </div>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuLabel>Urutkan Berdasarkan Aktivitas</DropdownMenuLabel>
+                        <DropdownMenuItem onSelect={() => {
+                          setMostRatedFilter(!mostRatedFilter);
+                          setCurrentPage(1);
+                        }}>
+                          <div className="flex items-center">
+                            <div className={`w-3 h-3 rounded-full mr-2 ${mostRatedFilter ? 'bg-emerald-500' : 'bg-gray-300'}`}></div>
+                            <span>Paling Banyak Dinilai</span>
+                          </div>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
 
-                    <select
-                      value={starSort}
-                      onChange={(e) => setStarSort(e.target.value)}
-                      className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none dark:bg-slate-700 dark:text-white text-base transition-all duration-300 hover:border-emerald-500 hover:shadow-sm hover:shadow-emerald-500/20"
-                    >
-                      <option value="none">Tanpa Sortir Bintang</option>
-                      <option value="high-low">Bintang Tinggi-Rendah</option>
-                      <option value="low-high">Bintang Rendah-Tinggi</option>
-                    </select>
+                    {/* Active Filters Display */}
+                    {(filterStatus !== 'all' || starFilter !== 'all' || sortOption !== 'a-z' || starSort !== 'none' || mostRatedFilter) && (
+                      <Button 
+                        variant="ghost" 
+                        className="flex items-center space-x-2 text-base px-4 py-3 rounded-xl text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
+                        onClick={() => {
+                          setFilterStatus('all');
+                          setStarFilter('all');
+                          setSortOption('a-z');
+                          setStarSort('none');
+                          setMostRatedFilter(false);
+                          setCurrentPage(1);
+                        }}
+                      >
+                        <X className="h-5 w-5" />
+                        <span>Reset Filter</span>
+                      </Button>
+                    )}
                   </div>
 
                   <DropdownMenu>
