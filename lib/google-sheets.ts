@@ -70,6 +70,8 @@ export interface SATKER {
   no: string;
   satuanKerja: string;
   satuanKerjaDetail: string;
+  kodeSatuanKerja: string;
+  jenisSatuanKerja: string;
 }
 
 class GoogleSheetsService {
@@ -382,10 +384,33 @@ class GoogleSheetsService {
 
   // Mendapatkan paket berdasarkan satuan kerja PPK
   async getPaketBySatuanKerja(satuanKerjaDetail: string): Promise<Paket[]> {
+    // Dapatkan kode satuan kerja yang valid berdasarkan satuanKerjaDetail
+    const validKodeSatuanKerja = await this.getKodeSatuanKerjaByDetail(satuanKerjaDetail);
+    
+    // Jika tidak ada kode satuan kerja yang valid, kembalikan array kosong
+    if (validKodeSatuanKerja.length === 0) {
+      return [];
+    }
+    
+    // Dapatkan semua paket
     const allPaket = await this.getPaket();
+    
+    // Filter paket berdasarkan kode satuan kerja yang valid
     return allPaket.filter(paket => 
-      paket.namaSatuanKerja.toLowerCase() === satuanKerjaDetail.toLowerCase()
+      validKodeSatuanKerja.includes(paket.kodeSatuanKerja)
     );
+  }
+
+  // Mendapatkan daftar kode satuan kerja yang valid berdasarkan satuanKerjaDetail
+  async getKodeSatuanKerjaByDetail(satuanKerjaDetail: string): Promise<string[]> {
+    // Dapatkan semua data SATKER
+    const allSATKER = await this.getSATKER();
+    
+    // Filter SATKER berdasarkan satuanKerjaDetail untuk mendapatkan kode satuan kerja yang valid
+    return allSATKER
+      .filter(item => item.satuanKerjaDetail.toLowerCase() === satuanKerjaDetail.toLowerCase())
+      .map(item => item.kodeSatuanKerja)
+      .filter(kode => kode && kode.trim() !== ''); // Filter out empty codes
   }
 
   // Update status penilaian paket
@@ -423,7 +448,7 @@ class GoogleSheetsService {
     try {
       const response = await this.sheets.spreadsheets.values.get({
         spreadsheetId: process.env.GOOGLE_SHEET_ID,
-        range: 'SATKER!A2:D', // Mulai dari baris 2 (skip header)
+        range: 'SATKER!A2:F', // Mulai dari baris 2 (skip header) sampai kolom F
       });
 
       const rows = response.data.values || [];
@@ -432,6 +457,8 @@ class GoogleSheetsService {
         no: row[1] || '',
         satuanKerja: row[2] || '',
         satuanKerjaDetail: row[3] || '',
+        kodeSatuanKerja: row[4] || '',
+        jenisSatuanKerja: row[5] || '',
       }));
     } catch (error) {
       console.error('Error getting SATKER data:', error);
@@ -505,7 +532,7 @@ class GoogleSheetsService {
 
       // Header untuk sheet SATKER
       const satkerHeaders = [
-        'Eselon I', 'No', 'Satuan Kerja', 'Satuan Kerja Detail'
+        'Eselon I', 'No', 'Satuan Kerja', 'Satuan Kerja Detail', 'Kode Satuan Kerja', 'Jenis Satuan Kerja'
       ];
 
       // Cek apakah header sudah ada, jika belum tambahkan
@@ -539,7 +566,7 @@ class GoogleSheetsService {
 
       await this.sheets.spreadsheets.values.update({
         spreadsheetId: process.env.GOOGLE_SHEET_ID,
-        range: 'SATKER!A1:D1',
+        range: 'SATKER!A1:F1',
         valueInputOption: 'RAW',
         resource: { values: [satkerHeaders] },
       });
