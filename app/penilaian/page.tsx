@@ -386,6 +386,7 @@ export default function PenilaianPage() {
       const penilaianData = {
         idPenyedia: selectedPaket!.kodePenyedia,
         nipPPK: authenticatedPPK!.nip,
+        namaPPK: authenticatedPPK!.nama,
         tanggalPenilaian: new Date().toISOString().split("T")[0],
         kualitasKuantitasBarangJasa: formData.kualitasKuantitasBarangJasa,
         komentarKualitasKuantitasBarangJasa:
