@@ -809,14 +809,14 @@ export default function LaporanPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.7 }}
         >
-          <Card className="rounded-2xl">
+          <Card className="rounded-2xl shadow-lg">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <Trophy className="h-5 w-5 text-yellow-600" />
                 <span>Penyedia Terbaik</span>
               </CardTitle>
               <CardDescription>
-                Top 3 penyedia dengan rating tertinggi
+                Top 3 penyedia dengan rating tertinggi berdasarkan perhitungan Bayesian Average
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -860,59 +860,89 @@ export default function LaporanPage() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.5, delay: index * 0.1 }}
                     >
-                      <Card className={`relative overflow-hidden rounded-2xl ${
-                        index === 0 ? 'ring-2 ring-yellow-400 bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20 dark:ring-yellow-300' :
-                        index === 1 ? 'ring-2 ring-gray-400 bg-gradient-to-br from-gray-50 to-slate-50 dark:from-gray-800/50 dark:to-slate-800/50 dark:ring-gray-300' :
-                        'ring-2 ring-orange-400 bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 dark:ring-orange-300'
+                      <Card className={`relative overflow-hidden rounded-2xl h-full transition-all duration-300 hover:shadow-xl ${
+                        index === 0 
+                          ? 'border-2 border-yellow-400 bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20' 
+                          : index === 1 
+                            ? 'border-2 border-gray-300 bg-gradient-to-br from-gray-50 to-slate-50 dark:from-gray-800/30 dark:to-slate-800/30' 
+                            : 'border-2 border-orange-300 bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20'
                       }`}>
-                        <CardContent className="p-6">
-                          <div className="flex items-center space-x-3 mb-4">
-                            <div className={`w-14 h-14 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg ${
-                              index === 0 ? 'bg-gradient-to-r from-yellow-400 to-yellow-600' :
-                              index === 1 ? 'bg-gradient-to-r from-gray-400 to-gray-600' :
-                              'bg-gradient-to-r from-orange-400 to-orange-600'
+                        <CardContent className="p-8 pt-12">
+                          {/* Ranking Badge */}
+                          <div className="flex justify-center -mt-10 mb-2">
+                            <div className={`w-16 h-16 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-xl ring-4 ring-white dark:ring-slate-800 z-10 ${
+                              index === 0 
+                                ? 'bg-gradient-to-r from-yellow-400 to-yellow-500' 
+                                : index === 1 
+                                  ? 'bg-gradient-to-r from-gray-400 to-gray-500' 
+                                  : 'bg-gradient-to-r from-orange-400 to-orange-500'
                             }`}>
-                              {index === 0 ? <Trophy className="h-7 w-7" /> :
-                               index === 1 ? <Medal className="h-7 w-7" /> :
-                               <Award className="h-7 w-7" />}
-                            </div>
-                            <div className="flex-1">
-                              <h3 className="font-semibold text-gray-900 dark:text-gray-100">{penyedia.namaPerusahaan}</h3>
-                              <Badge variant="secondary" className="mt-1">{penyedia.jenisUsaha}</Badge>
+                              <div className="flex items-center justify-center">
+                                {index === 0 ? <Trophy className="h-8 w-8" /> :
+                                 index === 1 ? <Medal className="h-8 w-8" /> :
+                                 <Award className="h-8 w-8" />}
+                              </div>
                             </div>
                           </div>
                           
-                          <div className="space-y-3">
-                            <div className="flex items-center justify-between">
+                          {/* Provider Info */}
+                          <div className="flex flex-col items-center text-center mb-8">
+                            <h3 className="font-bold text-lg text-gray-900 dark:text-gray-100 mb-2 truncate w-full px-2" style={{ fontSize: 'clamp(0.875rem, 2vw, 1.125rem)' }}>
+                              {penyedia.namaPerusahaan}
+                            </h3>
+                            <Badge 
+                              variant="secondary" 
+                              className="text-xs py-1 px-3 rounded-full"
+                            >
+                              {penyedia.jenisUsaha}
+                            </Badge>
+                          </div>
+                          
+                          {/* Rating Details */}
+                          <div className="space-y-4">
+                            <div className="flex justify-between items-center pb-2 border-b border-gray-200 dark:border-gray-700">
                               <span className="text-sm text-muted-foreground">Total Penilaian</span>
-                              <span className="font-semibold text-gray-900 dark:text-gray-100">{penyedia.totalPenilaian}</span>
+                              <span className="font-bold text-gray-900 dark:text-gray-100">{penyedia.totalPenilaian}</span>
                             </div>
                             
-                            <div className="flex items-center justify-between">
-                              <span className="text-sm text-muted-foreground">Rating Rata-rata</span>
-                              <StarRating rating={mapScoreToStars(penyedia.rataRataSkor)} size="md" showValue={false} />
-                            </div>
-                            
-                            <div className="flex items-center justify-between">
-                              <span className="text-sm text-muted-foreground">Skor Rating</span>
+                            <div className="flex justify-between items-center pb-2 border-b border-gray-200 dark:border-gray-700">
+                              <span className="text-xs sm:text-sm text-muted-foreground">Rating Rata-rata</span>
                               <div className="flex items-center">
-                                <span className="font-semibold text-gray-900 dark:text-gray-100 mr-2">
-                                  {penyedia.bayesianAverage.toFixed(2)}
+                                <StarRating 
+                                  rating={mapScoreToStars(penyedia.rataRataSkor)} 
+                                  size="sm" 
+                                  showValue={false} 
+                                  className="mr-2"
+                                />
+                                <span className="font-bold text-gray-900 dark:text-gray-100 text-sm sm:text-base">
+                                  {penyedia.rataRataSkor.toFixed(1)}
                                 </span>
-                                <Star className="h-4 w-4 text-amber-500 fill-amber-500" />
                               </div>
                             </div>
                             
-                            <Progress 
-                              value={(mapScoreToStars(penyedia.rataRataSkor) / 5) * 100} 
-                              className="h-2.5"
-                            />
+                            <div className="flex justify-between items-center">
+                              <span className="text-sm text-muted-foreground">Skor Bayesian</span>
+                              <div className="flex items-center">
+                                <Star className="h-4 w-4 text-amber-500 fill-amber-500 mr-2" />
+                                <span className="font-bold text-gray-900 dark:text-gray-100">
+                                  {penyedia.bayesianAverage.toFixed(2)}
+                                </span>
+                              </div>
+                            </div>
                           </div>
                           
-                          <div className={`absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm ${
-                            index === 0 ? 'bg-yellow-500' : index === 1 ? 'bg-gray-500' : 'bg-orange-500'
-                          }`}>
-                            #{index + 1}
+                          {/* Progress Bar */}
+                          <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                            <div className="flex justify-between text-xs sm:text-sm mb-1">
+                              <span className="text-muted-foreground">Percentage</span>
+                              <span className="font-medium">
+                                {Math.round((penyedia.bayesianAverage / 3) * 100)}%
+                              </span>
+                            </div>
+                            <Progress 
+                              value={(penyedia.bayesianAverage / 3) * 100} 
+                              className="h-2 sm:h-2.5"
+                            />
                           </div>
                         </CardContent>
                       </Card>
