@@ -520,7 +520,7 @@ export default function PenilaianPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
         >
-          <Card className="border-2 border-dashed border-blue-300/50 bg-gradient-to-br from-white/80 to-blue-50/30 dark:from-slate-800/80 dark:to-slate-900/30 shadow-xl rounded-3xl overflow-hidden backdrop-blur-sm">
+          <Card className="border-2 border-dashed border-blue-300/50 bg-gradient-to-br from-white/80 to-blue-50/30 dark:from-slate-800/80 dark:to-slate-900/30 shadow-xl rounded-3xl backdrop-blur-sm">
             <CardHeader className="text-center pb-6">
               <CardTitle className="flex items-center justify-center space-x-3 text-xl lg:text-2xl">
                 <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-xl">
