@@ -156,15 +156,24 @@ export default function LaporanPage() {
     if (!matchesSearch) return false
     
     // Apply status filter based on LKPP scale (1-3)
-    if (filterStatus === 'all') return true
-    if (filterStatus === 'excellent') return penyedia.rataRataSkor === 3
-    if (filterStatus === 'good') return penyedia.rataRataSkor >= 2 && penyedia.rataRataSkor < 3
-    if (filterStatus === 'average') return penyedia.rataRataSkor >= 1 && penyedia.rataRataSkor < 2
-    if (filterStatus === 'poor') return penyedia.rataRataSkor === 0
+    if (filterStatus !== 'all') {
+      if (filterStatus === 'excellent') {
+        if (penyedia.rataRataSkor !== 3) return false
+      } else if (filterStatus === 'good') {
+        if (!(penyedia.rataRataSkor >= 2 && penyedia.rataRataSkor < 3)) return false
+      } else if (filterStatus === 'average') {
+        if (!(penyedia.rataRataSkor >= 1 && penyedia.rataRataSkor < 2)) return false
+      } else if (filterStatus === 'poor') {
+        if (penyedia.rataRataSkor !== 0) return false
+      }
+    }
     
-    // Apply star filter
-    if (starFilter === 'rated') return penyedia.totalPenilaian > 0
-    if (starFilter === 'unrated') return penyedia.totalPenilaian === 0
+    // Apply star filter (rated/unrated)
+    if (starFilter === 'rated') {
+      return penyedia.totalPenilaian > 0
+    } else if (starFilter === 'unrated') {
+      return penyedia.totalPenilaian === 0
+    }
     
     return true
   }).sort((a, b) => {
