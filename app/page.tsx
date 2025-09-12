@@ -37,6 +37,7 @@ interface DashboardStats {
   totalPenilaian: number;
   totalPPK: number;
   rataRataSkor: string;
+  skorTertinggi: string;
   peningkatan: string;
 }
 
@@ -87,6 +88,7 @@ export default function HomePage() {
           totalPenilaian: 0,
           totalPPK: 0,
           rataRataSkor: "-",
+          skorTertinggi: "-",
           peningkatan: "+0%",
         },
         topPenyedia: [],
@@ -107,6 +109,12 @@ export default function HomePage() {
             penilaian.reduce((sum: number, p: any) => sum + p.skorTotal, 0) /
             penilaian.length
           ).toFixed(1)
+        : "-";
+
+    // Calculate highest score
+    const skorTertinggi =
+      penilaian.length > 0
+        ? Math.max(...penilaian.map((p: any) => p.skorTotal)).toFixed(1)
         : "-";
 
     // Calculate improvement percentage
@@ -168,6 +176,7 @@ export default function HomePage() {
         totalPenilaian,
         totalPPK,
         rataRataSkor,
+        skorTertinggi,
         peningkatan,
       },
       topPenyedia: penyediaWithRatings,
@@ -271,9 +280,9 @@ export default function HomePage() {
                     <h3 className="font-semibold text-slate-700 dark:text-slate-300">Tertinggi</h3>
                   </div>
                   <p className="text-2xl font-bold text-emerald-600">
-                    {stats.rataRataSkor !== "-" ? parseFloat(stats.rataRataSkor).toFixed(1) : "-"}
+                    {stats.skorTertinggi && stats.skorTertinggi !== "-" ? parseFloat(stats.skorTertinggi).toFixed(1) : "-"}
                   </p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">Rata-rata skor</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Skor tertinggi</p>
                 </div>
                 
                 <div className="bg-white/70 dark:bg-slate-800/70 p-4 rounded-xl">
@@ -281,8 +290,10 @@ export default function HomePage() {
                     <Shield className="h-5 w-5 text-amber-600 mr-2" />
                     <h3 className="font-semibold text-slate-700 dark:text-slate-300">Standar</h3>
                   </div>
-                  <p className="text-2xl font-bold text-amber-600">2.0</p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">Skor minimal</p>
+                  <p className="text-2xl font-bold text-amber-600">
+                    {stats.rataRataSkor && stats.rataRataSkor !== "-" ? parseFloat(stats.rataRataSkor).toFixed(1) : "-"}
+                  </p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Skor rata-rata</p>
                 </div>
                 
                 <div className="bg-white/70 dark:bg-slate-800/70 p-4 rounded-xl">
