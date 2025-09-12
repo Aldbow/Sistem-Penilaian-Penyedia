@@ -821,11 +821,39 @@ export default function LaporanPage() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {penyediaData
-                  .filter(p => p.totalPenilaian > 0)
-                  .sort((a, b) => b.rataRataSkor - a.rataRataSkor)
-                  .slice(0, 3)
-                  .map((penyedia, index) => (
+                {(() => {
+                  // Calculate global average rating
+                  const ratedProviders = penyediaData.filter(p => p.totalPenilaian > 0);
+                  const globalAvgRating = ratedProviders.length > 0 
+                    ? ratedProviders.reduce((sum, p) => sum + p.rataRataSkor, 0) / ratedProviders.length 
+                    : 0;
+                  
+                  // Calculate top performers using Bayesian Average
+                  const topPerformers = [...ratedProviders]
+                    .map(penyedia => {
+                      // Bayesian Average formula: 
+                      // (C * m + R * v) / (C + v)
+                      // C = weight given to the prior estimate (minimum evaluations for confidence)
+                      // m = global average rating
+                      // R = average rating of the provider
+                      // v = number of evaluations for the provider
+                      
+                      const C = 3; // Minimum evaluations needed for full confidence
+                      const m = globalAvgRating;
+                      const R = penyedia.rataRataSkor;
+                      const v = penyedia.totalPenilaian;
+                      
+                      const bayesianAverage = (C * m + R * v) / (C + v);
+                      
+                      return {
+                        ...penyedia,
+                        bayesianAverage
+                      };
+                    })
+                    .sort((a, b) => b.bayesianAverage - a.bayesianAverage)
+                    .slice(0, 3);
+                  
+                  return topPerformers.map((penyedia, index) => (
                     <motion.div
                       key={penyedia.id}
                       initial={{ opacity: 0, y: 20 }}
@@ -861,8 +889,18 @@ export default function LaporanPage() {
                             </div>
                             
                             <div className="flex items-center justify-between">
-                              <span className="text-sm text-muted-foreground">Rating</span>
+                              <span className="text-sm text-muted-foreground">Rating Rata-rata</span>
                               <StarRating rating={mapScoreToStars(penyedia.rataRataSkor)} size="md" showValue={false} />
+                            </div>
+                            
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm text-muted-foreground">Skor Rating</span>
+                              <div className="flex items-center">
+                                <span className="font-semibold text-gray-900 dark:text-gray-100 mr-2">
+                                  {penyedia.bayesianAverage.toFixed(2)}
+                                </span>
+                                <Star className="h-4 w-4 text-amber-500 fill-amber-500" />
+                              </div>
                             </div>
                             
                             <Progress 
@@ -879,7 +917,8 @@ export default function LaporanPage() {
                         </CardContent>
                       </Card>
                     </motion.div>
-                  ))}
+                  ));
+                })()}
               </div>
             </CardContent>
           </Card>
