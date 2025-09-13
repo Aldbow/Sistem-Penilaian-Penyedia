@@ -33,7 +33,6 @@
     "lucide-react": "^0.424.0",
     "next": "^15.5.2",
     "postcss": "^8.4.40",
-    "punycode": "^2.3.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.52.1",
