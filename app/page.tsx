@@ -81,7 +81,7 @@ export default function HomePage() {
     search(searchQuery);
   }, [searchQuery, search]);
 
-  const { stats, topPenyedia } = useMemo(() => {
+      const { stats, topPenyedia } = useMemo(() => {
     if (!dashboardData) {
       return {
         stats: {
@@ -147,20 +147,32 @@ export default function HomePage() {
       }
     }
 
-    // Calculate top penyedia
+    // Calculate top penyedia for the current week
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+    
     const penyediaWithRatings = penyedia
       .map((p: any) => {
-        const penilaianPenyedia = penilaian.filter(
-          (pnl: any) => pnl.idPenyedia === p.id
+        // Filter penilaian within the last week
+        const recentPenilaian = penilaian.filter(
+          (pnl: any) => {
+            const penilaianDate = new Date(pnl.tanggalPenilaian);
+            return (
+              pnl.idPenyedia === p.id && 
+              penilaianDate >= oneWeekAgo
+            );
+          }
         );
-        const totalPenilaianCount = penilaianPenyedia.length;
+        
+        const totalPenilaianCount = recentPenilaian.length;
         const rataRata =
           totalPenilaianCount > 0
-            ? penilaianPenyedia.reduce(
+            ? recentPenilaian.reduce(
                 (sum: number, pnl: any) => sum + pnl.skorTotal,
                 0
               ) / totalPenilaianCount
             : 0;
+            
         return {
           ...p,
           totalPenilaian: totalPenilaianCount,
@@ -168,7 +180,13 @@ export default function HomePage() {
         };
       })
       .filter((p: any) => p.totalPenilaian > 0)
-      .sort((a: any, b: any) => b.rataRataSkor - a.rataRataSkor)
+      .sort((a: any, b: any) => {
+        // Sort by rating first, then by number of evaluations
+        if (b.rataRataSkor !== a.rataRataSkor) {
+          return b.rataRataSkor - a.rataRataSkor;
+        }
+        return b.totalPenilaian - a.totalPenilaian;
+      })
       .slice(0, 3);
 
     return {
@@ -275,35 +293,58 @@ export default function HomePage() {
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Best Provider of the Week */}
                 <div className="bg-white/70 dark:bg-slate-800/70 p-4 rounded-xl">
                   <div className="flex items-center mb-2">
-                    <Target className="h-5 w-5 text-emerald-600 mr-2" />
-                    <h3 className="font-semibold text-slate-700 dark:text-slate-300">Tertinggi</h3>
+                    <Award className="h-5 w-5 text-yellow-600 mr-2" />
+                    <h3 className="font-semibold text-slate-700 dark:text-slate-300">Terbaik Minggu Ini</h3>
+                  </div>
+                  {topPenyedia.length > 0 ? (
+                    <>
+                      <p className="text-lg font-bold text-yellow-600 truncate">
+                        {topPenyedia[0]?.namaPerusahaan || "-"}
+                      </p>
+                      <div className="flex items-center mt-1">
+                        <Star className="h-4 w-4 text-amber-500 fill-amber-500 mr-1" />
+                        <span className="text-sm font-medium">
+                          {topPenyedia[0]?.rataRataSkor?.toFixed(1) || "-"} ({topPenyedia[0]?.totalPenilaian || 0}x)
+                        </span>
+                      </div>
+                    </>
+                  ) : (
+                    <p className="text-lg font-bold text-slate-500">-</p>
+                  )}
+                </div>
+                
+                {/* Today's Evaluations */}
+                <div className="bg-white/70 dark:bg-slate-800/70 p-4 rounded-xl">
+                  <div className="flex items-center mb-2">
+                    <FileText className="h-5 w-5 text-emerald-600 mr-2" />
+                    <h3 className="font-semibold text-slate-700 dark:text-slate-300">Penilaian Hari Ini</h3>
                   </div>
                   <p className="text-2xl font-bold text-emerald-600">
-                    {stats.skorTertinggi && stats.skorTertinggi !== "-" ? parseFloat(stats.skorTertinggi).toFixed(1) : "-"}
+                    {dashboardData?.penilaian?.filter((p: any) => {
+                      const today = new Date().toISOString().split('T')[0];
+                      return p.tanggalPenilaian === today;
+                    }).length || 0}
                   </p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">Skor tertinggi</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Evaluasi dilakukan hari ini</p>
                 </div>
                 
-                <div className="bg-white/70 dark:bg-slate-800/70 p-4 rounded-xl">
-                  <div className="flex items-center mb-2">
-                    <Shield className="h-5 w-5 text-amber-600 mr-2" />
-                    <h3 className="font-semibold text-slate-700 dark:text-slate-300">Standar</h3>
-                  </div>
-                  <p className="text-2xl font-bold text-amber-600">
-                    {stats.rataRataSkor && stats.rataRataSkor !== "-" ? parseFloat(stats.rataRataSkor).toFixed(1) : "-"}
-                  </p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">Skor rata-rata</p>
-                </div>
-                
+                {/* Performance Trend */}
                 <div className="bg-white/70 dark:bg-slate-800/70 p-4 rounded-xl">
                   <div className="flex items-center mb-2">
                     <TrendingUp className="h-5 w-5 text-purple-600 mr-2" />
-                    <h3 className="font-semibold text-slate-700 dark:text-slate-300">Peningkatan</h3>
+                    <h3 className="font-semibold text-slate-700 dark:text-slate-300">Tren Kinerja</h3>
                   </div>
-                  <p className="text-2xl font-bold text-purple-600">{stats.peningkatan || "+0%"}</p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">Dari periode sebelumnya</p>
+                  <p className="text-2xl font-bold text-purple-600">
+                    {stats.peningkatan || "+0%"}
+                  </p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    {parseFloat(stats.peningkatan || "0") >= 0 
+                      ? "Meningkat dari periode sebelumnya" 
+                      : "Menurun dari periode sebelumnya"}
+                  </p>
                 </div>
               </div>
             </CardContent>
