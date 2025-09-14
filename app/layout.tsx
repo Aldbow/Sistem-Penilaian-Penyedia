@@ -105,6 +105,7 @@ export default function RootLayout({
           <Toaster />
           <SpeedInsights />
         </ThemeProvider>
+        <div id="modal-root" />
       </body>
     </html>
   )
