@@ -68,6 +68,7 @@ export default function PenilaianPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentStep, setCurrentStep] = useState(1); // 1: select provider, 2: info, 3: termination, 4: rating
+  const [activeTab, setActiveTab] = useState<'unevaluated' | 'evaluated'>('unevaluated'); // New state for tabs
 
   // Contract termination state
   const [contractTerminated, setContractTerminated] = useState<boolean | null>(null);
@@ -276,6 +277,10 @@ export default function PenilaianPage() {
       loadPaketData();
     }
   }, [isAuthenticated, authenticatedPPK]);
+
+  // Separate paket into evaluated and unevaluated
+  const evaluatedPaket = paketList.filter(paket => paket.penilaian === 'Sudah');
+  const unevaluatedPaket = paketList.filter(paket => paket.penilaian !== 'Sudah');
 
   // Logout function
   const logout = () => {
@@ -854,89 +859,177 @@ export default function PenilaianPage() {
                       animate={{ opacity: 1, height: "auto" }}
                       exit={{ opacity: 0, height: 0 }}
                       transition={{ duration: 0.3 }}
-                      className="space-y-4"
+                      className="space-y-6"
                     >
-                      <div className="text-sm text-slate-600 dark:text-slate-400 mb-4">
-                        Ditemukan {paketList.length} penyedia yang berkontrak dengan satuan kerja Anda
+                      {/* Tabs for Evaluated vs Unevaluated */}
+                      <div className="flex border-b border-slate-200 dark:border-slate-700">
+                        <button
+                          onClick={() => setActiveTab('unevaluated')}
+                          className={`px-4 py-2 font-medium text-sm rounded-t-lg transition-colors ${
+                            activeTab === 'unevaluated'
+                              ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400'
+                              : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300'
+                          }`}
+                        >
+                          Belum Dinilai ({unevaluatedPaket.length})
+                        </button>
+                        <button
+                          onClick={() => setActiveTab('evaluated')}
+                          className={`px-4 py-2 font-medium text-sm rounded-t-lg transition-colors ${
+                            activeTab === 'evaluated'
+                              ? 'text-green-600 border-b-2 border-green-600 bg-green-50 dark:bg-green-900/20 dark:text-green-400'
+                              : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300'
+                          }`}
+                        >
+                          Sudah Dinilai ({evaluatedPaket.length})
+                        </button>
+                      </div>
+
+                      {/* Content based on active tab */}
+                      <div className="max-h-96 overflow-y-auto pr-2">
+                        {activeTab === 'unevaluated' && (
+                          <>
+                            {unevaluatedPaket.length > 0 ? (
+                              unevaluatedPaket.map((paket) => (
+                                <motion.div
+                                  key={`${paket.kodePaket}-${paket.kodePenyedia}`}
+                                  initial={{ opacity: 0, y: 10 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  transition={{ duration: 0.2 }}
+                                  whileHover={{ 
+                                    scale: 1.02,
+                                    y: -2,
+                                    transition: { duration: 0.2 }
+                                  }}
+                                  onClick={() => {
+                                    setSelectedPaket(paket);
+                                    // Remove automatic navigation to step 2
+                                  }}
+                                  className={`p-5 rounded-2xl border-2 cursor-pointer transition-all duration-300 mb-4 ${
+                                    selectedPaket?.kodePaket === paket.kodePaket && selectedPaket?.kodePenyedia === paket.kodePenyedia
+                                      ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 ring-2 ring-blue-500 ring-opacity-50 shadow-lg"
+                                      : "border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-500 shadow-sm"
+                                  }`}
+                                >
+                                  <div className="flex items-start justify-between">
+                                    <div className="flex-1 min-w-0 space-y-3">
+                                      <div>
+                                        <h3 className="font-bold text-lg text-slate-800 dark:text-slate-100 truncate">
+                                          {paket.namaPenyedia}
+                                        </h3>
+                                        <p className="text-sm text-slate-600 dark:text-slate-300">
+                                          NPWP: {paket.npwpPenyedia}
+                                        </p>
+                                      </div>
+                                      
+                                      <div className="bg-slate-50 dark:bg-slate-800 p-3 rounded-lg">
+                                        <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                                          Paket: {paket.kodePaket}
+                                        </p>
+                                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                                          Nilai Kontrak: {new Intl.NumberFormat('id-ID', { 
+                                            style: 'currency', 
+                                            currency: 'IDR' 
+                                          }).format(Number(paket.nilaiKontrak) || 0)}
+                                        </p>
+                                      </div>
+
+                                      <div className="flex items-center space-x-2">
+                                        <span className="px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300">
+                                          Belum Dinilai
+                                        </span>
+                                      </div>
+                                    </div>
+                                    
+                                    {selectedPaket?.kodePaket === paket.kodePaket && selectedPaket?.kodePenyedia === paket.kodePenyedia && (
+                                      <CheckCircle className="h-6 w-6 text-blue-500 flex-shrink-0 ml-3" />
+                                    )}
+                                  </div>
+                                </motion.div>
+                              ))
+                            ) : (
+                              <div className="text-center py-8">
+                                <Building2 className="h-12 w-12 text-slate-400 mx-auto mb-4" />
+                                <p className="text-slate-600 dark:text-slate-400">
+                                  Tidak ada penyedia yang belum dinilai
+                                </p>
+                              </div>
+                            )}
+                          </>
+                        )}
+
+                        {activeTab === 'evaluated' && (
+                          <>
+                            {evaluatedPaket.length > 0 ? (
+                              evaluatedPaket.map((paket) => (
+                                <motion.div
+                                  key={`${paket.kodePaket}-${paket.kodePenyedia}`}
+                                  initial={{ opacity: 0, y: 10 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  transition={{ duration: 0.2 }}
+                                  className="p-5 rounded-2xl border-2 border-slate-200 dark:border-slate-700 shadow-sm mb-4 bg-slate-50 dark:bg-slate-800/50 opacity-75"
+                                >
+                                  <div className="flex items-start justify-between">
+                                    <div className="flex-1 min-w-0 space-y-3">
+                                      <div>
+                                        <h3 className="font-bold text-lg text-slate-800 dark:text-slate-100 truncate">
+                                          {paket.namaPenyedia}
+                                        </h3>
+                                        <p className="text-sm text-slate-600 dark:text-slate-300">
+                                          NPWP: {paket.npwpPenyedia}
+                                        </p>
+                                      </div>
+                                      
+                                      <div className="bg-slate-100 dark:bg-slate-700/50 p-3 rounded-lg">
+                                        <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                                          Paket: {paket.kodePaket}
+                                        </p>
+                                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                                          Nilai Kontrak: {new Intl.NumberFormat('id-ID', { 
+                                            style: 'currency', 
+                                            currency: 'IDR' 
+                                          }).format(Number(paket.nilaiKontrak) || 0)}
+                                        </p>
+                                      </div>
+
+                                      <div className="flex items-center space-x-2">
+                                        <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
+                                          Sudah Dinilai
+                                        </span>
+                                      </div>
+                                    </div>
+                                    
+                                    <Lock className="h-6 w-6 text-slate-400 flex-shrink-0 ml-3" />
+                                  </div>
+                                </motion.div>
+                              ))
+                            ) : (
+                              <div className="text-center py-8">
+                                <Building2 className="h-12 w-12 text-slate-400 mx-auto mb-4" />
+                                <p className="text-slate-600 dark:text-slate-400">
+                                  Tidak ada penyedia yang sudah dinilai
+                                </p>
+                              </div>
+                            )}
+                          </>
+                        )}
                       </div>
                       
-                      <div className="grid gap-4 max-h-96 overflow-y-auto pr-2">
-                        {paketList.map((paket) => (
-                          <motion.div
-                            key={`${paket.kodePaket}-${paket.kodePenyedia}`}
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.2 }}
-                            whileHover={{ 
-                              scale: 1.02,
-                              y: -2,
-                              transition: { duration: 0.2 }
-                            }}
-                            onClick={() => {
-                              setSelectedPaket(paket);
-                              setCurrentStep(2);
-                            }}
-                            className={`p-5 rounded-2xl border-2 cursor-pointer transition-all duration-300 ${
-                              selectedPaket?.kodePaket === paket.kodePaket && selectedPaket?.kodePenyedia === paket.kodePenyedia
-                                ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 ring-2 ring-blue-500 ring-opacity-50 shadow-lg"
-                                : "border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-500 shadow-sm"
-                            }`}
+                      {/* Navigation button - only show when a paket is selected from unevaluated tab */}
+                      {activeTab === 'unevaluated' && selectedPaket && (
+                        <div className="flex justify-end">
+                          <Button
+                            onClick={() => setCurrentStep(2)}
+                            className="px-8 py-3 text-base font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
                           >
-                            <div className="flex items-start justify-between">
-                              <div className="flex-1 min-w-0 space-y-3">
-                                <div>
-                                  <h3 className="font-bold text-lg text-slate-800 dark:text-slate-100 truncate">
-                                    {paket.namaPenyedia}
-                                  </h3>
-                                  <p className="text-sm text-slate-600 dark:text-slate-300">
-                                    NPWP: {paket.npwpPenyedia}
-                                  </p>
-                                </div>
-                                
-                                <div className="bg-slate-50 dark:bg-slate-800 p-3 rounded-lg">
-                                  <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                                    Paket: {paket.kodePaket}
-                                  </p>
-                                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                                    Nilai Kontrak: {new Intl.NumberFormat('id-ID', { 
-                                      style: 'currency', 
-                                      currency: 'IDR' 
-                                    }).format(Number(paket.nilaiKontrak) || 0)}
-                                  </p>
-                                </div>
-
-                                <div className="flex items-center space-x-2">
-                                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                    paket.penilaian === 'Sudah' 
-                                      ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
-                                      : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300'
-                                  }`}>
-                                    {paket.penilaian === 'Sudah' ? 'Sudah Dinilai' : 'Belum Dinilai'}
-                                  </span>
-                                </div>
-                              </div>
-                              
-                              {selectedPaket?.kodePaket === paket.kodePaket && selectedPaket?.kodePenyedia === paket.kodePenyedia && (
-                                <CheckCircle className="h-6 w-6 text-blue-500 flex-shrink-0 ml-3" />
-                              )}
-                            </div>
-                          </motion.div>
-                        ))}
-                      </div>
+                            Lanjut
+                            <ArrowRight className="ml-2 h-5 w-5" />
+                          </Button>
+                        </div>
+                      )}
                     </motion.div>
                   )}
                 </AnimatePresence>
-
-                <div className="flex justify-end">
-                  <Button
-                    onClick={goToNextStep}
-                    disabled={!selectedPaket}
-                    className="px-8 py-3 text-base font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50"
-                  >
-                    Lanjut
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Button>
-                </div>
               </CardContent>
             </Card>
           </motion.div>
@@ -1045,6 +1138,18 @@ export default function PenilaianPage() {
                           }`}>
                             {selectedPaket.penilaian === 'Sudah' ? 'Sudah Dinilai' : 'Belum Dinilai'}
                           </span>
+                          
+                          {/* Warning for already evaluated paket */}
+                          {selectedPaket.penilaian === 'Sudah' && (
+                            <div className="mt-3 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg">
+                              <div className="flex items-start space-x-2">
+                                <Lock className="h-5 w-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
+                                <p className="text-sm text-yellow-700 dark:text-yellow-300">
+                                  Paket ini sudah dinilai dan tidak dapat dinilai kembali. Anda hanya dapat melihat informasi paket ini.
+                                </p>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -1061,11 +1166,37 @@ export default function PenilaianPage() {
                     Kembali
                   </Button>
                   <Button
-                    onClick={goToNextStep}
-                    className="px-8 py-3 text-base font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+                    onClick={() => {
+                      // Check if the selected paket is already evaluated
+                      const isEvaluated = evaluatedPaket.some(
+                        p => p.kodePaket === selectedPaket?.kodePaket && 
+                             p.kodePenyedia === selectedPaket?.kodePenyedia
+                      );
+                      
+                      if (!isEvaluated) {
+                        goToNextStep();
+                      }
+                    }}
+                    disabled={!selectedPaket || evaluatedPaket.some(
+                      p => p.kodePaket === selectedPaket?.kodePaket && 
+                           p.kodePenyedia === selectedPaket?.kodePenyedia
+                    )}
+                    className="px-8 py-3 text-base font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50"
                   >
-                    Lanjut ke Pertanyaan
-                    <ArrowRight className="ml-2 h-5 w-5" />
+                    {evaluatedPaket.some(
+                      p => p.kodePaket === selectedPaket?.kodePaket && 
+                           p.kodePenyedia === selectedPaket?.kodePenyedia
+                    ) ? (
+                      <div className="flex items-center">
+                        <Lock className="mr-2 h-5 w-5" />
+                        Sudah Dinilai
+                      </div>
+                    ) : (
+                      <>
+                        Lanjut ke Pertanyaan
+                        <ArrowRight className="ml-2 h-5 w-5" />
+                      </>
+                    )}
                   </Button>
                 </div>
               </CardContent>
