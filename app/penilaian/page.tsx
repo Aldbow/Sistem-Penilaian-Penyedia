@@ -702,7 +702,7 @@ export default function PenilaianPage() {
                 variant="outline"
                 size="sm"
                 onClick={logout}
-                className="text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300 dark:text-red-400 dark:border-red-800 dark:hover:bg-red-900/20"
+                className="text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300 hover:text-red-600 dark:text-red-400 dark:border-red-800 dark:hover:bg-red-900/20 dark:hover:text-red-400"
               >
                 <X className="h-4 w-4 mr-2" />
                 Keluar

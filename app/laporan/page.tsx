@@ -38,7 +38,7 @@ export default function LaporanPage() {
   const [ppkData, setPpkData] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
-  const [filterStatus, setFilterStatus] = useState('semua')
+  const [filterStatus, setFilterStatus] = useState('all')
   const [sortOption, setSortOption] = useState('a-z')
   const [starFilter, setStarFilter] = useState('all')
   const [starSort, setStarSort] = useState('none')
@@ -720,7 +720,7 @@ export default function LaporanPage() {
                       </DropdownMenuContent>
                     </DropdownMenu>
 
-                    {/* Active Filters Display */}
+                    {/* Active Filters Display - only show when filters are actually active */}
                     {(filterStatus !== 'all' || starFilter !== 'all' || sortOption !== 'a-z' || starSort !== 'none' || mostRatedFilter) && (
                       <Button 
                         variant="ghost" 
