@@ -1,15 +1,13 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { BarChart3, Building2, Users, Star, TrendingUp, Download, Award, Trophy, Medal, ChevronDown, FileText, FileSpreadsheet, Search, Filter, MapPin, Phone, Calendar, User, X } from 'lucide-react'
+import { BarChart3, Building2, Users, Star, TrendingUp, Download, Award, Trophy, Medal, ChevronDown, FileText, FileSpreadsheet, Search, Filter, X } from 'lucide-react'
 import { StarRating } from '@/components/ui/star-rating'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
-import { Separator } from '@/components/ui/separator'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -32,10 +30,18 @@ interface PenyediaWithDetails extends PenyediaWithRating {
   penilaian: Penilaian[]
 }
 
+// Define interface for PPK data
+interface PPK {
+  id: string;
+  nama: string;
+  nip: string;
+  // Add other properties as needed based on your PPK data structure
+}
+
 export default function LaporanPage() {
   const [penyediaData, setPenyediaData] = useState<PenyediaWithRating[]>([])
   const [penilaianData, setPenilaianData] = useState<Penilaian[]>([])
-  const [ppkData, setPpkData] = useState<any[]>([])
+  const [ppkData, setPpkData] = useState<PPK[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [filterStatus, setFilterStatus] = useState('all')
@@ -93,11 +99,17 @@ export default function LaporanPage() {
           const rataRataSkor = totalPenilaian > 0 
             ? penilaianPenyedia.reduce((sum, pnl) => sum + pnl.skorTotal, 0) / totalPenilaian
             : 0
+            
+          // Sort penilaian by date without mutating the original array
+          const sortedPenilaian = [...penilaianPenyedia].sort((a, b) => 
+            new Date(b.tanggalPenilaian).getTime() - new Date(a.tanggalPenilaian).getTime()
+          )
+          
           const penilaianTerbaru = totalPenilaian > 0
-            ? penilaianPenyedia.sort((a, b) => new Date(b.tanggalPenilaian).getTime() - new Date(a.tanggalPenilaian).getTime())[0].tanggalPenilaian
+            ? sortedPenilaian[0].tanggalPenilaian
             : '-'
           const penilaianAkhir = totalPenilaian > 0
-            ? penilaianPenyedia.sort((a, b) => new Date(b.tanggalPenilaian).getTime() - new Date(a.tanggalPenilaian).getTime())[0].penilaianAkhir
+            ? sortedPenilaian[0].penilaianAkhir
             : undefined
 
           return {
@@ -263,15 +275,6 @@ export default function LaporanPage() {
     return penilaianAkhir || 'Belum Dinilai'
   }
 
-  // Get final evaluation text for ratings (1-3 scale)
-  const getRatingEvaluationText = (rating: number) => {
-    if (rating === 3) return 'Sangat Baik'
-    if (rating >= 2 && rating < 3) return 'Baik'
-    if (rating >= 1 && rating < 2) return 'Cukup'
-    if (rating === 0) return 'Buruk'
-    return 'Cukup' // fallback
-  }
-
 
   // Prepare export data
   const prepareExportData = () => {
@@ -361,6 +364,11 @@ export default function LaporanPage() {
 
   return (
     <div className="space-y-6 lg:space-y-8 p-2 sm:p-4 lg:p-6">
+      <style jsx>{`
+        .text-responsive {
+          font-size: clamp(0.875rem, 2vw, 1.125rem);
+        }
+      `}</style>
       {/* Header */}
       <motion.div 
         className="text-center space-y-3 lg:space-y-4"
@@ -401,11 +409,11 @@ export default function LaporanPage() {
                   <p className="text-3xl font-bold text-blue-600">{totalPenyedia}</p>
                 </div>
                 <motion.div 
-                  className="p-3 bg-blue-100 rounded-xl"
+                  className="p-3 bg-blue-100 dark:bg-blue-900/50 rounded-xl"
                   whileHover={{ scale: 1.1 }}
                   transition={{ type: "spring", stiffness: 400 }}
                 >
-                  <Building2 className="h-6 w-6 text-blue-600" />
+                  <Building2 className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                 </motion.div>
               </div>
             </CardContent>
@@ -425,11 +433,11 @@ export default function LaporanPage() {
                   <p className="text-3xl font-bold text-green-600">{totalPenilaian}</p>
                 </div>
                 <motion.div 
-                  className="p-3 bg-green-100 rounded-xl"
+                  className="p-3 bg-green-100 dark:bg-green-900/50 rounded-xl"
                   whileHover={{ scale: 1.1 }}
                   transition={{ type: "spring", stiffness: 400 }}
                 >
-                  <BarChart3 className="h-6 w-6 text-green-600" />
+                  <BarChart3 className="h-6 w-6 text-green-600 dark:text-green-400" />
                 </motion.div>
               </div>
             </CardContent>
@@ -449,11 +457,11 @@ export default function LaporanPage() {
                   <p className="text-3xl font-bold text-purple-600">{totalPPK}</p>
                 </div>
                 <motion.div 
-                  className="p-3 bg-purple-100 rounded-xl"
+                  className="p-3 bg-purple-100 dark:bg-purple-900/50 rounded-xl"
                   whileHover={{ scale: 1.1 }}
                   transition={{ type: "spring", stiffness: 400 }}
                 >
-                  <Users className="h-6 w-6 text-purple-600" />
+                  <Users className="h-6 w-6 text-purple-600 dark:text-purple-400" />
                 </motion.div>
               </div>
             </CardContent>
@@ -891,9 +899,10 @@ export default function LaporanPage() {
                 <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
                   {/* Items per page selector - responsive */}
                   <div className="flex items-center gap-2 w-full sm:w-auto">
-                    <label className="text-sm font-medium text-slate-700 dark:text-slate-300 whitespace-nowrap hidden xs:block">Items per halaman:</label>
-                    <label className="text-sm font-medium text-slate-700 dark:text-slate-300 whitespace-nowrap xs:hidden">Item:</label>
+                    <label htmlFor="itemsPerPage" className="text-sm font-medium text-slate-700 dark:text-slate-300 whitespace-nowrap hidden xs:block">Items per halaman:</label>
+                    <label htmlFor="itemsPerPage" className="text-sm font-medium text-slate-700 dark:text-slate-300 whitespace-nowrap xs:hidden">Item:</label>
                     <select
+                      id="itemsPerPage"
                       value={itemsPerPage}
                       onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
                       className="px-2 py-1 sm:px-3 sm:py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none dark:bg-slate-700 dark:text-white text-sm w-full sm:w-auto transition-all duration-300 hover:border-emerald-500 hover:shadow-sm hover:shadow-emerald-500/20"
@@ -1051,7 +1060,7 @@ export default function LaporanPage() {
                           
                           {/* Provider Info */}
                           <div className="flex flex-col items-center text-center mb-8">
-                            <h3 className="font-bold text-lg text-gray-900 dark:text-gray-100 mb-2 truncate w-full px-2" style={{ fontSize: 'clamp(0.875rem, 2vw, 1.125rem)' }}>
+                            <h3 className="font-bold text-lg text-gray-900 dark:text-gray-100 mb-2 truncate w-full px-2 text-responsive">
                               {penyedia.namaPerusahaan}
                             </h3>
                             <Badge 
