@@ -74,6 +74,48 @@ export interface SATKER {
   jenisSatuanKerja: string;
 }
 
+// Interface untuk data TenderPengumuman
+export interface TenderPengumuman {
+  tahunAnggaran: string;
+  listTahunAnggaran: string;
+  kdKlpd: string;
+  namaKlpd: string;
+  jenisKlpd: string;
+  kdSatker: string;
+  kdSatkerStr: string;
+  namaSatker: string;
+  kdLpse: string;
+  namaLpse: string;
+  kdTender: string;
+  kdPktDce: string;
+  kdRup: string;
+  namaPaket: string;
+  pagu: string;
+  hps: string;
+  sumberDana: string;
+  kualifikasiPaket: string;
+  jenisPengadaan: string;
+  mtdPemilihan: string;
+  mtdEvaluasi: string;
+  mtdKualifikasi: string;
+  kontrakPembayaran: string;
+  statusTender: string;
+  tanggalStatus: string;
+  versiTender: string;
+  ketDitutup: string;
+  ketDiulang: string;
+  tglBuatPaket: string;
+  tglKolektifKolegial: string;
+  tglPengumumanTender: string;
+  nipPpk: string;
+  namaPpk: string;
+  nipPokja: string;
+  namaPokja: string;
+  lokasiPekerjaan: string;
+  urlLpse: string;
+  eventDate: string;
+}
+
 class GoogleSheetsService {
   private auth: any;
   private sheets: any;
@@ -571,8 +613,80 @@ class GoogleSheetsService {
         resource: { values: [satkerHeaders] },
       });
 
+      // Header untuk sheet TenderPengumuman
+      const tenderPengumumanHeaders = [
+        'tahun_anggaran', 'list_tahun_anggaran', 'kd_klpd', 'nama_klpd', 'jenis_klpd', 'kd_satker', 'kd_satker_str', 'nama_satker',
+        'kd_lpse', 'nama_lpse', 'kd_tender', 'kd_pkt_dce', 'kd_rup', 'nama_paket', 'pagu', 'hps', 'sumber_dana',
+        'kualifikasi_paket', 'jenis_pengadaan', 'mtd_pemilihan', 'mtd_evaluasi', 'mtd_kualifikasi',
+        'kontrak_pembayaran', 'status_tender', 'tanggal_status', 'versi_tender', 'ket_ditutup', 'ket_diulang',
+        'tgl_buat_paket', 'tgl_kolektif_kolegial', 'tgl_pengumuman_tender', 'nip_ppk', 'nama_ppk',
+        'nip_pokja', 'nama_pokja', 'lokasi_pekerjaan', 'url_lpse', '_event_date'
+      ];
+
+      await this.sheets.spreadsheets.values.update({
+        spreadsheetId: process.env.GOOGLE_SHEET_ID,
+        range: 'TenderPengumuman!A1:AK1', // Sesuaikan dengan jumlah kolom
+        valueInputOption: 'RAW',
+        resource: { values: [tenderPengumumanHeaders] },
+      });
+
     } catch (error) {
       console.error('Error initializing spreadsheet:', error);
+      throw error;
+    }
+  }
+
+  // Mendapatkan semua data TenderPengumuman
+  async getTenderPengumuman(): Promise<TenderPengumuman[]> {
+    try {
+      const response = await this.sheets.spreadsheets.values.get({
+        spreadsheetId: process.env.GOOGLE_SHEET_ID,
+        range: 'TenderPengumuman!A2:AK', // Sesuaikan range dengan jumlah kolom yang ada
+      });
+
+      const rows = response.data.values || [];
+      return rows.map((row: any[]) => ({
+        tahunAnggaran: row[0] || '',
+        listTahunAnggaran: row[1] || '',
+        kdKlpd: row[2] || '',
+        namaKlpd: row[3] || '',
+        jenisKlpd: row[4] || '',
+        kdSatker: row[5] || '',
+        kdSatkerStr: row[6] || '',
+        namaSatker: row[7] || '',
+        kdLpse: row[8] || '',
+        namaLpse: row[9] || '',
+        kdTender: row[10] || '',
+        kdPktDce: row[11] || '',
+        kdRup: row[12] || '',
+        namaPaket: row[13] || '',
+        pagu: row[14] || '',
+        hps: row[15] || '',
+        sumberDana: row[16] || '',
+        kualifikasiPaket: row[17] || '',
+        jenisPengadaan: row[18] || '',
+        mtdPemilihan: row[19] || '',
+        mtdEvaluasi: row[20] || '',
+        mtdKualifikasi: row[21] || '',
+        kontrakPembayaran: row[22] || '',
+        statusTender: row[23] || '',
+        tanggalStatus: row[24] || '',
+        versiTender: row[25] || '',
+        ketDitutup: row[26] || '',
+        ketDiulang: row[27] || '',
+        tglBuatPaket: row[28] || '',
+        tglKolektifKolegial: row[29] || '',
+        tglPengumumanTender: row[30] || '',
+        nipPpk: row[31] || '',
+        namaPpk: row[32] || '',
+        nipPokja: row[33] || '',
+        namaPokja: row[34] || '',
+        lokasiPekerjaan: row[35] || '',
+        urlLpse: row[36] || '',
+        eventDate: row[37] || '',
+      }));
+    } catch (error) {
+      console.error('Error getting tender pengumuman data:', error);
       throw error;
     }
   }
