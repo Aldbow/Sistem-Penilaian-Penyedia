@@ -16,7 +16,8 @@ import {
   LogOut,
   ArrowRight,
   ArrowLeft,
-  X
+  X,
+  Check
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -1451,8 +1452,8 @@ export default function PenilaianPage() {
                       </p>
                     </div>
 
-                    {/* Rating buttons */}
-                    <div className="flex flex-wrap items-center gap-3">
+                    {/* Rating buttons with modern design using borders and transparent gradients */}
+                    <div className="grid grid-cols-3 gap-4">
                       {skalaPenilaian.map((skala) => (
                         <motion.button
                           key={skala.value}
@@ -1463,36 +1464,53 @@ export default function PenilaianPage() {
                           whileHover={!contractTerminated ? { scale: 1.05 } : {}}
                           whileTap={!contractTerminated ? { scale: 0.95 } : {}}
                           disabled={contractTerminated === true}
-                          className={`px-6 py-3 rounded-xl border-2 font-semibold text-base transition-all duration-300 ${
+                          className={`px-4 py-6 rounded-2xl font-bold text-lg transition-all duration-300 flex flex-col items-center justify-center gap-2 relative overflow-hidden ${
                             contractTerminated === true
-                              ? "bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                              ? "bg-gray-100/50 dark:bg-gray-800/50 text-gray-400 border-2 border-gray-300 dark:border-gray-600 cursor-not-allowed"
                               : formData[criteria.key as keyof typeof formData] === skala.value
-                              ? `${skala.color} border-transparent text-white shadow-lg`
-                              : "bg-white dark:bg-slate-700 border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:border-blue-300 dark:hover:border-blue-500 shadow-sm"
+                              ? skala.value === 1 
+                                ? "bg-yellow-50/70 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-300 border-2 border-yellow-500 shadow-yellow-500/20"
+                                : skala.value === 2
+                                ? "bg-blue-50/70 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border-2 border-blue-500 shadow-blue-500/20"
+                                : "bg-green-50/70 dark:bg-green-900/20 text-green-700 dark:text-green-300 border-2 border-green-500 shadow-green-500/20"
+                              : skala.value === 1
+                              ? "bg-yellow-50/30 dark:bg-yellow-900/10 text-yellow-600 dark:text-yellow-400 border-2 border-yellow-300 hover:border-yellow-500"
+                              : skala.value === 2
+                              ? "bg-blue-50/30 dark:bg-blue-900/10 text-blue-600 dark:text-blue-400 border-2 border-blue-300 hover:border-blue-500"
+                              : "bg-green-50/30 dark:bg-green-900/10 text-green-600 dark:text-green-400 border-2 border-green-300 hover:border-green-500"
                           }`}
                         >
-                          {contractTerminated === true ? 0 : skala.value}
+                          <div className="text-2xl font-extrabold">
+                            {contractTerminated === true ? 0 : skala.value}
+                          </div>
+                          <div className="text-sm font-medium">
+                            {skala.label}
+                          </div>
+                          {formData[criteria.key as keyof typeof formData] === skala.value && !contractTerminated && (
+                            <motion.div
+                              className="absolute top-2 right-2"
+                              initial={{ scale: 0, rotate: -45 }}
+                              animate={{ scale: 1, rotate: 0 }}
+                              transition={{ 
+                                type: "spring", 
+                                stiffness: 300, 
+                                damping: 20,
+                                duration: 0.3
+                              }}
+                            >
+                              <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
+                                skala.value === 1 
+                                  ? "bg-yellow-500"
+                                  : skala.value === 2
+                                  ? "bg-blue-500"
+                                  : "bg-green-500"
+                              }`}>
+                                <Check className="h-4 w-4 text-white" strokeWidth={3} />
+                              </div>
+                            </motion.div>
+                          )}
                         </motion.button>
                       ))}
-                      <div className="ml-2">
-                        <span
-                          className={`text-lg font-semibold px-4 py-2 rounded-full ${
-                            skalaPenilaian.find(
-                              (s) =>
-                                s.value ===
-                                formData[criteria.key as keyof typeof formData]
-                            )?.color || "bg-slate-100 dark:bg-slate-700 text-slate-500"
-                          }`}
-                        >
-                          {
-                            skalaPenilaian.find(
-                              (s) =>
-                                s.value ===
-                                formData[criteria.key as keyof typeof formData]
-                            )?.label || "Belum dipilih"
-                          }
-                        </span>
-                      </div>
                     </div>
 
                     {/* Comment field for this criteria */}
