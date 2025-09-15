@@ -923,16 +923,11 @@ export default function PenilaianPage() {
                                   initial={{ opacity: 0, y: 10 }}
                                   animate={{ opacity: 1, y: 0 }}
                                   transition={{ duration: 0.2 }}
-                                  whileHover={{ 
-                                    scale: 1.02,
-                                    y: -2,
-                                    transition: { duration: 0.2 }
-                                  }}
                                   onClick={() => {
                                     setSelectedPaket(paket);
                                     // Remove automatic navigation to step 2
                                   }}
-                                  className={`p-5 rounded-2xl border-2 cursor-pointer transition-all duration-300 mb-4 ${
+                                  className={`p-5 rounded-2xl border-2 cursor-pointer transition-all duration-300 mb-4 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 ${
                                     selectedPaket?.kodePaket === paket.kodePaket && selectedPaket?.kodePenyedia === paket.kodePenyedia
                                       ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 ring-2 ring-blue-500 ring-opacity-50 shadow-lg"
                                       : "border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-500 shadow-sm"
