@@ -150,14 +150,9 @@ export function SearchSection({
                     initial={{ opacity: 0, x: -30 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    whileHover={{ 
-                      scale: 1.01,
-                      y: -5,
-                      transition: { duration: 0.2, type: "spring", stiffness: 300 }
-                    }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => setSelectedPenyedia(penyedia)}
-                    className="group p-6 border-2 border-slate-200/50 dark:border-slate-700/50 rounded-2xl cursor-pointer hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-300 bg-white/80 dark:bg-slate-800/80 shadow-md hover:shadow-xl backdrop-blur-sm"
+                    className="group p-6 border-2 border-slate-200/50 dark:border-slate-700/50 rounded-2xl cursor-pointer hover:border-blue-300 dark:hover:border-blue-500 transition-all duration-300 bg-white/80 dark:bg-slate-800/80 shadow-md hover:shadow-xl hover:bg-blue-50/50 dark:hover:bg-blue-900/20 backdrop-blur-sm"
                   >
                     <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                       <div className="flex-1 min-w-0">
