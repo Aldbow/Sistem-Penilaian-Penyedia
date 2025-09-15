@@ -69,6 +69,7 @@ export default function PenilaianPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentStep, setCurrentStep] = useState(1); // 1: select provider, 2: info, 3: termination, 4: rating
   const [activeTab, setActiveTab] = useState<'unevaluated' | 'evaluated'>('unevaluated'); // New state for tabs
+  const [searchTerm, setSearchTerm] = useState(""); // Search term for providers
 
   // Contract termination state
   const [contractTerminated, setContractTerminated] = useState<boolean | null>(null);
@@ -281,6 +282,19 @@ export default function PenilaianPage() {
   // Separate paket into evaluated and unevaluated
   const evaluatedPaket = paketList.filter(paket => paket.penilaian === 'Sudah');
   const unevaluatedPaket = paketList.filter(paket => paket.penilaian !== 'Sudah');
+  
+  // Filter paket based on search term
+  const filteredUnevaluatedPaket = unevaluatedPaket.filter(paket => 
+    paket.namaPenyedia.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    paket.npwpPenyedia.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    paket.kodePaket.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  
+  const filteredEvaluatedPaket = evaluatedPaket.filter(paket => 
+    paket.namaPenyedia.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    paket.npwpPenyedia.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    paket.kodePaket.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   // Logout function
   const logout = () => {
@@ -861,6 +875,18 @@ export default function PenilaianPage() {
                       transition={{ duration: 0.3 }}
                       className="space-y-6"
                     >
+                      {/* Search Input */}
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                        <Input
+                          type="text"
+                          placeholder="Cari penyedia berdasarkan nama, NPWP, atau kode paket..."
+                          value={searchTerm}
+                          onChange={(e) => setSearchTerm(e.target.value)}
+                          className="pl-10 py-5 text-base rounded-xl border-slate-300 focus:border-blue-500 focus:ring-blue-500"
+                        />
+                      </div>
+                      
                       {/* Tabs for Evaluated vs Unevaluated */}
                       <div className="flex border-b border-slate-200 dark:border-slate-700">
                         <button
@@ -871,7 +897,7 @@ export default function PenilaianPage() {
                               : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300'
                           }`}
                         >
-                          Belum Dinilai ({unevaluatedPaket.length})
+                          Belum Dinilai ({filteredUnevaluatedPaket.length})
                         </button>
                         <button
                           onClick={() => setActiveTab('evaluated')}
@@ -881,7 +907,7 @@ export default function PenilaianPage() {
                               : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300'
                           }`}
                         >
-                          Sudah Dinilai ({evaluatedPaket.length})
+                          Sudah Dinilai ({filteredEvaluatedPaket.length})
                         </button>
                       </div>
 
@@ -889,8 +915,8 @@ export default function PenilaianPage() {
                       <div className="max-h-96 overflow-y-auto pr-2">
                         {activeTab === 'unevaluated' && (
                           <>
-                            {unevaluatedPaket.length > 0 ? (
-                              unevaluatedPaket.map((paket) => (
+                            {filteredUnevaluatedPaket.length > 0 ? (
+                              filteredUnevaluatedPaket.map((paket) => (
                                 <motion.div
                                   key={`${paket.kodePaket}-${paket.kodePenyedia}`}
                                   initial={{ opacity: 0, y: 10 }}
@@ -960,8 +986,8 @@ export default function PenilaianPage() {
 
                         {activeTab === 'evaluated' && (
                           <>
-                            {evaluatedPaket.length > 0 ? (
-                              evaluatedPaket.map((paket) => (
+                            {filteredEvaluatedPaket.length > 0 ? (
+                              filteredEvaluatedPaket.map((paket) => (
                                 <motion.div
                                   key={`${paket.kodePaket}-${paket.kodePenyedia}`}
                                   initial={{ opacity: 0, y: 10 }}
