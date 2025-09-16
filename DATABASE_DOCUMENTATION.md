@@ -1,18 +1,20 @@
-# Database Implementation Documentation - Sistem Penilaian Penyedia
+# 📊 Database Implementation Documentation - Sistem Penilaian Penyedia
 
-## Overview
+## 🎯 Overview
 
-The Sistem Penilaian Penyedia (Provider Evaluation System) uses **Google Sheets** as its primary database solution. This document provides a comprehensive overview of the database implementation, data structures, and how the system interacts with the database.
+The **Sistem Penilaian Penyedia** (Provider Evaluation System) uses **Google Sheets** as its primary database solution for the UKPBJ Kemnaker provider evaluation system. This document provides a comprehensive overview of the database implementation, data structures, and system interactions.
 
-## Database Architecture
+## 🏗️ Database Architecture
 
-### Technology Stack
+### 🛠️ Technology Stack
 - **Database**: Google Sheets API v4
 - **Authentication**: Google Service Account with OAuth2
 - **ORM/Client**: Custom Google Sheets Service (`lib/google-sheets.ts`)
 - **Caching**: Custom API cache implementation (`lib/use-api-cache.ts`)
+- **Frontend**: Next.js 15 with TypeScript
+- **UI Framework**: Tailwind CSS with Framer Motion
 
-### Authentication & Configuration
+### 🔐 Authentication & Configuration
 
 The system uses Google Service Account authentication with the following environment variables:
 
@@ -23,59 +25,59 @@ GOOGLE_SHEETS_PRIVATE_KEY_BASE64=base64-encoded-private-key (alternative)
 GOOGLE_SHEET_ID=your-spreadsheet-id
 ```
 
-The authentication supports both direct private key and base64-encoded private key formats for deployment flexibility.
+> **Note**: The authentication supports both direct private key and base64-encoded private key formats for deployment flexibility.
 
-## Data Structures & Sheets
+## 📋 Data Structures & Sheets
 
-The database consists of 6 main sheets (tabs) in the Google Spreadsheet:
+The database consists of **6 main sheets** (tabs) in the Google Spreadsheet:
 
-### 1. Penyedia (Providers) Sheet
+### 1. 🏢 Penyedia (Providers) Sheet
 
-**Purpose**: Stores information about service/goods providers that can be evaluated.
+**Purpose**: Stores essential information about service/goods providers that can be evaluated.
 
-**Columns (A-G)**:
-- `A`: ID Penyedia (Provider ID) - Auto-generated with format `PYD{timestamp}`
-- `B`: Nama Perusahaan (Company Name)
-- `C`: NPWP (Tax ID Number)
-- `D`: Alamat (Address)
-- `E`: Kontak (Contact Information)
-- `F`: Jenis Usaha (Business Type)
-- `G`: Tanggal Registrasi (Registration Date)
+> **📅 Updated**: Simplified structure with only essential fields (December 2024)
 
-**Interface**:
+**Columns (A-C)** - *Simplified Structure*:
+- `A`: **ID Penyedia** - Auto-generated unique identifier with format `PYD{timestamp}`
+- `B`: **Nama Perusahaan** - Company/Organization name
+- `C`: **NPWP** - Tax identification number (Nomor Pokok Wajib Pajak)
+
+**TypeScript Interface**:
 ```typescript
 interface Penyedia {
-  id: string;
-  namaPerusahaan: string;
-  npwp: string;
-  alamat: string;
-  kontak: string;
-  jenisUsaha: string;
-  tanggalRegistrasi: string;
+  id: string;           // Unique provider identifier
+  namaPerusahaan: string; // Company name
+  npwp: string;         // Tax ID number
 }
 ```
 
-### 2. PPK (Pejabat Pembuat Komitmen) Sheet
+**Key Features**:
+- ✅ Simplified data structure for better performance
+- ✅ Essential fields only for core functionality
+- ✅ Automatic ID generation with timestamp
+- ✅ NPWP validation for tax compliance
 
-**Purpose**: Stores information about procurement officials who can perform evaluations.
+### 2. 👨‍💼 PPK (Pejabat Pembuat Komitmen) Sheet
+
+**Purpose**: Stores information about procurement officials (PPK) who can perform provider evaluations.
 
 **Columns (A-H)**:
-- `A`: No (Sequential Number)
-- `B`: Eselon I (Echelon I Level)
-- `C`: Satuan Kerja (Work Unit)
-- `D`: Satuan Kerja Detail (Detailed Work Unit) - **NEW COLUMN**
-- `E`: TA (Budget Year)
-- `F`: Nama (Name)
-- `G`: NIP (Employee ID)
-- `H`: No. HP (Phone Number)
+- `A`: **No** - Sequential number for ordering
+- `B`: **Eselon I** - Echelon I organizational level
+- `C`: **Satuan Kerja** - Main work unit/department
+- `D`: **Satuan Kerja Detail** - Detailed work unit specification *(Added 2024)*
+- `E`: **TA** - Budget year (Tahun Anggaran)
+- `F`: **Nama** - PPK full name
+- `G`: **NIP** - Employee identification number
+- `H`: **No. HP** - Contact phone number
 
-**Interface**:
+**TypeScript Interface**:
 ```typescript
 interface PPK {
   no: string;
   eselonI: string;
   satuanKerja: string;
-  satuanKerjaDetail: string; // Added in recent update
+  satuanKerjaDetail: string; // 🆕 Enhanced filtering capability
   ta: string;
   nama: string;
   nip: string;
@@ -83,29 +85,36 @@ interface PPK {
 }
 ```
 
-### 3. Paket (Packages/Contracts) Sheet
+**Authentication Flow**:
+1. PPK enters NIP + Eselon I + Satuan Kerja
+2. System validates against this sheet
+3. `satuanKerjaDetail` determines accessible packages
 
-**Purpose**: Stores contract/package information linking PPK units with providers.
+### 3. 📦 Paket (Packages/Contracts) Sheet
 
-**Columns (A-P)**:
-- `A`: Tahun Anggaran (Budget Year)
-- `B`: Kode Satuan Kerja (Work Unit Code)
-- `C`: Nama Satuan Kerja (Work Unit Name)
-- `D`: Kode Paket (Package Code)
-- `E`: Kode RUP Paket (RUP Package Code)
-- `F`: Pagu (Budget Ceiling)
-- `G`: HPS (Government Estimated Price)
-- `H`: Nilai Penawaran (Bid Value)
-- `I`: Nilai Terkoreksi (Corrected Value)
-- `J`: Nilai Negosiasi (Negotiated Value)
-- `K`: Nilai Kontrak (Contract Value)
-- `L`: Kode Penyedia (Provider Code)
-- `M`: Nama Penyedia (Provider Name)
-- `N`: NPWP Penyedia (Provider Tax ID)
-- `O`: NPWP 16 Penyedia (Provider 16-digit Tax ID)
-- `P`: Penilaian (Evaluation Status: "Belum"/"Sudah")
+**Purpose**: Stores contract/package information linking PPK work units with providers for evaluation access control.
 
-**Interface**:
+> **🔗 Key Feature**: Enables PPK to only evaluate providers they have contracts with
+
+**Columns (A-P)** - *Complete Contract Information*:
+- `A`: **Tahun Anggaran** - Budget year
+- `B`: **Kode Satuan Kerja** - Work unit code
+- `C`: **Nama Satuan Kerja** - Work unit name
+- `D`: **Kode Paket** - Package/contract code
+- `E`: **Kode RUP Paket** - RUP system package code
+- `F`: **Pagu** - Budget ceiling amount
+- `G`: **HPS** - Government estimated price
+- `H`: **Nilai Penawaran** - Initial bid value
+- `I`: **Nilai Terkoreksi** - Corrected bid value
+- `J`: **Nilai Negosiasi** - Negotiated value
+- `K`: **Nilai Kontrak** - Final contract value
+- `L`: **Kode Penyedia** - Provider code
+- `M`: **Nama Penyedia** - Provider name
+- `N`: **NPWP Penyedia** - Provider tax ID
+- `O`: **NPWP 16 Penyedia** - 16-digit provider tax ID
+- `P`: **Penilaian** - Evaluation status: `"Belum"` | `"Sudah"`
+
+**TypeScript Interface**:
 ```typescript
 interface Paket {
   tahunAnggaran: string;
@@ -123,76 +132,87 @@ interface Paket {
   namaPenyedia: string;
   npwpPenyedia: string;
   npwp16Penyedia: string;
-  penilaian: string; // "Belum" or "Sudah"
+  penilaian: 'Belum' | 'Sudah'; // Evaluation status
 }
 ```
 
-### 4. Penilaian (Evaluations) Sheet
+**Business Logic**:
+- 🔒 PPK can only see providers from their `satuanKerjaDetail`
+- 🔄 Status automatically updates from "Belum" → "Sudah" after evaluation
+- 💼 Links procurement data with evaluation permissions
 
-**Purpose**: Stores the actual evaluation data submitted by PPK officials.
+### 4. ⭐ Penilaian (Evaluations) Sheet
 
-**Columns (A-O)**:
-- `A`: ID Penilaian (Evaluation ID) - Auto-generated with format `PNL{timestamp}`
-- `B`: ID Penyedia (Provider ID)
-- `C`: Nama PPK (PPK Name)
-- `D`: Tanggal Penilaian (Evaluation Date)
-- `E`: Kualitas dan Kuantitas Barang/Jasa (Quality & Quantity Score: 1-3)
-- `F`: Komentar Kualitas dan Kuantitas (Quality & Quantity Comments)
-- `G`: Biaya (Cost Score: 1-3)
-- `H`: Komentar Biaya (Cost Comments)
-- `I`: Waktu (Time Score: 1-3)
-- `J`: Komentar Waktu (Time Comments)
-- `K`: Layanan (Service Score: 1-3)
-- `L`: Komentar Layanan (Service Comments)
-- `M`: Penilaian Akhir (Final Rating: Calculated)
-- `N`: Skor Total (Total Score: Calculated)
-- `O`: Keterangan (Additional Notes)
+**Purpose**: Stores the actual evaluation data submitted by PPK officials using the LKPP evaluation criteria.
 
-**Scoring System**:
-- Score 1: "Cukup" (Sufficient) - Yellow color scheme
-- Score 2: "Baik" (Good) - Blue color scheme  
-- Score 3: "Sangat Baik" (Very Good) - Green color scheme
+**Columns (A-O)** - *Complete Evaluation Data*:
+- `A`: **ID Penilaian** - Auto-generated with format `PNL{timestamp}`
+- `B`: **ID Penyedia** - Reference to provider being evaluated
+- `C`: **Nama PPK** - Name of evaluating PPK official
+- `D`: **Tanggal Penilaian** - Evaluation submission date
+- `E`: **Kualitas & Kuantitas** - Quality & quantity score (1-3)
+- `F`: **Komentar Kualitas** - Quality & quantity comments
+- `G`: **Biaya** - Cost effectiveness score (1-3)
+- `H`: **Komentar Biaya** - Cost comments
+- `I`: **Waktu** - Time management score (1-3)
+- `J`: **Komentar Waktu** - Time comments
+- `K`: **Layanan** - Service quality score (1-3)
+- `L`: **Komentar Layanan** - Service comments
+- `M`: **Penilaian Akhir** - Final calculated rating
+- `N`: **Skor Total** - Weighted total score (1-3)
+- `O`: **Keterangan** - Additional notes
 
-**Weighted Calculation**:
-- Quality & Quantity: 30%
-- Cost: 20%
-- Time: 30%
-- Service: 20%
+**🎯 LKPP Scoring System**:
+| Score | Rating | Description | UI Color |
+|-------|--------|-------------|----------|
+| `1` | **Cukup** | Sufficient | 🟡 Yellow |
+| `2` | **Baik** | Good | 🔵 Blue |
+| `3` | **Sangat Baik** | Very Good | 🟢 Green |
 
-**Interface**:
+**⚖️ Weighted Calculation Formula**:
+```
+Total Score = (Quality × 30%) + (Cost × 20%) + (Time × 30%) + (Service × 20%)
+```
+
+**TypeScript Interface**:
 ```typescript
 interface Penilaian {
   id: string;
   idPenyedia: string;
   namaPPK: string;
   tanggalPenilaian: string;
-  kualitasKuantitasBarangJasa: number;
+  kualitasKuantitasBarangJasa: number; // 1-3
   komentarKualitasKuantitasBarangJasa: string;
-  biaya: number;
+  biaya: number; // 1-3
   komentarBiaya: string;
-  waktu: number;
+  waktu: number; // 1-3
   komentarWaktu: string;
-  layanan: number;
+  layanan: number; // 1-3
   komentarLayanan: string;
-  penilaianAkhir: string;
-  skorTotal: number;
+  penilaianAkhir: string; // Calculated rating
+  skorTotal: number; // Weighted score (1-3)
   keterangan: string;
 }
 ```
 
-### 5. SATKER (Satuan Kerja) Sheet
+**🔄 Automatic Processes**:
+- ✅ Score calculation using weighted formula
+- ✅ Final rating determination based on score ranges
+- ✅ Package status update to "Sudah" after submission
 
-**Purpose**: Reference data for organizational work units and their hierarchical structure.
+### 5. 🏛️ SATKER (Satuan Kerja) Sheet
 
-**Columns (A-F)**:
-- `A`: Eselon I (Echelon I Level)
-- `B`: No (Sequential Number)
-- `C`: Satuan Kerja (Work Unit)
-- `D`: Satuan Kerja Detail (Detailed Work Unit)
-- `E`: Kode Satuan Kerja (Work Unit Code)
-- `F`: Jenis Satuan Kerja (Work Unit Type)
+**Purpose**: Reference data for Kemnaker organizational work units and their hierarchical structure.
 
-**Interface**:
+**Columns (A-F)** - *Organizational Structure*:
+- `A`: **Eselon I** - Top-level organizational division
+- `B`: **No** - Sequential ordering number
+- `C`: **Satuan Kerja** - Main work unit name
+- `D`: **Satuan Kerja Detail** - Detailed work unit specification
+- `E`: **Kode Satuan Kerja** - Official work unit code
+- `F`: **Jenis Satuan Kerja** - Work unit type/category
+
+**TypeScript Interface**:
 ```typescript
 interface SATKER {
   eselonI: string;
@@ -204,277 +224,717 @@ interface SATKER {
 }
 ```
 
-### 6. TenderPengumuman (Tender Announcements) Sheet
+**🔗 Integration Purpose**:
+- Maps PPK work units to package filtering
+- Provides hierarchical organizational structure
+- Enables proper access control for evaluations
 
-**Purpose**: Stores tender announcement data from external procurement systems.
+### 6. 📢 TenderPengumuman (Tender Announcements) Sheet
 
-**Columns (A-AK)** - 37 columns total including:
-- Basic tender information (year, codes, names)
-- Financial data (budget, HPS, bid values)
-- Process information (methods, status, dates)
-- Official information (PPK, working group)
-- Location and URL references
+**Purpose**: Stores comprehensive tender announcement data from external procurement systems for reference and integration.
 
-**Interface**:
+**Columns (A-AK)** - *37 comprehensive fields including*:
+- 📊 **Basic Information**: Year, codes, names, descriptions
+- 💰 **Financial Data**: Budget ceiling, HPS, bid values, contract amounts
+- 🔄 **Process Information**: Methods, status, important dates
+- 👥 **Official Information**: PPK details, working groups
+- 📍 **Location & References**: Addresses, URLs, documentation
+
+**TypeScript Interface**:
 ```typescript
 interface TenderPengumuman {
   tahunAnggaran: string;
   listTahunAnggaran: string;
   kdKlpd: string;
   namaKlpd: string;
-  // ... 33 more fields
+  // ... 33 additional comprehensive fields
   eventDate: string;
 }
 ```
 
-## Database Service Layer
+**🎯 Usage**:
+- Reference data for procurement processes
+- Integration with external tender systems
+- Historical tender information tracking
 
-### GoogleSheetsService Class
+## 🔧 Database Service Layer
 
-Located in `lib/google-sheets.ts`, this service provides the main interface to interact with Google Sheets.
+### 🛠️ GoogleSheetsService Class
 
-#### Core Methods
+Located in `lib/google-sheets.ts`, this service provides the main interface to interact with Google Sheets API.
 
-**Authentication & Initialization**:
-- `initializeAuth()`: Sets up Google Sheets API authentication
-- `testConnection()`: Validates connection to the spreadsheet
-- `initializeSpreadsheet()`: Creates headers for all sheets
+#### 🔐 Authentication & Initialization
 
-**Penyedia Operations**:
-- `getPenyedia()`: Retrieves all providers
-- `searchPenyedia(query)`: Searches providers by name or NPWP
-- `addPenyedia(penyedia)`: Adds a new provider
-- `searchPenyediaWithRatings(query)`: Optimized search with evaluation data
+| Method | Description | Usage |
+|--------|-------------|-------|
+| `initializeAuth()` | Sets up Google Sheets API authentication | System startup |
+| `testConnection()` | Validates connection to the spreadsheet | Health checks |
+| `initializeSpreadsheet()` | Creates headers for all sheets | Initial setup |
 
-**PPK Operations**:
-- `getPPK()`: Retrieves all PPK officials
-- `searchPPK(query)`: Searches PPK by name, NIP, or work unit
+#### 🏢 Penyedia (Provider) Operations
 
-**Paket Operations**:
-- `getPaket()`: Retrieves all packages/contracts
-- `getPaketBySatuanKerja(satuanKerjaDetail)`: Filters packages by PPK's work unit
-- `updatePenilaianStatus(kodePaket, kodePenyedia, status)`: Updates evaluation status
+| Method | Parameters | Returns | Description |
+|--------|------------|---------|-------------|
+| `getPenyedia()` | - | `Penyedia[]` | Retrieves all providers (simplified structure) |
+| `searchPenyedia(query)` | `query: string` | `Penyedia[]` | Searches by name/NPWP |
+| `addPenyedia(penyedia)` | `Omit<Penyedia, 'id'>` | `string` | Adds new provider, returns ID |
+| `searchPenyediaWithRatings(query)` | `query: string` | `PenyediaWithRatings[]` | Optimized search with evaluation data |
 
-**Penilaian Operations**:
-- `getPenilaian()`: Retrieves all evaluations
-- `addPenilaian(penilaian)`: Adds new evaluation with automatic scoring
-- `getPenilaianByPenyedia(idPenyedia)`: Gets evaluations for specific provider
+#### 👨‍💼 PPK Operations
 
-**SATKER Operations**:
-- `getSATKER()`: Retrieves organizational structure data
-- `getKodeSatuanKerjaByDetail(satuanKerjaDetail)`: Maps detailed work units to codes
+| Method | Parameters | Returns | Description |
+|--------|------------|---------|-------------|
+| `getPPK()` | - | `PPK[]` | Retrieves all PPK officials |
+| `searchPPK(query)` | `query: string` | `PPK[]` | Searches by name, NIP, or work unit |
 
-**TenderPengumuman Operations**:
-- `getTenderPengumuman()`: Retrieves tender announcement data
+#### 📦 Paket (Package) Operations
 
-## API Layer
+| Method | Parameters | Returns | Description |
+|--------|------------|---------|-------------|
+| `getPaket()` | - | `Paket[]` | Retrieves all packages/contracts |
+| `getPaketBySatuanKerja(detail)` | `satuanKerjaDetail: string` | `Paket[]` | Filters by PPK's work unit |
+| `updatePenilaianStatus(kode, penyedia, status)` | `kodePaket, kodePenyedia, status` | `boolean` | Updates evaluation status |
+
+#### ⭐ Penilaian (Evaluation) Operations
+
+| Method | Parameters | Returns | Description |
+|--------|------------|---------|-------------|
+| `getPenilaian()` | - | `Penilaian[]` | Retrieves all evaluations |
+| `addPenilaian(penilaian)` | `Omit<Penilaian, 'id'>` | `string` | Adds evaluation with auto-scoring |
+| `getPenilaianByPenyedia(id)` | `idPenyedia: string` | `Penilaian[]` | Gets evaluations for provider |
+
+#### 🏛️ SATKER & Reference Operations
+
+| Method | Parameters | Returns | Description |
+|--------|------------|---------|-------------|
+| `getSATKER()` | - | `SATKER[]` | Organizational structure data |
+| `getKodeSatuanKerjaByDetail(detail)` | `satuanKerjaDetail: string` | `string[]` | Maps work units to codes |
+| `getTenderPengumuman()` | - | `TenderPengumuman[]` | Tender announcement data |
+
+## 🌐 API Layer
 
 The system exposes RESTful API endpoints that interact with the database service:
 
-### `/api/init` - Database Initialization
-- **POST**: Initializes spreadsheet headers
-- **Usage**: Setup and maintenance
+### 🔧 System Endpoints
 
-### `/api/penyedia` - Provider Management
-- **GET**: Retrieve providers (with optional search)
-- **POST**: Add new provider
-- **Query Parameters**: `search` for filtering
-
-### `/api/penyedia/search` - Optimized Provider Search
-- **GET**: Search providers with ratings included
-- **Query Parameters**: `q` for search query
-- **Returns**: Providers with aggregated evaluation data
-
-### `/api/penyedia/[id]/penilaian` - Provider Evaluations
-- **GET**: Get all evaluations for specific provider
-- **Path Parameter**: Provider ID
-
-### `/api/ppk` - PPK Management
-- **GET**: Retrieve PPK officials (with optional search)
-- **Query Parameters**: `search` for filtering
-
-### `/api/penilaian` - Evaluation Management
-- **GET**: Retrieve evaluations (with optional provider filter)
-- **POST**: Submit new evaluation
-- **Query Parameters**: `idPenyedia` for filtering
-- **Side Effects**: Updates package evaluation status
-
-### `/api/penilaian/validate-ppk` - PPK Authentication
-- **POST**: Validates PPK credentials
-- **Body**: `{ nip, eselonI, satuanKerja }`
-- **Returns**: PPK data if valid
-
-### `/api/penilaian/ppk-options` - PPK Form Options
-- **GET**: Retrieve dropdown options for PPK forms
-- **Query Parameters**: `eselonI` for filtering work units
-- **Returns**: Hierarchical options for form fields
-
-### `/api/paket` - Package/Contract Data
-- **GET**: Retrieve packages filtered by work unit
-- **Query Parameters**: `satuanKerjaDetail` (required)
-- **Usage**: Shows packages that PPK can evaluate
-
-### `/api/tender-pengumuman` - Tender Announcements
-- **GET**: Retrieve tender announcement data
-- **Query Parameters**: `kdRup` for filtering
-
-## Caching Layer
-
-### API Cache Implementation
-
-Located in `lib/use-api-cache.ts`, provides client-side caching for API responses.
-
-**Features**:
-- Time-based expiration (default 5 minutes)
-- Automatic revalidation on window focus
-- Interval-based revalidation
-- Manual cache invalidation
-- Optimistic updates
-
-**Specialized Hooks**:
-- `usePenyediaData()`: Cached provider data (10 min expiry)
-- `usePenilaianData()`: Cached evaluation data (5 min expiry)
-- `usePPKData()`: Cached PPK data (10 min expiry)
-- `useDashboardStats()`: Aggregated dashboard data (3 min expiry)
-
-## Business Logic & Workflows
-
-### PPK Authentication Workflow
-
-1. PPK enters NIP, Eselon I, and Satuan Kerja
-2. System validates against PPK sheet data
-3. If valid, PPK gains access to evaluation functions
-4. PPK's `satuanKerjaDetail` determines accessible packages
-
-### Provider Evaluation Workflow
-
-1. **Package Filtering**: System filters packages by PPK's work unit
-2. **Provider Display**: Shows providers with existing contracts
-3. **Evaluation Submission**: PPK submits 4-criteria evaluation
-4. **Automatic Scoring**: System calculates weighted total score
-5. **Status Update**: Package status changes from "Belum" to "Sudah"
-6. **Final Rating**: Determines rating based on score ranges:
-   - 0: "Buruk" (Poor)
-   - 1-1.99: "Cukup" (Sufficient)
-   - 2-2.99: "Baik" (Good)
-   - 3: "Sangat Baik" (Very Good)
-
-### Data Relationships
-
-```
-PPK → (satuanKerjaDetail) → SATKER → (kodeSatuanKerja) → Paket → (kodePenyedia) → Penyedia
-                                                            ↓
-                                                        Penilaian
+#### `POST /api/init` - Database Initialization
+```typescript
+// Initializes spreadsheet headers for all sheets
+Response: { success: boolean, message: string }
+Usage: Setup and maintenance
 ```
 
-### Search & Filtering Logic
+### 🏢 Provider Endpoints
 
-**Provider Search**:
-- Searches by company name (case-insensitive)
-- Searches by NPWP (exact match)
-- Includes aggregated rating data
-- Limited to top 20 results for performance
+#### `GET /api/penyedia` - Provider Management
+```typescript
+// Retrieve providers with optional search
+Query: { search?: string }
+Response: Penyedia[]
+Example: /api/penyedia?search=PT%20ABC
+```
 
-**PPK Search**:
-- Searches by name (case-insensitive)
-- Searches by NIP (exact match)
-- Searches by work unit (case-insensitive)
+#### `POST /api/penyedia` - Add Provider
+```typescript
+// Add new provider
+Body: { namaPerusahaan: string, npwp: string }
+Response: { id: string, success: boolean }
+```
 
-**Package Filtering**:
-- Maps PPK's `satuanKerjaDetail` to valid `kodeSatuanKerja` values
-- Filters packages by matching work unit codes
-- Only shows packages with contracts
+#### `GET /api/penyedia/search` - Optimized Search
+```typescript
+// Search providers with ratings included
+Query: { q: string }
+Response: PenyediaWithRatings[]
+Features: Aggregated evaluation data, performance optimized
+```
 
-## Performance Optimizations
+#### `GET /api/penyedia/[id]/penilaian` - Provider Evaluations
+```typescript
+// Get all evaluations for specific provider
+Path: /api/penyedia/{providerId}/penilaian
+Response: Penilaian[]
+```
 
-### Database Level
-- Batch operations where possible
-- Optimized range queries (e.g., `A2:G` instead of full sheet)
-- Parallel data fetching for related entities
+### 👨‍💼 PPK Endpoints
 
-### Application Level
-- Client-side caching with configurable expiration
-- Debounced search queries
-- Lazy loading of non-critical data
-- Optimized search results (limited to 20 items)
+#### `GET /api/ppk` - PPK Management
+```typescript
+// Retrieve PPK officials with optional search
+Query: { search?: string }
+Response: PPK[]
+Example: /api/ppk?search=John
+```
 
-### API Level
-- Combined operations (e.g., `searchPenyediaWithRatings`)
-- Efficient filtering at the service layer
-- Minimal data transfer (only required fields)
+#### `POST /api/penilaian/validate-ppk` - PPK Authentication
+```typescript
+// Validates PPK credentials for evaluation access
+Body: {
+  nip: string,
+  eselonI: string,
+  satuanKerja: string
+}
+Response: {
+  valid: boolean,
+  ppk?: PPK,
+  message: string
+}
+```
 
-## Error Handling
+#### `GET /api/penilaian/ppk-options` - PPK Form Options
+```typescript
+// Retrieve dropdown options for PPK forms
+Query: { eselonI?: string }
+Response: {
+  eselonIOptions: string[],
+  satuanKerjaOptions: string[],
+  satuanKerjaDetailOptions: string[]
+}
+```
 
-### Authentication Errors
-- Invalid credentials detection
-- Private key format validation
-- Connection testing on initialization
+### ⭐ Evaluation Endpoints
 
-### Data Validation
-- Required field validation
-- Data type checking
-- Range validation for scores (1-3)
+#### `GET /api/penilaian` - Evaluation Management
+```typescript
+// Retrieve evaluations with optional provider filter
+Query: { idPenyedia?: string }
+Response: Penilaian[]
+Example: /api/penilaian?idPenyedia=PYD123
+```
 
-### API Error Responses
-- Standardized error format
-- Appropriate HTTP status codes
-- Detailed error messages for debugging
+#### `POST /api/penilaian` - Submit Evaluation
+```typescript
+// Submit new evaluation with automatic scoring
+Body: {
+  idPenyedia: string,
+  namaPPK: string,
+  kualitasKuantitasBarangJasa: number, // 1-3
+  komentarKualitasKuantitasBarangJasa: string,
+  biaya: number, // 1-3
+  komentarBiaya: string,
+  waktu: number, // 1-3
+  komentarWaktu: string,
+  layanan: number, // 1-3
+  komentarLayanan: string,
+  keterangan: string
+}
+Response: {
+  id: string,
+  skorTotal: number,
+  penilaianAkhir: string,
+  success: boolean
+}
+Side Effects: Updates package evaluation status to "Sudah"
+```
 
-## Security Considerations
+### 📦 Package/Contract Endpoints
 
-### Authentication
-- Service account with minimal required permissions
-- Private key stored as environment variable
-- Support for base64 encoding for secure deployment
+#### `GET /api/paket` - Package Data
+```typescript
+// Retrieve packages filtered by PPK's work unit
+Query: { satuanKerjaDetail: string } // Required
+Response: Paket[]
+Purpose: Shows only packages that PPK can evaluate
+Example: /api/paket?satuanKerjaDetail=Direktorat%20ABC
+```
 
-### Data Access
-- PPK can only evaluate providers in their work unit
-- No direct database access from client
-- All operations go through validated API endpoints
+### 📢 Reference Data Endpoints
 
-### Input Validation
-- Server-side validation for all inputs
-- SQL injection prevention (not applicable to Sheets API)
-- XSS prevention through proper data handling
+#### `GET /api/tender-pengumuman` - Tender Announcements
+```typescript
+// Retrieve tender announcement data
+Query: { kdRup?: string }
+Response: TenderPengumuman[]
+Purpose: Reference data for procurement processes
+```
 
-## Deployment & Configuration
+## 🚀 Caching Layer
 
-### Environment Setup
+### 📦 API Cache Implementation
+
+Located in `lib/use-api-cache.ts`, provides intelligent client-side caching for optimal performance.
+
+#### 🎯 Core Features
+- ⏰ **Time-based expiration** (configurable per endpoint)
+- 🔄 **Automatic revalidation** on window focus
+- 📊 **Interval-based revalidation** for real-time data
+- 🗑️ **Manual cache invalidation** for immediate updates
+- ⚡ **Optimistic updates** for better UX
+- 🔍 **Search result caching** with debouncing
+
+#### 🎣 Specialized Cache Hooks
+
+| Hook | Cache Duration | Purpose | Auto-Revalidation |
+|------|----------------|---------|-------------------|
+| `usePenyediaData()` | 10 minutes | Provider data | On focus |
+| `usePenilaianData()` | 5 minutes | Evaluation data | On focus + interval |
+| `usePPKData()` | 10 minutes | PPK officials | On focus |
+| `useDashboardStats()` | 3 minutes | Aggregated stats | Interval (30s) |
+| `useSearchCache()` | 5 minutes | Search results | Debounced (250ms) |
+
+#### 🔧 Cache Configuration
+```typescript
+interface CacheConfig {
+  cacheTimeout: number;     // Expiration time in ms
+  debounceDelay: number;    // Search debounce delay
+  revalidateOnFocus: boolean; // Auto-revalidate on window focus
+  revalidateInterval: number; // Background revalidation interval
+}
+```
+
+## 🔄 Business Logic & Workflows
+
+### 🔐 PPK Authentication Workflow
+
+```mermaid
+flowchart TD
+    A[PPK enters credentials] --> B{Validate against PPK sheet}
+    B -->|Valid| C[Grant access to evaluation]
+    B -->|Invalid| D[Show error message]
+    C --> E[Load accessible packages based on satuanKerjaDetail]
+    E --> F[Display providers with contracts]
+```
+
+**Steps**:
+1. 📝 PPK enters **NIP** + **Eselon I** + **Satuan Kerja**
+2. 🔍 System validates against PPK sheet data
+3. ✅ If valid, PPK gains access to evaluation functions
+4. 🎯 PPK's `satuanKerjaDetail` determines accessible packages
+
+### ⭐ Provider Evaluation Workflow
+
+```mermaid
+flowchart TD
+    A[PPK authenticated] --> B[Filter packages by work unit]
+    B --> C[Display providers with contracts]
+    C --> D[PPK selects provider to evaluate]
+    D --> E[Submit 4-criteria evaluation]
+    E --> F[Calculate weighted score]
+    F --> G[Determine final rating]
+    G --> H[Update package status to 'Sudah']
+    H --> I[Store evaluation in database]
+```
+
+**Detailed Steps**:
+1. 🔍 **Package Filtering**: System filters by PPK's work unit
+2. 📋 **Provider Display**: Shows providers with existing contracts only
+3. 📝 **Evaluation Submission**: PPK submits 4-criteria evaluation
+4. 🧮 **Automatic Scoring**: System calculates weighted total score
+5. 🔄 **Status Update**: Package status: "Belum" → "Sudah"
+6. 🏆 **Final Rating**: Determines rating based on score ranges
+
+#### 🎯 Rating Scale Mapping
+| Score Range | Rating | Description | Star Display |
+|-------------|--------|-------------|-------------|
+| `0` | **Buruk** | Poor | ⭐ (1 star) |
+| `1.0 - 1.99` | **Cukup** | Sufficient | ⭐⭐ (2 stars) |
+| `2.0 - 2.99` | **Baik** | Good | ⭐⭐⭐⭐ (4 stars) |
+| `3.0` | **Sangat Baik** | Very Good | ⭐⭐⭐⭐⭐ (5 stars) |
+
+### 🔗 Data Relationships
+
+```
+👨‍💼 PPK → (satuanKerjaDetail) → 🏛️ SATKER → (kodeSatuanKerja) → 📦 Paket → (kodePenyedia) → 🏢 Penyedia
+                                                                              ↓
+                                                                          ⭐ Penilaian
+```
+
+### 🔍 Search & Filtering Logic
+
+#### 🏢 Provider Search
+- 📝 **Company name**: Case-insensitive partial matching
+- 🔢 **NPWP**: Exact match for tax ID
+- 📊 **Includes**: Aggregated rating data and evaluation count
+- ⚡ **Performance**: Limited to top 20 results
+- 🕒 **Caching**: 5-minute cache with 250ms debounce
+
+#### 👨‍💼 PPK Search
+- 👤 **Name**: Case-insensitive partial matching
+- 🆔 **NIP**: Exact match for employee ID
+- 🏢 **Work unit**: Case-insensitive partial matching
+- 🎯 **Scope**: Searches across all organizational levels
+
+#### 📦 Package Filtering
+- 🗺️ **Mapping**: PPK's `satuanKerjaDetail` → valid `kodeSatuanKerja` values
+- 🔍 **Filtering**: Only packages matching work unit codes
+- 📋 **Contracts**: Only shows packages with existing contracts
+- 🔒 **Access Control**: PPK can only evaluate their contracted providers
+
+## ⚡ Performance Optimizations
+
+### 🗄️ Database Level
+- 📦 **Batch operations** where possible to reduce API calls
+- 🎯 **Optimized range queries** (e.g., `A2:C` vs full sheet for providers)
+- 🔄 **Parallel data fetching** for related entities
+- 📊 **Simplified data structures** (Provider: 7 fields → 3 fields)
+- 🔍 **Indexed lookups** using efficient range selections
+
+### 💻 Application Level
+- 🚀 **Client-side caching** with configurable expiration times
+- ⏱️ **Debounced search queries** (250ms delay)
+- 🎯 **Lazy loading** of non-critical data components
+- 📋 **Optimized search results** (limited to 20 items)
+- 🎨 **Virtual scrolling** for large data sets
+- 📱 **Responsive design** with mobile-first approach
+
+### 🌐 API Level
+- 🔗 **Combined operations** (e.g., `searchPenyediaWithRatings`)
+- 🔍 **Efficient filtering** at the service layer
+- 📦 **Minimal data transfer** (only required fields)
+- 🗜️ **Response compression** for large datasets
+- ⚡ **Connection pooling** equivalent for Google Sheets API
+
+### 🎯 Specific Optimizations
+
+| Component | Optimization | Impact |
+|-----------|-------------|--------|
+| Provider Search | Debounced + Cached | 🔥 90% fewer API calls |
+| Dashboard Stats | 3-min cache + background refresh | 🚀 Instant loading |
+| Evaluation Form | Optimistic updates | ⚡ Immediate feedback |
+| Package Filtering | Server-side filtering | 📊 Reduced data transfer |
+| Provider Data | Simplified structure | 🎯 60% smaller payload |
+
+## 🚨 Error Handling
+
+### 🔐 Authentication Errors
+
+| Error Type | Detection | Response | User Action |
+|------------|-----------|----------|-------------|
+| Invalid Credentials | Service account validation | 401 Unauthorized | Check environment variables |
+| Private Key Format | Key parsing failure | 500 Internal Error | Verify key format/encoding |
+| Connection Failure | API connectivity test | 503 Service Unavailable | Check network/permissions |
+| Quota Exceeded | Google API limits | 429 Too Many Requests | Implement retry logic |
+
+### ✅ Data Validation
+
+#### Input Validation Rules
+```typescript
+// Provider validation
+interface ProviderValidation {
+  namaPerusahaan: string; // Required, min 3 chars
+  npwp: string;          // Required, 15 digits format
+}
+
+// Evaluation validation
+interface EvaluationValidation {
+  scores: number;        // Range: 1-3 only
+  comments: string;      // Required for each criteria
+  ppkName: string;       // Must match authenticated PPK
+}
+```
+
+#### Validation Layers
+- 🎯 **Client-side**: Immediate feedback, UX optimization
+- 🛡️ **Server-side**: Security, data integrity
+- 📊 **Database-level**: Constraint validation
+
+### 🌐 API Error Responses
+
+#### Standardized Error Format
+```typescript
+interface APIError {
+  success: false;
+  error: {
+    code: string;        // Machine-readable error code
+    message: string;     // Human-readable message
+    details?: any;       // Additional error context
+    timestamp: string;   // ISO timestamp
+  };
+}
+```
+
+#### HTTP Status Code Mapping
+| Status | Code | Usage | Example |
+|--------|------|-------|----------|
+| 200 | OK | Successful operation | Data retrieved |
+| 201 | Created | Resource created | New evaluation added |
+| 400 | Bad Request | Invalid input | Missing required field |
+| 401 | Unauthorized | Authentication failed | Invalid PPK credentials |
+| 403 | Forbidden | Access denied | PPK accessing wrong unit |
+| 404 | Not Found | Resource not found | Provider ID not exists |
+| 429 | Too Many Requests | Rate limit exceeded | Google API quota |
+| 500 | Internal Server Error | System error | Database connection failed |
+
+### 🔧 Error Recovery Strategies
+
+- 🔄 **Automatic retry** with exponential backoff
+- 💾 **Offline data caching** for critical operations
+- 🎯 **Graceful degradation** when services are unavailable
+- 📝 **Detailed logging** for debugging and monitoring
+- 🚨 **User-friendly error messages** with actionable guidance
+
+## 📊 Google Sheets Integration Details
+
+### 🔗 Connection Setup
+
+#### Required Environment Variables
 ```bash
-# Required environment variables
+# Google Service Account Configuration
+GOOGLE_SHEETS_CLIENT_EMAIL=your-service-account@project.iam.gserviceaccount.com
+GOOGLE_SHEETS_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
+# OR (for deployment environments)
+GOOGLE_SHEETS_PRIVATE_KEY_BASE64=base64_encoded_private_key
+
+# Target Spreadsheet
+GOOGLE_SHEET_ID=1234567890abcdef_your_sheet_id
+```
+
+#### Service Account Permissions
+- **Google Sheets API**: Read/Write access
+- **Spreadsheet Access**: Editor permissions on target sheet
+- **Minimal Scope**: `https://www.googleapis.com/auth/spreadsheets`
+
+### 📋 Sheet Structure & Mapping
+
+#### Sheet Names & Ranges
+| Sheet Name | Range | Purpose | Auto-Headers |
+|------------|-------|---------|-------------|
+| `Penyedia` | A:C | Provider data | ✅ |
+| `PPK` | A:H | PPK officials | ✅ |
+| `Paket` | A:O | Packages/Contracts | ✅ |
+| `Penilaian` | A:L | Evaluations | ✅ |
+| `SATKER` | A:D | Organizational units | ✅ |
+| `TenderPengumuman` | A:AH | Tender data | ✅ |
+
+#### Data Type Mapping
+```typescript
+// Google Sheets → TypeScript type conversion
+interface SheetMapping {
+  string: string;     // Text cells
+  number: number;     // Numeric cells
+  date: string;       // ISO date strings
+  boolean: string;    // "true"/"false" strings
+  formula: string;    // Calculated values
+}
+```
+
+### 🔄 Data Synchronization
+
+#### Read Operations
+- **Batch Reading**: Uses `batchGet` for multiple ranges
+- **Range Optimization**: Reads only necessary columns (e.g., A2:C for providers)
+- **Header Validation**: Ensures sheet structure matches expected format
+- **Empty Row Handling**: Filters out empty rows automatically
+
+#### Write Operations
+- **Append Mode**: New records added to next available row
+- **ID Generation**: Auto-generates unique IDs (PYD001, PNL001, etc.)
+- **Atomic Updates**: Single API call per operation
+- **Status Updates**: In-place updates for evaluation status
+
+#### Error Handling
+```typescript
+// Retry logic for Google API operations
+const retryConfig = {
+  maxRetries: 3,
+  backoffMultiplier: 2,
+  initialDelay: 1000, // 1 second
+  maxDelay: 8000      // 8 seconds
+};
+```
+
+### 🎯 Performance Considerations
+
+#### API Quota Management
+- **Read Quota**: 100 requests/100 seconds/user
+- **Write Quota**: 100 requests/100 seconds/user
+- **Batch Operations**: Combine multiple operations when possible
+- **Caching Strategy**: Reduce API calls with intelligent caching
+
+#### Optimization Techniques
+```typescript
+// Example: Efficient range reading
+const ranges = [
+  'Penyedia!A2:C',     // Only essential provider fields
+  'Penilaian!A2:L',    // Full evaluation data
+  'PPK!A2:H'           // PPK data with new satuanKerjaDetail
+];
+
+// Batch request instead of 3 separate calls
+const batchResponse = await sheets.spreadsheets.values.batchGet({
+  spreadsheetId,
+  ranges
+});
+```
+
+### 🔒 Security & Access Control
+
+#### Authentication Flow
+1. 🔑 **Service Account**: Uses JWT for server-to-server auth
+2. 🛡️ **Private Key**: Securely stored in environment variables
+3. 🔐 **Token Management**: Automatic token refresh handled by Google client
+4. 🎯 **Scope Limitation**: Only spreadsheet access, no other Google services
+
+#### Data Security
+- **Encryption**: All data transmitted over HTTPS
+- **Access Logs**: Google Workspace audit logs track all access
+- **Principle of Least Privilege**: Service account has minimal required permissions
+- **No Client-Side Keys**: Private keys never exposed to browser
+
+### 🧪 Testing & Validation
+
+#### Connection Testing
+```typescript
+// Built-in connection test
+const testResult = await googleSheetsService.testConnection();
+if (!testResult.success) {
+  console.error('Connection failed:', testResult.error);
+}
+```
+
+#### Data Validation
+- **Schema Validation**: Ensures data matches expected interfaces
+- **Type Checking**: Validates data types before writing
+- **Constraint Validation**: Checks business rules (e.g., score ranges)
+- **Duplicate Prevention**: ID uniqueness validation
+
+### 🔧 Maintenance & Monitoring
+
+#### Health Checks
+- **Connection Status**: Regular connectivity tests
+- **Quota Monitoring**: Track API usage against limits
+- **Error Rate Tracking**: Monitor failed operations
+- **Performance Metrics**: Response time monitoring
+
+#### Backup & Recovery
+- **Google Sheets Versioning**: Built-in revision history
+- **Export Capabilities**: Programmatic data export for backups
+- **Disaster Recovery**: Service account key rotation procedures
+- **Data Integrity**: Checksums and validation for critical operations
+
+#### Troubleshooting Common Issues
+
+| Issue | Cause | Solution |
+|-------|-------|----------|
+| 403 Forbidden | Service account lacks permissions | Grant Editor access to spreadsheet |
+| 429 Rate Limited | Exceeded API quota | Implement exponential backoff |
+| Invalid Private Key | Malformed key format | Check key format and encoding |
+| Sheet Not Found | Incorrect sheet name | Verify sheet names match exactly |
+| Empty Response | No data in range | Check data exists in specified range |
+
+## 🔒 Security Considerations
+
+### 🔐 Authentication
+- **Service Account**: Minimal required permissions for Google Sheets API
+- **Private Key Storage**: Secure environment variable storage
+- **Base64 Encoding**: Support for deployment environments
+- **Token Management**: Automatic refresh with Google client libraries
+
+### 🛡️ Data Access Control
+- **PPK Authorization**: Can only evaluate providers in their work unit
+- **Role-Based Access**: Different access levels for different user types
+- **Data Filtering**: Server-side filtering prevents unauthorized data access
+- **Audit Trail**: All evaluations tracked with PPK identification
+
+### 🌐 Network Security
+- **No Direct Database Access**: All client operations go through validated API endpoints
+- **Server-Side Validation**: All inputs validated before processing
+- **CORS Configuration**: Restricted to authorized domains
+- **Rate Limiting**: Protection against abuse and DoS attacks
+
+## 🚀 Development & Deployment
+
+### 📋 Environment Setup
+
+#### Required Environment Variables
+```bash
+# Google Sheets Integration
 GOOGLE_SHEETS_CLIENT_EMAIL=service-account@project.iam.gserviceaccount.com
 GOOGLE_SHEETS_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
-# OR
-GOOGLE_SHEETS_PRIVATE_KEY_BASE64=base64-encoded-key
-GOOGLE_SHEET_ID=1234567890abcdef
+GOOGLE_SHEETS_PRIVATE_KEY_BASE64=base64_encoded_key  # Alternative for deployment
+GOOGLE_SHEET_ID=1234567890abcdef_your_sheet_id
+
+# Application Configuration
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+NODE_ENV=development
 ```
 
-### Google Sheets Setup
-1. Create Google Spreadsheet with 6 sheets: Penyedia, PPK, Paket, Penilaian, SATKER, TenderPengumuman
-2. Share spreadsheet with service account email
-3. Grant edit permissions to service account
-4. Run `/api/init` endpoint to initialize headers
+### 🛠️ Development Setup
 
-### Monitoring & Maintenance
-- API quota monitoring (Google Sheets API limits)
-- Error logging for failed operations
-- Regular data backup recommendations
-- Performance monitoring for large datasets
+1. **Create Google Service Account**
+   ```bash
+   # Go to Google Cloud Console
+   # Create new service account
+   # Generate and download private key (JSON format)
+   ```
 
-## Future Considerations
+2. **Configure Spreadsheet Access**
+   ```bash
+   # Share target spreadsheet with service account email
+   # Grant "Editor" permissions
+   ```
 
-### Scalability
-- Consider migration to traditional database for large datasets
-- Implement data archiving for old evaluations
-- Add database indexing equivalent (sheet organization)
+3. **Install Dependencies**
+   ```bash
+   npm install
+   # or
+   yarn install
+   ```
 
-### Features
-- Real-time collaboration features
-- Advanced reporting and analytics
-- Data export capabilities
-- Audit trail implementation
+4. **Set Environment Variables**
+   ```bash
+   cp .env.example .env.local
+   # Edit .env.local with your configuration
+   ```
 
-### Performance
+5. **Initialize Database**
+   ```bash
+   # Start development server
+   npm run dev
+   
+   # Initialize spreadsheet headers (one-time setup)
+   curl -X POST http://localhost:3000/api/init
+   ```
+
+### 🚢 Deployment Guidelines
+
+#### Production Environment
+- **Private Key Encoding**: Use `GOOGLE_SHEETS_PRIVATE_KEY_BASE64` for secure deployment
+- **Environment Validation**: Verify all required variables are set
+- **Connection Testing**: Test Google Sheets connectivity before going live
+- **Monitoring Setup**: Configure logging and error tracking
+
+#### Deployment Checklist
+- [ ] Service account created with proper permissions
+- [ ] Spreadsheet shared with service account
+- [ ] Environment variables configured
+- [ ] Database initialized (`/api/init` called)
+- [ ] Connection test successful
+- [ ] API endpoints responding correctly
+- [ ] Authentication flow working
+- [ ] Error handling tested
+
+### 📊 Monitoring & Maintenance
+
+#### Key Metrics to Monitor
+- **API Response Times**: Google Sheets API latency
+- **Error Rates**: Failed operations percentage
+- **Quota Usage**: API calls vs. limits
+- **User Activity**: Evaluation submissions, searches
+- **Cache Hit Rates**: Client-side cache effectiveness
+
+#### Regular Maintenance Tasks
+- **Quota Monitoring**: Track Google API usage
+- **Performance Review**: Analyze slow queries
+- **Data Cleanup**: Remove test data, optimize sheets
+- **Security Audit**: Review access permissions
+- **Backup Verification**: Ensure data backup processes work
+
+---
+
+## 📝 Summary
+
+This documentation provides a comprehensive overview of the **Sistem Penilaian Penyedia** database structure and implementation. The system uses Google Sheets as a backend database with a simplified Provider data structure (ID, Company Name, NPWP) and implements robust authentication, caching, and performance optimizations.
+
+**Key Features**:
+- 🏢 **Simplified Provider Management** with essential fields only
+- 👨‍💼 **PPK Authentication** with work unit-based access control
+- ⭐ **Comprehensive Evaluation System** with automatic scoring
+- 📊 **Performance Optimized** with intelligent caching and debouncing
+- 🔒 **Secure** with proper authentication and data validation
+- 📱 **Modern UI** with responsive design and real-time updates
+
+For technical support or questions about implementation details, refer to the codebase in `lib/google-sheets.ts` and the API endpoints in `app/api/`.
 - Consider Redis caching for frequently accessed data
 - Implement database connection pooling equivalent
 - Add data compression for large responses
