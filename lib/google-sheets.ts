@@ -43,6 +43,16 @@ export interface Paket {
   npwpPenyedia: string;
   npwp16Penyedia: string;
   penilaian: string; // "Belum" or "Sudah"
+  
+  // Enriched fields from TenderPengumuman join
+  tenderInfo?: TenderPengumuman | null;
+  namaPaket?: string;
+  statusTender?: string;
+  metodePemilihan?: string;
+  jenisKontrak?: string;
+  lokasiPekerjaan?: string;
+  tanggalPengumuman?: string;
+  urlLpse?: string | null;
 }
 
 // Interface untuk data penilaian
@@ -424,8 +434,8 @@ class GoogleSheetsService {
     }
   }
 
-  // Mendapatkan paket berdasarkan satuan kerja PPK
-  async getPaketBySatuanKerja(satuanKerjaDetail: string): Promise<Paket[]> {
+  // Mendapatkan paket berdasarkan satuan kerja PPK dengan data tender pengumuman
+  async getPaketBySatuanKerja(satuanKerjaDetail: string): Promise<any[]> {
     // Dapatkan kode satuan kerja yang valid berdasarkan satuanKerjaDetail
     const validKodeSatuanKerja = await this.getKodeSatuanKerjaByDetail(satuanKerjaDetail);
     
@@ -434,13 +444,38 @@ class GoogleSheetsService {
       return [];
     }
     
-    // Dapatkan semua paket
-    const allPaket = await this.getPaket();
+    // Dapatkan semua paket dan tender pengumuman secara paralel
+    const [allPaket, allTenderPengumuman] = await Promise.all([
+      this.getPaket(),
+      this.getTenderPengumuman()
+    ]);
     
     // Filter paket berdasarkan kode satuan kerja yang valid
-    return allPaket.filter(paket => 
+    const filteredPaket = allPaket.filter(paket => 
       validKodeSatuanKerja.includes(paket.kodeSatuanKerja)
     );
+    
+    // Gabungkan data paket dengan tender pengumuman berdasarkan RUP code
+    const enrichedPaket = filteredPaket.map(paket => {
+      const tenderData = allTenderPengumuman.find(tender => 
+        tender.kdRup === paket.kodeRupPaket
+      );
+      
+      return {
+        ...paket,
+        tenderInfo: tenderData || null,
+        // Add derived fields for easier access
+        namaPaket: tenderData?.namaPaket || `Paket ${paket.kodePaket}`,
+        statusTender: tenderData?.statusTender || 'Unknown',
+        metodePemilihan: tenderData?.mtdPemilihan || 'Unknown',
+        jenisKontrak: tenderData?.kontrakPembayaran || 'Unknown',
+        lokasiPekerjaan: tenderData?.lokasiPekerjaan || 'Unknown',
+        tanggalPengumuman: tenderData?.tglPengumumanTender || 'Unknown',
+        urlLpse: tenderData?.urlLpse || null,
+      };
+    });
+    
+    return enrichedPaket;
   }
 
   // Mendapatkan daftar kode satuan kerja yang valid berdasarkan satuanKerjaDetail

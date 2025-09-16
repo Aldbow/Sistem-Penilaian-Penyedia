@@ -65,7 +65,7 @@ export default function PenilaianPage() {
 
   // Evaluation State
   const [paketList, setPaketList] = useState<Paket[]>([]);
-  const [selectedPaket, setSelectedPaket] = useState<Paket | null>(null);
+  const [selectedPaket, setSelectedPaket] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentStep, setCurrentStep] = useState(1); // 1: select provider, 2: info, 3: termination, 4: rating
@@ -284,17 +284,27 @@ export default function PenilaianPage() {
   const evaluatedPaket = paketList.filter(paket => paket.penilaian === 'Sudah');
   const unevaluatedPaket = paketList.filter(paket => paket.penilaian !== 'Sudah');
   
-  // Filter paket based on search term
+  // Filter paket based on search term - includes enriched package data
   const filteredUnevaluatedPaket = unevaluatedPaket.filter(paket => 
+    (paket.namaPaket && paket.namaPaket.toLowerCase().includes(searchTerm.toLowerCase())) ||
     paket.namaPenyedia.toLowerCase().includes(searchTerm.toLowerCase()) ||
     paket.npwpPenyedia.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    paket.kodePaket.toLowerCase().includes(searchTerm.toLowerCase())
+    paket.kodePaket.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    paket.kodeRupPaket.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (paket.statusTender && paket.statusTender.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (paket.metodePemilihan && paket.metodePemilihan.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (paket.lokasiPekerjaan && paket.lokasiPekerjaan.toLowerCase().includes(searchTerm.toLowerCase()))
   );
   
   const filteredEvaluatedPaket = evaluatedPaket.filter(paket => 
+    (paket.namaPaket && paket.namaPaket.toLowerCase().includes(searchTerm.toLowerCase())) ||
     paket.namaPenyedia.toLowerCase().includes(searchTerm.toLowerCase()) ||
     paket.npwpPenyedia.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    paket.kodePaket.toLowerCase().includes(searchTerm.toLowerCase())
+    paket.kodePaket.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    paket.kodeRupPaket.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (paket.statusTender && paket.statusTender.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (paket.metodePemilihan && paket.metodePemilihan.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (paket.lokasiPekerjaan && paket.lokasiPekerjaan.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   // Logout function
@@ -842,10 +852,10 @@ export default function PenilaianPage() {
                   <div className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-100 text-blue-600 font-bold text-base">
                     1
                   </div>
-                  <span>Pilih Penyedia</span>
+                  <span>Pilih Paket Kontrak</span>
                 </CardTitle>
                 <CardDescription className="text-base">
-                  Pilih penyedia yang berkontrak dengan satuan kerja Anda
+                  Pilih paket kontrak yang akan dinilai dari satuan kerja Anda
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -853,7 +863,7 @@ export default function PenilaianPage() {
                   <div className="flex items-center justify-center py-8">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
                     <span className="ml-3 text-muted-foreground text-lg">
-                      Memuat data penyedia...
+                      Memuat data paket...
                     </span>
                   </div>
                 )}
@@ -862,7 +872,7 @@ export default function PenilaianPage() {
                   <div className="text-center py-8">
                     <Building2 className="h-12 w-12 text-slate-400 mx-auto mb-4" />
                     <p className="text-slate-600 dark:text-slate-400">
-                      Tidak ada penyedia yang berkontrak dengan satuan kerja Anda
+                      Tidak ada paket yang berkontrak dengan satuan kerja Anda
                     </p>
                   </div>
                 )}
@@ -881,7 +891,7 @@ export default function PenilaianPage() {
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                         <Input
                           type="text"
-                          placeholder="Cari penyedia berdasarkan nama, NPWP, atau kode paket..."
+                          placeholder="Cari paket berdasarkan nama paket, penyedia, NPWP, atau kode paket..."
                           value={searchTerm}
                           onChange={(e) => setSearchTerm(e.target.value)}
                           className="pl-10 py-5 text-base rounded-xl border-slate-300 focus:border-blue-500 focus:ring-blue-500"
@@ -927,39 +937,93 @@ export default function PenilaianPage() {
                                     setSelectedPaket(paket);
                                     // Remove automatic navigation to step 2
                                   }}
-                                  className={`p-5 rounded-2xl border-2 cursor-pointer transition-all duration-300 mb-4 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 ${
+                                  className={`p-6 rounded-2xl border-2 cursor-pointer transition-all duration-300 mb-4 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 ${
                                     selectedPaket?.kodePaket === paket.kodePaket && selectedPaket?.kodePenyedia === paket.kodePenyedia
                                       ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 ring-2 ring-blue-500 ring-opacity-50 shadow-lg"
                                       : "border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-500 shadow-sm"
                                   }`}
                                 >
                                   <div className="flex items-start justify-between">
-                                    <div className="flex-1 min-w-0 space-y-3">
+                                    <div className="flex-1 min-w-0 space-y-4">
+                                      {/* Package Name - Primary */}
                                       <div>
-                                        <h3 className="font-bold text-lg text-slate-800 dark:text-slate-100 truncate">
-                                          {paket.namaPenyedia}
+                                        <h3 className="font-bold text-lg text-slate-800 dark:text-slate-100 leading-tight">
+                                          {paket.namaPaket || `Paket ${paket.kodePaket}`}
                                         </h3>
-                                        <p className="text-sm text-slate-600 dark:text-slate-300">
-                                          NPWP: {paket.npwpPenyedia}
+                                        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                                          Kode: {paket.kodePaket} • RUP: {paket.kodeRupPaket}
                                         </p>
                                       </div>
                                       
-                                      <div className="bg-slate-50 dark:bg-slate-800 p-3 rounded-lg">
-                                        <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                                          Paket: {paket.kodePaket}
+                                      {/* Provider Info */}
+                                      <div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-lg">
+                                        <div className="flex items-center space-x-2 mb-2">
+                                          <Building2 className="h-4 w-4 text-slate-500" />
+                                          <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                                            Penyedia: {paket.namaPenyedia}
+                                          </p>
+                                        </div>
+                                        <p className="text-xs text-slate-500 dark:text-slate-400">
+                                          NPWP: {paket.npwpPenyedia}
                                         </p>
-                                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                                          Nilai Kontrak: {new Intl.NumberFormat('id-ID', { 
-                                            style: 'currency', 
-                                            currency: 'IDR' 
-                                          }).format(Number(paket.nilaiKontrak) || 0)}
-                                        </p>
+                                        {/* Additional Package Details */}
+                                        {paket.tenderInfo && (
+                                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                                            <div>
+                                              <span className="text-slate-500 dark:text-slate-400">Metode:</span>
+                                              <span className="ml-2 text-slate-700 dark:text-slate-300">{paket.metodePemilihan || 'Unknown'}</span>
+                                            </div>
+                                            <div>
+                                              <span className="text-slate-500 dark:text-slate-400">Status:</span>
+                                              <span className="ml-2 px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
+                                                {paket.statusTender || 'Unknown'}
+                                              </span>
+                                            </div>
+                                            <div className="sm:col-span-2">
+                                              <span className="text-slate-500 dark:text-slate-400">Lokasi:</span>
+                                              <span className="ml-2 text-slate-700 dark:text-slate-300">{paket.lokasiPekerjaan || 'Unknown'}</span>
+                                            </div>
+                                          </div>
+                                        )}
                                       </div>
 
-                                      <div className="flex items-center space-x-2">
-                                        <span className="px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300">
+                                      {/* Contract Details */}
+                                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                        <div className="bg-green-50 dark:bg-green-900/20 p-3 rounded-lg">
+                                          <p className="text-xs font-medium text-green-700 dark:text-green-300 uppercase tracking-wide">
+                                            Nilai Kontrak
+                                          </p>
+                                          <p className="text-sm font-bold text-green-800 dark:text-green-200">
+                                            {new Intl.NumberFormat('id-ID', { 
+                                              style: 'currency', 
+                                              currency: 'IDR' 
+                                            }).format(Number(paket.nilaiKontrak) || 0)}
+                                          </p>
+                                        </div>
+                                        
+                                        <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg">
+                                          <p className="text-xs font-medium text-blue-700 dark:text-blue-300 uppercase tracking-wide">
+                                            Metode
+                                          </p>
+                                          <p className="text-sm font-bold text-blue-800 dark:text-blue-200">
+                                            {paket.metodePemilihan}
+                                          </p>
+                                        </div>
+                                      </div>
+
+                                      {/* Additional Info */}
+                                      <div className="flex flex-wrap items-center gap-2">
+                                        <span className="px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300">
                                           Belum Dinilai
                                         </span>
+                                        <span className="px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300">
+                                          {paket.statusTender}
+                                        </span>
+                                        {paket.lokasiPekerjaan !== 'Unknown' && (
+                                          <span className="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300">
+                                            📍 {paket.lokasiPekerjaan}
+                                          </span>
+                                        )}
                                       </div>
                                     </div>
                                     
@@ -993,18 +1057,26 @@ export default function PenilaianPage() {
                                 >
                                   <div className="flex items-start justify-between">
                                     <div className="flex-1 min-w-0 space-y-3">
+                                      {/* Package Name - Primary */}
                                       <div>
-                                        <h3 className="font-bold text-lg text-slate-800 dark:text-slate-100 truncate">
-                                          {paket.namaPenyedia}
+                                        <h3 className="font-bold text-lg text-slate-800 dark:text-slate-100 leading-tight">
+                                          {paket.namaPaket || `Paket ${paket.kodePaket}`}
                                         </h3>
-                                        <p className="text-sm text-slate-600 dark:text-slate-300">
-                                          NPWP: {paket.npwpPenyedia}
+                                        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                                          Kode: {paket.kodePaket} • RUP: {paket.kodeRupPaket}
                                         </p>
                                       </div>
                                       
+                                      {/* Provider Info */}
                                       <div className="bg-slate-100 dark:bg-slate-700/50 p-3 rounded-lg">
-                                        <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                                          Paket: {paket.kodePaket}
+                                        <div className="flex items-center space-x-2 mb-2">
+                                          <Building2 className="h-4 w-4 text-slate-500" />
+                                          <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                                            Penyedia: {paket.namaPenyedia}
+                                          </p>
+                                        </div>
+                                        <p className="text-xs text-slate-500 dark:text-slate-400">
+                                          NPWP: {paket.npwpPenyedia}
                                         </p>
                                         <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                                           Nilai Kontrak: {new Intl.NumberFormat('id-ID', { 
@@ -1073,7 +1145,7 @@ export default function PenilaianPage() {
                     <div className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-100 text-blue-600 font-bold text-base">
                       2
                     </div>
-                    <span>Informasi Penyedia & Paket Terpilih</span>
+                    <span>Informasi Paket & Penyedia Terpilih</span>
                   </CardTitle>
                   <Button
                     variant="outline"
@@ -1084,12 +1156,85 @@ export default function PenilaianPage() {
                     className="rounded-xl"
                   >
                     <X className="h-4 w-4 mr-2" />
-                    Ganti Penyedia
+                    Ganti Paket
                   </Button>
                 </div>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-6">
+                    <div className="bg-white/70 dark:bg-slate-800/70 p-5 rounded-2xl shadow-sm">
+                      <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-4">
+                        Informasi Paket
+                      </h3>
+                      <div className="space-y-4">
+                        <div>
+                          <p className="text-sm font-medium text-slate-600 dark:text-slate-300">
+                            Nama Paket
+                          </p>
+                          <p className="text-lg font-semibold text-slate-800 dark:text-slate-100">
+                            {selectedPaket.namaPaket || `Paket ${selectedPaket.kodePaket}`}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-slate-600 dark:text-slate-300">
+                            Kode Paket
+                          </p>
+                          <p className="text-lg font-semibold text-slate-800 dark:text-slate-100">
+                            {selectedPaket.kodePaket}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-slate-600 dark:text-slate-300">
+                            Kode RUP
+                          </p>
+                          <p className="text-lg font-semibold text-slate-800 dark:text-slate-100">
+                            {selectedPaket.kodeRupPaket}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-slate-600 dark:text-slate-300">
+                            Nilai Kontrak
+                          </p>
+                          <p className="text-lg font-semibold text-slate-800 dark:text-slate-100">
+                            {new Intl.NumberFormat('id-ID', { 
+                              style: 'currency', 
+                              currency: 'IDR' 
+                            }).format(Number(selectedPaket.nilaiKontrak) || 0)}
+                          </p>
+                        </div>
+                        {selectedPaket.tenderInfo && (
+                          <>
+                            <div>
+                              <p className="text-sm font-medium text-slate-600 dark:text-slate-300">
+                                Metode Pemilihan
+                              </p>
+                              <p className="text-base text-slate-800 dark:text-slate-100">
+                                {selectedPaket.metodePemilihan || 'Unknown'}
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium text-slate-600 dark:text-slate-300">
+                                Status Tender
+                              </p>
+                              <span className="inline-flex px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
+                                {selectedPaket.statusTender || 'Unknown'}
+                              </span>
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium text-slate-600 dark:text-slate-300">
+                                Lokasi Pekerjaan
+                              </p>
+                              <p className="text-base text-slate-800 dark:text-slate-100">
+                                {selectedPaket.lokasiPekerjaan || 'Unknown'}
+                              </p>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  
                   <div className="space-y-6">
                     <div className="bg-white/70 dark:bg-slate-800/70 p-5 rounded-2xl shadow-sm">
                       <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-4">
@@ -1118,35 +1263,6 @@ export default function PenilaianPage() {
                           </p>
                           <p className="text-lg font-semibold text-slate-800 dark:text-slate-100">
                             {selectedPaket.npwpPenyedia}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-6">
-                    <div className="bg-white/70 dark:bg-slate-800/70 p-5 rounded-2xl shadow-sm">
-                      <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-4">
-                        Informasi Paket
-                      </h3>
-                      <div className="space-y-4">
-                        <div>
-                          <p className="text-sm font-medium text-slate-600 dark:text-slate-300">
-                            Kode Paket
-                          </p>
-                          <p className="text-lg font-semibold text-slate-800 dark:text-slate-100">
-                            {selectedPaket.kodePaket}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-slate-600 dark:text-slate-300">
-                            Nilai Kontrak
-                          </p>
-                          <p className="text-lg font-semibold text-slate-800 dark:text-slate-100">
-                            {new Intl.NumberFormat('id-ID', { 
-                              style: 'currency', 
-                              currency: 'IDR' 
-                            }).format(Number(selectedPaket.nilaiKontrak) || 0)}
                           </p>
                         </div>
                         <div>
