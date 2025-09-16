@@ -26,7 +26,24 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     
-    // Add penilaian
+    // Validate required fields for new structure
+    const requiredFields = [
+      'idPenyedia', 'namaPPK', 'satuanKerja', 'metodePemilihan', 
+      'namaPaket', 'jenisPengadaan', 'nilaiKontrak', 'namaPenyedia', 
+      'tanggalPenilaian', 'kualitasKuantitasBarangJasa', 'biaya', 
+      'waktu', 'layanan', 'keterangan', 'status'
+    ];
+    
+    for (const field of requiredFields) {
+      if (body[field] === undefined || body[field] === null) {
+        return NextResponse.json(
+          { error: `Field ${field} is required` },
+          { status: 400 }
+        );
+      }
+    }
+    
+    // Add penilaian with new structure
     await googleSheetsService.addPenilaian(body);
     
     // Update paket status from "Belum" to "Sudah" if kodePaket and kodePenyedia are provided

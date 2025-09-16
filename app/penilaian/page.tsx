@@ -415,8 +415,13 @@ export default function PenilaianPage() {
     try {
       const penilaianData = {
         idPenyedia: selectedPaket!.kodePenyedia,
-        nipPPK: authenticatedPPK!.nip,
         namaPPK: authenticatedPPK!.nama,
+        satuanKerja: authenticatedPPK!.satuanKerjaDetail,
+        metodePemilihan: selectedPaket!.metodePemilihan || 'Unknown',
+        namaPaket: selectedPaket!.namaPaket || `Paket ${selectedPaket!.kodePaket}`,
+        jenisPengadaan: selectedPaket!.tenderInfo?.jenisPengadaan || 'Unknown',
+        nilaiKontrak: selectedPaket!.nilaiKontrak,
+        namaPenyedia: selectedPaket!.namaPenyedia,
         tanggalPenilaian: new Date().toISOString().split("T")[0],
         kualitasKuantitasBarangJasa: formData.kualitasKuantitasBarangJasa,
         komentarKualitasKuantitasBarangJasa:
@@ -428,6 +433,7 @@ export default function PenilaianPage() {
         layanan: formData.layanan,
         komentarLayanan: formData.komentarLayanan,
         keterangan: formData.keterangan,
+        status: selectedPaket!.statusTender || 'Unknown',
         kodePaket: selectedPaket!.kodePaket,
         kodePenyedia: selectedPaket!.kodePenyedia,
       };

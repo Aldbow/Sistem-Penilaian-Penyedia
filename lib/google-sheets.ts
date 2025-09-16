@@ -56,6 +56,12 @@ export interface Penilaian {
   id: string;
   idPenyedia: string;
   namaPPK: string;
+  satuanKerja: string;
+  metodePemilihan: string;
+  namaPaket: string;
+  jenisPengadaan: string;
+  nilaiKontrak: string;
+  namaPenyedia: string;
   tanggalPenilaian: string;
   kualitasKuantitasBarangJasa: number;
   komentarKualitasKuantitasBarangJasa: string;
@@ -68,6 +74,7 @@ export interface Penilaian {
   penilaianAkhir: string;
   skorTotal: number;
   keterangan: string;
+  status: string;
 }
 
 // Interface untuk data SATKER
@@ -298,7 +305,7 @@ class GoogleSheetsService {
     try {
       const response = await this.sheets.spreadsheets.values.get({
         spreadsheetId: process.env.GOOGLE_SHEET_ID,
-        range: 'Penilaian!A2:O', // Updated range to include comment columns
+        range: 'Penilaian!A2:V', // Updated range to include all new columns
       });
 
       const rows = response.data.values || [];
@@ -306,18 +313,25 @@ class GoogleSheetsService {
         id: row[0] || '',
         idPenyedia: row[1] || '',
         namaPPK: row[2] || '',
-        tanggalPenilaian: row[3] || '',
-        kualitasKuantitasBarangJasa: parseFloat(row[4]) || 0,
-        komentarKualitasKuantitasBarangJasa: row[5] || '',
-        biaya: parseFloat(row[6]) || 0,
-        komentarBiaya: row[7] || '',
-        waktu: parseFloat(row[8]) || 0,
-        komentarWaktu: row[9] || '',
-        layanan: parseFloat(row[10]) || 0,
-        komentarLayanan: row[11] || '',
-        penilaianAkhir: row[12] || '',
-        skorTotal: parseFloat(row[13]) || 0,
-        keterangan: row[14] || '',
+        satuanKerja: row[3] || '',
+        metodePemilihan: row[4] || '',
+        namaPaket: row[5] || '',
+        jenisPengadaan: row[6] || '',
+        nilaiKontrak: row[7] || '',
+        namaPenyedia: row[8] || '',
+        tanggalPenilaian: row[9] || '',
+        kualitasKuantitasBarangJasa: parseFloat(row[10]) || 0,
+        komentarKualitasKuantitasBarangJasa: row[11] || '',
+        biaya: parseFloat(row[12]) || 0,
+        komentarBiaya: row[13] || '',
+        waktu: parseFloat(row[14]) || 0,
+        komentarWaktu: row[15] || '',
+        layanan: parseFloat(row[16]) || 0,
+        komentarLayanan: row[17] || '',
+        penilaianAkhir: row[18] || '',
+        skorTotal: parseFloat(row[19]) || 0,
+        keterangan: row[20] || '',
+        status: row[21] || '',
       }));
     } catch (error) {
       console.error('Error getting penilaian data:', error);
@@ -357,6 +371,12 @@ class GoogleSheetsService {
         id,
         penilaian.idPenyedia,
         penilaian.namaPPK,
+        penilaian.satuanKerja,
+        penilaian.metodePemilihan,
+        penilaian.namaPaket,
+        penilaian.jenisPengadaan,
+        penilaian.nilaiKontrak,
+        penilaian.namaPenyedia,
         penilaian.tanggalPenilaian,
         penilaian.kualitasKuantitasBarangJasa,
         penilaian.komentarKualitasKuantitasBarangJasa,
@@ -368,12 +388,13 @@ class GoogleSheetsService {
         penilaian.komentarLayanan,
         penilaianAkhir,
         skorTotal,
-        penilaian.keterangan
+        penilaian.keterangan,
+        penilaian.status
       ]];
 
       await this.sheets.spreadsheets.values.append({
         spreadsheetId: process.env.GOOGLE_SHEET_ID,
-        range: 'Penilaian!A:O',
+        range: 'Penilaian!A:V',
         valueInputOption: 'RAW',
         resource: { values },
       });
@@ -619,10 +640,11 @@ class GoogleSheetsService {
 
       // Header untuk sheet Penilaian
       const penilaianHeaders = [
-        'ID Penilaian', 'ID Penyedia', 'Nama PPK', 'Tanggal Penilaian',
+        'ID Penilaian', 'ID Penyedia', 'Nama PPK', 'Satuan Kerja', 'Metode Pemilihan', 
+        'Nama Paket', 'Jenis Pengadaan', 'Nilai Kontrak', 'Nama Penyedia', 'Tanggal Penilaian',
         'Kualitas dan KuantitasBarang/Jasa', 'Komentar Kualitas dan KuantitasBarang/Jasa',
         'Biaya', 'Komentar Biaya', 'Waktu', 'Komentar Waktu',
-        'Layanan', 'Komentar Layanan', 'Penilaian Akhir', 'Skor Total', 'Keterangan'
+        'Layanan', 'Komentar Layanan', 'Penilaian Akhir', 'Skor Total', 'Keterangan', 'Status'
       ];
 
       // Header untuk sheet SATKER
@@ -654,7 +676,7 @@ class GoogleSheetsService {
 
       await this.sheets.spreadsheets.values.update({
         spreadsheetId: process.env.GOOGLE_SHEET_ID,
-        range: 'Penilaian!A1:O1',
+        range: 'Penilaian!A1:V1',
         valueInputOption: 'RAW',
         resource: { values: [penilaianHeaders] },
       });
