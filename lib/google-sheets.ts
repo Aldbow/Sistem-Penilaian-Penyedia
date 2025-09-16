@@ -7,10 +7,6 @@ export interface Penyedia {
   id: string;
   namaPerusahaan: string;
   npwp: string;
-  alamat: string;
-  kontak: string;
-  jenisUsaha: string;
-  tanggalRegistrasi: string;
 }
 
 // Interface untuk data PPK
@@ -216,7 +212,7 @@ class GoogleSheetsService {
     try {
       const response = await this.sheets.spreadsheets.values.get({
         spreadsheetId: process.env.GOOGLE_SHEET_ID,
-        range: 'Penyedia!A2:G', // Mulai dari baris 2 (skip header)
+        range: 'Penyedia!A2:C', // Mulai dari baris 2 (skip header)
       });
 
       const rows = response.data.values || [];
@@ -224,10 +220,6 @@ class GoogleSheetsService {
         id: row[0] || '',
         namaPerusahaan: row[1] || '',
         npwp: row[2] || '',
-        alamat: row[3] || '',
-        kontak: row[4] || '',
-        jenisUsaha: row[5] || '',
-        tanggalRegistrasi: row[6] || '',
       }));
     } catch (error) {
       console.error('Error getting penyedia data:', error);
@@ -251,16 +243,12 @@ class GoogleSheetsService {
       const values = [[
         id,
         penyedia.namaPerusahaan,
-        penyedia.npwp,
-        penyedia.alamat,
-        penyedia.kontak,
-        penyedia.jenisUsaha,
-        penyedia.tanggalRegistrasi
+        penyedia.npwp
       ]];
 
       await this.sheets.spreadsheets.values.append({
         spreadsheetId: process.env.GOOGLE_SHEET_ID,
-        range: 'Penyedia!A:G',
+        range: 'Penyedia!A:C',
         valueInputOption: 'RAW',
         resource: { values },
       });
@@ -583,8 +571,7 @@ class GoogleSheetsService {
     try {
       // Header untuk sheet Penyedia
       const penyediaHeaders = [
-        'ID Penyedia', 'Nama Perusahaan', 'NPWP', 'Alamat', 
-        'Kontak', 'Jenis Usaha', 'Tanggal Registrasi'
+        'ID Penyedia', 'Nama Perusahaan', 'NPWP'
       ];
 
       // Header untuk sheet PPK
@@ -615,7 +602,7 @@ class GoogleSheetsService {
       // Cek apakah header sudah ada, jika belum tambahkan
       await this.sheets.spreadsheets.values.update({
         spreadsheetId: process.env.GOOGLE_SHEET_ID,
-        range: 'Penyedia!A1:G1',
+        range: 'Penyedia!A1:C1',
         valueInputOption: 'RAW',
         resource: { values: [penyediaHeaders] },
       });

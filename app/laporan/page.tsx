@@ -279,10 +279,9 @@ export default function LaporanPage() {
   // Prepare export data
   const prepareExportData = () => {
     return filteredData.map(penyedia => ({
+      'ID Penyedia': penyedia.id,
       'Nama Perusahaan': penyedia.namaPerusahaan,
       'NPWP': penyedia.npwp,
-      'Jenis Usaha': penyedia.jenisUsaha,
-      'Alamat': penyedia.alamat,
       'Total Penilaian': penyedia.totalPenilaian,
       'Rata-rata Skor': penyedia.rataRataSkor.toFixed(1),
       'Rating': getRatingText(penyedia.rataRataSkor),
@@ -840,25 +839,21 @@ export default function LaporanPage() {
                               </motion.div>
                               <div>
                                 <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100">{item.namaPerusahaan}</h3>
-                                <p className="text-sm text-slate-600 dark:text-slate-300">{item.jenisUsaha}</p>
+                                <p className="text-sm text-slate-600 dark:text-slate-300">ID: {item.id}</p>
                               </div>
                             </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
                               <div>
                                 <p className="text-slate-500 dark:text-slate-400">NPWP</p>
                                 <p className="font-medium text-slate-800 dark:text-slate-200 break-all">{item.npwp}</p>
                               </div>
                               <div>
-                                <p className="text-slate-500 dark:text-slate-400">Kontak</p>
-                                <p className="font-medium text-slate-800 dark:text-slate-200 break-all">{item.kontak}</p>
-                              </div>
-                              <div>
-                                <p className="text-slate-500 dark:text-slate-400">Registrasi</p>
-                                <p className="font-medium text-slate-800 dark:text-slate-200">{new Date(item.tanggalRegistrasi).toLocaleDateString('id-ID')}</p>
-                              </div>
-                              <div>
                                 <p className="text-slate-500 dark:text-slate-400">Total Penilaian</p>
                                 <p className="font-medium text-slate-800 dark:text-slate-200">{item.totalPenilaian}</p>
+                              </div>
+                              <div>
+                                <p className="text-slate-500 dark:text-slate-400">Penilaian Terbaru</p>
+                                <p className="font-medium text-slate-800 dark:text-slate-200">{item.penilaianTerbaru !== '-' ? new Date(item.penilaianTerbaru).toLocaleDateString('id-ID') : 'Belum ada'}</p>
                               </div>
                             </div>
                           </div>
@@ -1067,7 +1062,7 @@ export default function LaporanPage() {
                               variant="secondary" 
                               className="text-xs py-1 px-3 rounded-full"
                             >
-                              {penyedia.jenisUsaha}
+                              ID: {penyedia.id}
                             </Badge>
                           </div>
                           

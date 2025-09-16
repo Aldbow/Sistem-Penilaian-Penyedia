@@ -3,17 +3,13 @@
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Building2, MapPin, Phone, FileText, Award, Calendar, User, Star } from "lucide-react";
+import { X, Building2, FileText, Award, Calendar, User, Star } from "lucide-react";
 import { StarRating } from "@/components/ui/star-rating";
 
 interface Penyedia {
   id: string;
   namaPerusahaan: string;
   npwp: string;
-  alamat: string;
-  jenisUsaha: string;
-  kontak: string;
-  tanggalRegistrasi: string;
 }
 
 interface Penilaian {
@@ -198,27 +194,14 @@ export function LaporanModal({ isOpen, onClose, penyedia }: LaporanModalProps) {
                     </div>
                     <div className="flex items-start">
                       <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg mr-3">
-                        <MapPin className="h-5 w-5 text-blue-600 dark:text-blue-400" aria-hidden="true" />
+                        <FileText className="h-5 w-5 text-blue-600 dark:text-blue-400" aria-hidden="true" />
                       </div>
                       <div>
                         <p className="text-sm text-slate-500 dark:text-slate-400">
-                          Alamat
+                          ID Penyedia
                         </p>
                         <p className="font-medium text-slate-800 dark:text-slate-100">
-                          {penyedia.alamat || "-"}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-start">
-                      <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg mr-3">
-                        <Phone className="h-5 w-5 text-blue-600 dark:text-blue-400" aria-hidden="true" />
-                      </div>
-                      <div>
-                        <p className="text-sm text-slate-500 dark:text-slate-400">
-                          Kontak
-                        </p>
-                        <p className="font-medium text-slate-800 dark:text-slate-100">
-                          {penyedia.kontak || "-"}
+                          {penyedia.id}
                         </p>
                       </div>
                     </div>
@@ -249,10 +232,10 @@ export function LaporanModal({ isOpen, onClose, penyedia }: LaporanModalProps) {
                       </div>
                       <div>
                         <p className="text-sm text-slate-500 dark:text-slate-400">
-                          Jenis Usaha
+                          Total Penilaian
                         </p>
                         <p className="font-medium text-slate-800 dark:text-slate-100">
-                          {penyedia.jenisUsaha}
+                          {penyedia.totalPenilaian} evaluasi
                         </p>
                       </div>
                     </div>
@@ -262,12 +245,10 @@ export function LaporanModal({ isOpen, onClose, penyedia }: LaporanModalProps) {
                       </div>
                       <div>
                         <p className="text-sm text-slate-500 dark:text-slate-400">
-                          Tanggal Registrasi
+                          Penilaian Terbaru
                         </p>
                         <p className="font-medium text-slate-800 dark:text-slate-100">
-                          {new Date(
-                            penyedia.tanggalRegistrasi
-                          ).toLocaleDateString("id-ID")}
+                          {penyedia.penilaianTerbaru !== '-' ? new Date(penyedia.penilaianTerbaru).toLocaleDateString("id-ID") : 'Belum ada'}
                         </p>
                       </div>
                     </div>

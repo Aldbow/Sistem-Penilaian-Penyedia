@@ -186,40 +186,6 @@ export function ProviderModal({ isOpen, onClose, penyedia }: ProviderModalProps)
                     </div>
                     <div className="flex items-start">
                       <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg mr-3">
-                        <MapPin className="h-5 w-5 text-blue-600 dark:text-blue-400" aria-hidden="true" />
-                      </div>
-                      <div>
-                        <p className="text-sm text-slate-500 dark:text-slate-400">
-                          Alamat
-                        </p>
-                        <p className="font-medium text-slate-800 dark:text-slate-100">
-                          {penyedia.alamat || "-"}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-start">
-                      <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg mr-3">
-                        <Phone className="h-5 w-5 text-blue-600 dark:text-blue-400" aria-hidden="true" />
-                      </div>
-                      <div>
-                        <p className="text-sm text-slate-500 dark:text-slate-400">
-                          Kontak
-                        </p>
-                        <p className="font-medium text-slate-800 dark:text-slate-100">
-                          {penyedia.kontak || "-"}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-4">
-                    Informasi Tambahan
-                  </h3>
-                  <div className="space-y-4">
-                    <div className="flex items-start">
-                      <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg mr-3">
                         <FileText className="h-5 w-5 text-blue-600 dark:text-blue-400" aria-hidden="true" />
                       </div>
                       <div>
@@ -231,31 +197,24 @@ export function ProviderModal({ isOpen, onClose, penyedia }: ProviderModalProps)
                         </p>
                       </div>
                     </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-4">
+                    ID Penyedia
+                  </h3>
+                  <div className="space-y-4">
                     <div className="flex items-start">
                       <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg mr-3">
                         <Award className="h-5 w-5 text-blue-600 dark:text-blue-400" aria-hidden="true" />
                       </div>
                       <div>
                         <p className="text-sm text-slate-500 dark:text-slate-400">
-                          Jenis Usaha
+                          ID Penyedia
                         </p>
                         <p className="font-medium text-slate-800 dark:text-slate-100">
-                          {penyedia.jenisUsaha}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-start">
-                      <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg mr-3">
-                        <Calendar className="h-5 w-5 text-blue-600 dark:text-blue-400" aria-hidden="true" />
-                      </div>
-                      <div>
-                        <p className="text-sm text-slate-500 dark:text-slate-400">
-                          Tanggal Registrasi
-                        </p>
-                        <p className="font-medium text-slate-800 dark:text-slate-100">
-                          {new Date(
-                            penyedia.tanggalRegistrasi
-                          ).toLocaleDateString("id-ID")}
+                          {penyedia.id}
                         </p>
                       </div>
                     </div>
