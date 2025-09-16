@@ -13,8 +13,17 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Get paket data filtered by satuan kerja detail
-    const paketList = await googleSheetsService.getPaketBySatuanKerja(satuanKerjaDetail);
+    // Check if user is admin - admin can access all packages
+    const isAdmin = satuanKerjaDetail.toUpperCase() === 'ADMIN';
+    
+    let paketList;
+    if (isAdmin) {
+      // Admin gets all packages with enriched data
+      paketList = await googleSheetsService.getAllPaketWithTenderInfo();
+    } else {
+      // Regular PPK gets filtered packages by their satuan kerja detail
+      paketList = await googleSheetsService.getPaketBySatuanKerja(satuanKerjaDetail);
+    }
 
     return NextResponse.json(paketList);
   } catch (error) {

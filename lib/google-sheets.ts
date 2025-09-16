@@ -422,6 +422,37 @@ class GoogleSheetsService {
     }
   }
 
+  // Mendapatkan semua paket dengan data tender pengumuman (untuk admin)
+  async getAllPaketWithTenderInfo(): Promise<any[]> {
+    // Dapatkan semua paket dan tender pengumuman secara paralel
+    const [allPaket, allTenderPengumuman] = await Promise.all([
+      this.getPaket(),
+      this.getTenderPengumuman()
+    ]);
+    
+    // Gabungkan semua data paket dengan tender pengumuman berdasarkan RUP code
+    const enrichedPaket = allPaket.map(paket => {
+      const tenderData = allTenderPengumuman.find(tender => 
+        tender.kdRup === paket.kodeRupPaket
+      );
+      
+      return {
+        ...paket,
+        tenderInfo: tenderData || null,
+        // Add derived fields for easier access
+        namaPaket: tenderData?.namaPaket || `Paket ${paket.kodePaket}`,
+        statusTender: tenderData?.statusTender || 'Unknown',
+        metodePemilihan: tenderData?.mtdPemilihan || 'Unknown',
+        jenisKontrak: tenderData?.kontrakPembayaran || 'Unknown',
+        lokasiPekerjaan: tenderData?.lokasiPekerjaan || 'Unknown',
+        tanggalPengumuman: tenderData?.tglPengumumanTender || 'Unknown',
+        urlLpse: tenderData?.urlLpse || null,
+      };
+    });
+    
+    return enrichedPaket;
+  }
+
   // Mendapatkan paket berdasarkan satuan kerja PPK dengan data tender pengumuman
   async getPaketBySatuanKerja(satuanKerjaDetail: string): Promise<any[]> {
     // Dapatkan kode satuan kerja yang valid berdasarkan satuanKerjaDetail
