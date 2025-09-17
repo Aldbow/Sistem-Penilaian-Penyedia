@@ -49,6 +49,7 @@ export default function LaporanPage() {
   const [starFilter, setStarFilter] = useState('all')
   const [starSort, setStarSort] = useState('none')
   const [mostRatedFilter, setMostRatedFilter] = useState(false) // New state for most rated filter
+  const [dateSort, setDateSort] = useState('none') // New state for date sorting
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage, setItemsPerPage] = useState(10)
   const [screenSize, setScreenSize] = useState<'sm' | 'md' | 'lg'>('lg')
@@ -193,6 +194,21 @@ export default function LaporanPage() {
     // Apply most rated filter first (if enabled, sort by totalPenilaian descending)
     if (mostRatedFilter) {
       return b.totalPenilaian - a.totalPenilaian;
+    }
+    
+    // Apply date sorting (newest/oldest evaluation)
+    if (dateSort === 'newest') {
+      // Sort by latest evaluation date (newest first)
+      if (a.penilaianTerbaru === '-' && b.penilaianTerbaru === '-') return 0;
+      if (a.penilaianTerbaru === '-') return 1; // Move unrated to end
+      if (b.penilaianTerbaru === '-') return -1; // Move unrated to end
+      return new Date(b.penilaianTerbaru).getTime() - new Date(a.penilaianTerbaru).getTime();
+    } else if (dateSort === 'oldest') {
+      // Sort by latest evaluation date (oldest first)
+      if (a.penilaianTerbaru === '-' && b.penilaianTerbaru === '-') return 0;
+      if (a.penilaianTerbaru === '-') return 1; // Move unrated to end
+      if (b.penilaianTerbaru === '-') return -1; // Move unrated to end
+      return new Date(a.penilaianTerbaru).getTime() - new Date(b.penilaianTerbaru).getTime();
     }
     
     // Apply star rating sorting
@@ -582,7 +598,7 @@ export default function LaporanPage() {
                         }}>
                           <div className="flex items-center">
                             <div className={`w-3 h-3 rounded-full mr-2 ${filterStatus === 'excellent' ? 'bg-emerald-500' : 'bg-gray-300'}`}></div>
-                            <span>Sangat Baik (3.0)</span>
+                            <span>Sangat Baik</span>
                           </div>
                         </DropdownMenuItem>
                         <DropdownMenuItem onSelect={() => {
@@ -591,7 +607,7 @@ export default function LaporanPage() {
                         }}>
                           <div className="flex items-center">
                             <div className={`w-3 h-3 rounded-full mr-2 ${filterStatus === 'good' ? 'bg-emerald-500' : 'bg-gray-300'}`}></div>
-                            <span>Baik (≥2.0)</span>
+                            <span>Baik</span>
                           </div>
                         </DropdownMenuItem>
                         <DropdownMenuItem onSelect={() => {
@@ -600,7 +616,7 @@ export default function LaporanPage() {
                         }}>
                           <div className="flex items-center">
                             <div className={`w-3 h-3 rounded-full mr-2 ${filterStatus === 'average' ? 'bg-emerald-500' : 'bg-gray-300'}`}></div>
-                            <span>Cukup (≥1.0)</span>
+                            <span>Cukup</span>
                           </div>
                         </DropdownMenuItem>
                         <DropdownMenuItem onSelect={() => {
@@ -609,7 +625,7 @@ export default function LaporanPage() {
                         }}>
                           <div className="flex items-center">
                             <div className={`w-3 h-3 rounded-full mr-2 ${filterStatus === 'poor' ? 'bg-emerald-500' : 'bg-gray-300'}`}></div>
-                            <span>Buruk (0)</span>
+                            <span>Buruk</span>
                           </div>
                         </DropdownMenuItem>
                       </DropdownMenuContent>
@@ -714,6 +730,35 @@ export default function LaporanPage() {
                           </div>
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
+                        <DropdownMenuLabel>Urutkan Berdasarkan Tanggal Penilaian</DropdownMenuLabel>
+                        <DropdownMenuItem onSelect={() => {
+                          setDateSort('none');
+                          setCurrentPage(1);
+                        }}>
+                          <div className="flex items-center">
+                            <div className={`w-3 h-3 rounded-full mr-2 ${dateSort === 'none' ? 'bg-emerald-500' : 'bg-gray-300'}`}></div>
+                            <span>Tanpa Sortir Tanggal</span>
+                          </div>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onSelect={() => {
+                          setDateSort('newest');
+                          setCurrentPage(1);
+                        }}>
+                          <div className="flex items-center">
+                            <div className={`w-3 h-3 rounded-full mr-2 ${dateSort === 'newest' ? 'bg-emerald-500' : 'bg-gray-300'}`}></div>
+                            <span>Terbaru</span>
+                          </div>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onSelect={() => {
+                          setDateSort('oldest');
+                          setCurrentPage(1);
+                        }}>
+                          <div className="flex items-center">
+                            <div className={`w-3 h-3 rounded-full mr-2 ${dateSort === 'oldest' ? 'bg-emerald-500' : 'bg-gray-300'}`}></div>
+                            <span>Terlama</span>
+                          </div>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
                         <DropdownMenuLabel>Urutkan Berdasarkan Aktivitas</DropdownMenuLabel>
                         <DropdownMenuItem onSelect={() => {
                           setMostRatedFilter(!mostRatedFilter);
@@ -728,7 +773,7 @@ export default function LaporanPage() {
                     </DropdownMenu>
 
                     {/* Active Filters Display - only show when filters are actually active */}
-                    {(filterStatus !== 'all' || starFilter !== 'all' || sortOption !== 'a-z' || starSort !== 'none' || mostRatedFilter) && (
+                    {(filterStatus !== 'all' || starFilter !== 'all' || sortOption !== 'a-z' || starSort !== 'none' || mostRatedFilter || dateSort !== 'none') && (
                       <Button 
                         variant="ghost" 
                         className="flex items-center space-x-2 text-base px-4 py-3 rounded-xl text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
@@ -738,6 +783,7 @@ export default function LaporanPage() {
                           setSortOption('a-z');
                           setStarSort('none');
                           setMostRatedFilter(false);
+                          setDateSort('none');
                           setCurrentPage(1);
                         }}
                       >
