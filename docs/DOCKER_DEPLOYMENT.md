@@ -53,13 +53,16 @@ RUN adduser --system --uid 1001 nextjs
 
 COPY --from=builder /app/public ./public
 
-# Set permission yang benar untuk prerender cache
-RUN mkdir .next
-RUN chown nextjs:nodejs .next
+# Set permission yang benar untuk prerender cache dan direktori cache
+RUN mkdir -p .next/cache/images
+RUN chown -R nextjs:nodejs .next
 
 # Copy built application
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+# Pastikan direktori cache memiliki permission yang benar
+RUN chown -R nextjs:nodejs .next
 
 USER nextjs
 
@@ -333,21 +336,47 @@ docker-compose build --no-cache
 docker-compose up -d
 ```
 
-### 2. Tidak Bisa Akses dari Komputer Lain
+### 2. Permission Denied Error untuk Cache Directory
+
+Jika Anda mengalami error seperti:
+```
+EACCES: permission denied, mkdir '/usr/src/app/.next/cache/images'
+```
+
+**Solusi:**
+1. Pastikan Dockerfile sudah membuat direktori cache dengan permission yang benar
+2. Rebuild container dengan Dockerfile yang sudah diperbaiki:
+
+```bash
+docker-compose down
+docker-compose build --no-cache
+docker-compose up -d
+```
+
+**Alternatif solusi jika masih bermasalah:**
+
+```dockerfile
+# Tambahkan di Dockerfile sebelum USER nextjs
+RUN mkdir -p .next/cache/images .next/cache/webpack
+RUN chmod -R 755 .next
+RUN chown -R nextjs:nodejs .next
+```
+
+### 3. Tidak Bisa Akses dari Komputer Lain
 
 1. Pastikan firewall tidak memblokir port 3000
 2. Cek apakah aplikasi bind ke `0.0.0.0` bukan `127.0.0.1`
 3. Pastikan komputer berada di jaringan yang sama
 4. Test koneksi: `telnet [IP_ADDRESS] 3000`
 
-### 3. Google Sheets API Error
+### 4. Google Sheets API Error
 
 1. Pastikan Service Account memiliki akses ke spreadsheet
 2. Cek format private key di environment variable
 3. Pastikan Google Sheets API sudah diaktifkan
 4. Verifikasi GOOGLE_SHEET_ID benar
 
-### 4. Performance Issues
+### 5. Performance Issues
 
 ```bash
 # Increase memory limit
