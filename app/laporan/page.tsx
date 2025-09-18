@@ -1049,7 +1049,7 @@ export default function LaporanPage() {
                 <span>Penyedia Terbaik</span>
               </CardTitle>
               <CardDescription>
-                Top 3 penyedia dengan rating tertinggi berdasarkan Wilson Score Confidence Interval
+                Top 3 penyedia dengan rating tertinggi berdasarkan Wilson Score Confidence Interval. Klik kartu untuk melihat detail.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -1061,6 +1061,16 @@ export default function LaporanPage() {
                     .sort((a, b) => b.wilsonScore - a.wilsonScore)
                     .slice(0, 3);
                   
+                  // Function to handle card click and show modal
+                  const handleCardClick = (penyedia: PenyediaWithRating) => {
+                    const penyediaWithDetails: PenyediaWithDetails = {
+                      ...penyedia,
+                      penilaian: penilaianData.filter(p => p.idPenyedia === penyedia.id)
+                    };
+                    setSelectedPenyedia(penyediaWithDetails);
+                    setIsModalOpen(true);
+                  };
+                  
                   return topPerformers.map((penyedia, index) => (
                     <motion.div
                       key={penyedia.id}
@@ -1068,13 +1078,16 @@ export default function LaporanPage() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.5, delay: index * 0.1 }}
                     >
-                      <Card className={`relative overflow-hidden rounded-2xl h-full transition-all duration-300 hover:shadow-xl ${
+                      <Card 
+                        className={`relative overflow-hidden rounded-2xl h-full transition-all duration-300 hover:shadow-xl cursor-pointer hover:scale-105 ${
                         index === 0 
                           ? 'border-2 border-yellow-400 bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20' 
                           : index === 1 
                             ? 'border-2 border-gray-300 bg-gradient-to-br from-gray-50 to-slate-50 dark:from-gray-800/30 dark:to-slate-800/30' 
                             : 'border-2 border-orange-300 bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20'
-                      }`}>
+                      }`}
+                        onClick={() => handleCardClick(penyedia)}
+                      >
                         <CardContent className="p-8 pt-12">
                           {/* Ranking Badge */}
                           <div className="flex justify-center -mt-10 mb-2">
