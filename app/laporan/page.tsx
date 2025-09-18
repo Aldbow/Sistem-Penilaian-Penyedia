@@ -24,6 +24,7 @@ interface PenyediaWithRating extends Penyedia {
   rataRataSkor: number
   penilaianTerbaru: string
   penilaianAkhir?: string
+  wilsonScore: number
 }
 
 interface PenyediaWithDetails extends PenyediaWithRating {
@@ -37,6 +38,34 @@ interface PPK {
   nip: string;
   // Add other properties as needed based on your PPK data structure
 }
+
+// Wilson Score Confidence Interval calculation
+const calculateWilsonScore = (successRate: number, totalSamples: number, confidence: number = 1.96): number => {
+  if (totalSamples === 0) return 0;
+  
+  const p = successRate;
+  const n = totalSamples;
+  const z = confidence; // 1.96 for 95% confidence interval
+  
+  const numerator = p + (z * z) / (2 * n) - z * Math.sqrt((p * (1 - p) + (z * z) / (4 * n)) / n);
+  const denominator = 1 + (z * z) / n;
+  
+  return Math.max(0, numerator / denominator);
+};
+
+// Convert LKPP score (1-3) to Wilson Score
+const calculateProviderWilsonScore = (rataRataSkor: number, totalPenilaian: number): number => {
+  if (totalPenilaian === 0) return 0;
+  
+  // Convert score 1-3 to success rate (0-1)
+  // Score 1 = 0% success, Score 2 = 50% success, Score 3 = 100% success
+  const successRate = Math.max(0, Math.min(1, (rataRataSkor - 1) / 2));
+  
+  const wilsonScore = calculateWilsonScore(successRate, totalPenilaian);
+  
+  // Convert back to 1-3 scale
+  return 1 + (wilsonScore * 2);
+};
 
 export default function LaporanPage() {
   const [penyediaData, setPenyediaData] = useState<PenyediaWithRating[]>([])
@@ -113,12 +142,16 @@ export default function LaporanPage() {
             ? sortedPenilaian[0].penilaianAkhir
             : undefined
 
+          // Calculate Wilson Score
+          const wilsonScore = calculateProviderWilsonScore(rataRataSkor, totalPenilaian)
+
           return {
             ...p,
             totalPenilaian,
             rataRataSkor,
             penilaianTerbaru,
-            penilaianAkhir
+            penilaianAkhir,
+            wilsonScore
           }
         })
 
@@ -211,27 +244,13 @@ export default function LaporanPage() {
       return new Date(a.penilaianTerbaru).getTime() - new Date(b.penilaianTerbaru).getTime();
     }
     
-    // Apply star rating sorting
+    // Apply Wilson Score sorting
     if (starSort === 'high-low') {
-      // Sort by mapped star rating (highest first), then by total evaluations
-      const aStars = mapScoreToStars(a.rataRataSkor);
-      const bStars = mapScoreToStars(b.rataRataSkor);
-      
-      if (bStars !== aStars) {
-        return bStars - aStars;
-      }
-      // If stars are equal, sort by number of evaluations (more evaluations first)
-      return b.totalPenilaian - a.totalPenilaian;
+      // Sort by Wilson Score (highest first)
+      return b.wilsonScore - a.wilsonScore;
     } else if (starSort === 'low-high') {
-      // Sort by mapped star rating (lowest first), then by total evaluations
-      const aStars = mapScoreToStars(a.rataRataSkor);
-      const bStars = mapScoreToStars(b.rataRataSkor);
-      
-      if (aStars !== bStars) {
-        return aStars - bStars;
-      }
-      // If stars are equal, sort by number of evaluations (more evaluations first)
-      return b.totalPenilaian - a.totalPenilaian;
+      // Sort by Wilson Score (lowest first)
+      return a.wilsonScore - b.wilsonScore;
     }
     
     // Apply alphabetical sorting based on sort option
@@ -1030,41 +1049,16 @@ export default function LaporanPage() {
                 <span>Penyedia Terbaik</span>
               </CardTitle>
               <CardDescription>
-                Top 3 penyedia dengan rating tertinggi berdasarkan perhitungan Bayesian Average
+                Top 3 penyedia dengan rating tertinggi berdasarkan Wilson Score Confidence Interval
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {(() => {
-                  // Calculate global average rating
-                  const ratedProviders = penyediaData.filter(p => p.totalPenilaian > 0);
-                  const globalAvgRating = ratedProviders.length > 0 
-                    ? ratedProviders.reduce((sum, p) => sum + p.rataRataSkor, 0) / ratedProviders.length 
-                    : 0;
-                  
-                  // Calculate top performers using Bayesian Average
-                  const topPerformers = [...ratedProviders]
-                    .map(penyedia => {
-                      // Bayesian Average formula: 
-                      // (C * m + R * v) / (C + v)
-                      // C = weight given to the prior estimate (minimum evaluations for confidence)
-                      // m = global average rating
-                      // R = average rating of the provider
-                      // v = number of evaluations for the provider
-                      
-                      const C = 3; // Minimum evaluations needed for full confidence
-                      const m = globalAvgRating;
-                      const R = penyedia.rataRataSkor;
-                      const v = penyedia.totalPenilaian;
-                      
-                      const bayesianAverage = (C * m + R * v) / (C + v);
-                      
-                      return {
-                        ...penyedia,
-                        bayesianAverage
-                      };
-                    })
-                    .sort((a, b) => b.bayesianAverage - a.bayesianAverage)
+                  // Get top performers using Wilson Score
+                  const topPerformers = [...penyediaData]
+                    .filter(p => p.totalPenilaian > 0) // Only include providers with evaluations
+                    .sort((a, b) => b.wilsonScore - a.wilsonScore)
                     .slice(0, 3);
                   
                   return topPerformers.map((penyedia, index) => (
@@ -1134,29 +1128,66 @@ export default function LaporanPage() {
                               </div>
                             </div>
                             
-                            <div className="flex justify-between items-center">
-                              <span className="text-sm text-muted-foreground">Skor Rating</span>
-                              <div className="flex items-center">
-                                <Star className="h-4 w-4 text-amber-500 fill-amber-500 mr-2" />
-                                <span className="font-bold text-gray-900 dark:text-gray-100">
-                                  {penyedia.bayesianAverage.toFixed(2)}
-                                </span>
+                            {/* Rata-rata per Kriteria */}
+                            <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+                              <div className="text-xs text-muted-foreground mb-2 font-medium">Rata-rata per Kriteria:</div>
+                              <div className="grid grid-cols-2 gap-2 text-xs">
+                                {(() => {
+                                  // Calculate average per criteria for this provider
+                                  const providerEvaluations = penilaianData.filter(p => p.idPenyedia === penyedia.id);
+                                  
+                                  if (providerEvaluations.length === 0) {
+                                    return (
+                                      <div className="col-span-2 text-center text-muted-foreground py-2">
+                                        Belum ada data kriteria
+                                      </div>
+                                    );
+                                  }
+                                  
+                                  const avgKualitas = providerEvaluations.reduce((sum, p) => sum + p.kualitasKuantitasBarangJasa, 0) / providerEvaluations.length;
+                                  const avgBiaya = providerEvaluations.reduce((sum, p) => sum + p.biaya, 0) / providerEvaluations.length;
+                                  const avgWaktu = providerEvaluations.reduce((sum, p) => sum + p.waktu, 0) / providerEvaluations.length;
+                                  const avgLayanan = providerEvaluations.reduce((sum, p) => sum + p.layanan, 0) / providerEvaluations.length;
+                                  
+                                  const getCriteriaColor = (score: number) => {
+                                    if (score >= 2.5) return 'text-green-600 bg-green-50';
+                                    if (score >= 2.0) return 'text-blue-600 bg-blue-50';
+                                    if (score >= 1.5) return 'text-yellow-600 bg-yellow-50';
+                                    return 'text-red-600 bg-red-50';
+                                  };
+                                  
+                                  return (
+                                    <>
+                                      <div className="flex justify-between items-center">
+                                        <span className="text-slate-600 dark:text-slate-400">Kualitas:</span>
+                                        <Badge className={`text-xs px-2 py-0.5 ${getCriteriaColor(avgKualitas)}`}>
+                                          {avgKualitas.toFixed(1)}
+                                        </Badge>
+                                      </div>
+                                      <div className="flex justify-between items-center">
+                                        <span className="text-slate-600 dark:text-slate-400">Biaya:</span>
+                                        <Badge className={`text-xs px-2 py-0.5 ${getCriteriaColor(avgBiaya)}`}>
+                                          {avgBiaya.toFixed(1)}
+                                        </Badge>
+                                      </div>
+                                      <div className="flex justify-between items-center">
+                                        <span className="text-slate-600 dark:text-slate-400">Waktu:</span>
+                                        <Badge className={`text-xs px-2 py-0.5 ${getCriteriaColor(avgWaktu)}`}>
+                                          {avgWaktu.toFixed(1)}
+                                        </Badge>
+                                      </div>
+                                      <div className="flex justify-between items-center">
+                                        <span className="text-slate-600 dark:text-slate-400">Layanan:</span>
+                                        <Badge className={`text-xs px-2 py-0.5 ${getCriteriaColor(avgLayanan)}`}>
+                                          {avgLayanan.toFixed(1)}
+                                        </Badge>
+                                      </div>
+                                    </>
+                                  );
+                                })()}
                               </div>
                             </div>
-                          </div>
-                          
-                          {/* Progress Bar */}
-                          <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                            <div className="flex justify-between text-xs sm:text-sm mb-1">
-                              <span className="text-muted-foreground">Percentage</span>
-                              <span className="font-medium">
-                                {Math.round((penyedia.bayesianAverage / 3) * 100)}%
-                              </span>
-                            </div>
-                            <Progress 
-                              value={(penyedia.bayesianAverage / 3) * 100} 
-                              className="h-2 sm:h-2.5"
-                            />
+                            
                           </div>
                         </CardContent>
                       </Card>
