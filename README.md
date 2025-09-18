@@ -1,7 +1,7 @@
 # 🏛️ Sistem Penilaian Penyedia LKPP
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/username/sistem-penilaian-penyedia)
-[![Live Demo](https://img.shields.io/badge/Live-Demo-blue)](https://rancangan-aktualisasi.vercel.app/)
+[![Live Demo](https://img.shields.io/badge/Live-Demo-blue)](https://sistem-penilaian-penyedia.vercel.app/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 > **Sistem penilaian penyedia barang/jasa yang terintegrasi dengan Google Spreadsheet untuk memudahkan PPK dalam memberikan penilaian terhadap penyedia sesuai standar LKPP.**
