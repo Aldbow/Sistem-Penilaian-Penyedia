@@ -75,6 +75,8 @@ export interface Penilaian {
   skorTotal: number;
   keterangan: string;
   status: string;
+  // Additional field for package code
+  kodePaket?: string;
 }
 
 // Interface untuk data SATKER
@@ -404,10 +406,33 @@ class GoogleSheetsService {
     }
   }
 
-  // Mendapatkan penilaian berdasarkan ID penyedia
+  // Mendapatkan penilaian berdasarkan ID penyedia dengan informasi paket
   async getPenilaianByPenyedia(idPenyedia: string): Promise<Penilaian[]> {
     const allPenilaian = await this.getPenilaian();
-    return allPenilaian.filter(penilaian => penilaian.idPenyedia === idPenyedia);
+    const filteredPenilaian = allPenilaian.filter(penilaian => penilaian.idPenyedia === idPenyedia);
+    
+    // Jika tidak ada penilaian, kembalikan array kosong
+    if (filteredPenilaian.length === 0) {
+      return [];
+    }
+    
+    // Dapatkan semua paket untuk mendapatkan informasi tambahan
+    const allPaket = await this.getPaket();
+    
+    // Gabungkan informasi penilaian dengan informasi paket
+    return filteredPenilaian.map(penilaian => {
+      // Cari paket yang sesuai berdasarkan nama paket dan penyedia
+      const paket = allPaket.find(p => 
+        p.namaPaket === penilaian.namaPaket && 
+        p.kodePenyedia === penilaian.idPenyedia
+      );
+      
+      // Tambahkan informasi paket ke penilaian jika ditemukan
+      return {
+        ...penilaian,
+        kodePaket: paket?.kodePaket || undefined
+      };
+    });
   }
 
   // Mendapatkan semua data paket

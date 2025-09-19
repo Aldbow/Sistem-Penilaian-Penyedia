@@ -311,20 +311,121 @@ export default function LaporanPage() {
   }
 
 
-  // Prepare export data
+  // Prepare comprehensive export data
   const prepareExportData = () => {
-    return filteredData.map(penyedia => ({
-      'ID Penyedia': penyedia.id,
-      'Nama Perusahaan': penyedia.namaPerusahaan,
-      'NPWP': penyedia.npwp,
-      'Total Penilaian': penyedia.totalPenilaian,
-      'Rata-rata Skor': penyedia.rataRataSkor.toFixed(1),
-      'Rating': getRatingText(penyedia.rataRataSkor),
-      'Penilaian Akhir': getFinalEvaluationText(penyedia.penilaianAkhir || ''),
-      'Penilaian Terbaru': penyedia.penilaianTerbaru !== '-' 
-        ? new Date(penyedia.penilaianTerbaru).toLocaleDateString('id-ID')
-        : 'Belum ada'
-    }))
+    return filteredData.map(penyedia => {
+      // Get all evaluations for this provider
+      const providerEvaluations = penilaianData.filter(p => p.idPenyedia === penyedia.id)
+      
+      // Calculate criteria averages
+      const avgKualitas = providerEvaluations.length > 0 
+        ? providerEvaluations.reduce((sum, p) => sum + (p.kualitasKuantitasBarangJasa || 0), 0) / providerEvaluations.length
+        : 0
+      const avgBiaya = providerEvaluations.length > 0 
+        ? providerEvaluations.reduce((sum, p) => sum + (p.biaya || 0), 0) / providerEvaluations.length
+        : 0
+      const avgWaktu = providerEvaluations.length > 0 
+        ? providerEvaluations.reduce((sum, p) => sum + (p.waktu || 0), 0) / providerEvaluations.length
+        : 0
+      const avgLayanan = providerEvaluations.length > 0 
+        ? providerEvaluations.reduce((sum, p) => sum + (p.layanan || 0), 0) / providerEvaluations.length
+        : 0
+
+      // Calculate standard deviation for consistency analysis
+      const scores = providerEvaluations.map(p => p.skorTotal)
+      const mean = penyedia.rataRataSkor
+      const variance = scores.length > 1 
+        ? scores.reduce((sum, score) => sum + Math.pow(score - mean, 2), 0) / (scores.length - 1)
+        : 0
+      const stdDev = Math.sqrt(variance)
+
+      // Get unique PPKs who evaluated this provider
+      const uniquePPKs = Array.from(new Set(providerEvaluations.map(p => p.namaPPK))).length
+
+      // Calculate trend (compare first half vs second half of evaluations)
+      let trend = 'Stabil'
+      if (providerEvaluations.length >= 4) {
+        const sortedEvals = [...providerEvaluations].sort((a, b) => 
+          new Date(a.tanggalPenilaian).getTime() - new Date(b.tanggalPenilaian).getTime()
+        )
+        const midIndex = Math.floor(sortedEvals.length / 2)
+        const firstHalf = sortedEvals.slice(0, midIndex)
+        const secondHalf = sortedEvals.slice(midIndex)
+        
+        const avgFirst = firstHalf.reduce((sum, p) => sum + p.skorTotal, 0) / firstHalf.length
+        const avgSecond = secondHalf.reduce((sum, p) => sum + p.skorTotal, 0) / secondHalf.length
+        
+        if (avgSecond > avgFirst + 0.2) trend = 'Meningkat'
+        else if (avgSecond < avgFirst - 0.2) trend = 'Menurun'
+      }
+
+      // Get evaluation period
+      const dates = providerEvaluations.map(p => new Date(p.tanggalPenilaian))
+      const earliestDate = dates.length > 0 ? new Date(Math.min(...dates.map(d => d.getTime()))) : null
+      const latestDate = dates.length > 0 ? new Date(Math.max(...dates.map(d => d.getTime()))) : null
+
+      // Helper function to get rating text for criteria
+      const getCriteriaRating = (score: number) => {
+        if (score >= 2.5) return 'Sangat Baik'
+        if (score >= 2.0) return 'Baik'
+        if (score >= 1.5) return 'Cukup'
+        return 'Perlu Perbaikan'
+      }
+
+      return {
+        // === INFORMASI DASAR PENYEDIA ===
+        'ID Penyedia': penyedia.id,
+        'Nama Perusahaan': penyedia.namaPerusahaan,
+        'NPWP': penyedia.npwp,
+
+        // === STATISTIK PENILAIAN KESELURUHAN ===
+        'Total Penilaian': penyedia.totalPenilaian,
+        'Rata-rata Skor Keseluruhan': penyedia.rataRataSkor.toFixed(2),
+        'Rating Kategori': getRatingText(penyedia.rataRataSkor),
+        'Wilson Score': penyedia.wilsonScore.toFixed(3),
+        'Penilaian Terbaru': penyedia.penilaianTerbaru !== '-' 
+          ? new Date(penyedia.penilaianTerbaru).toLocaleDateString('id-ID')
+          : 'Belum ada',
+
+        // === ANALISIS PER ASPEK PENILAIAN ===
+        'Rata-rata Kualitas': avgKualitas.toFixed(2),
+        'Rating Kualitas': getCriteriaRating(avgKualitas),
+        'Rata-rata Biaya': avgBiaya.toFixed(2),
+        'Rating Biaya': getCriteriaRating(avgBiaya),
+        'Rata-rata Waktu': avgWaktu.toFixed(2),
+        'Rating Waktu': getCriteriaRating(avgWaktu),
+        'Rata-rata Layanan': avgLayanan.toFixed(2),
+        'Rating Layanan': getCriteriaRating(avgLayanan),
+
+        // === METADATA UNTUK ANALISIS ===
+        'Jumlah PPK Penilai': uniquePPKs,
+        'Konsistensi Penilaian (StdDev)': stdDev.toFixed(3),
+        'Trend Penilaian': trend,
+        'Periode Evaluasi Awal': earliestDate ? earliestDate.toLocaleDateString('id-ID') : '-',
+        'Periode Evaluasi Akhir': latestDate ? latestDate.toLocaleDateString('id-ID') : '-',
+        'Rentang Evaluasi (Hari)': earliestDate && latestDate 
+          ? Math.ceil((latestDate.getTime() - earliestDate.getTime()) / (1000 * 60 * 60 * 24))
+          : 0,
+
+        // === DETAIL RIWAYAT PENILAIAN (untuk analisis mendalam) ===
+        'Riwayat Penilaian': providerEvaluations.map((evaluation, index) => 
+          `[${index + 1}] ${new Date(evaluation.tanggalPenilaian).toLocaleDateString('id-ID')} - ${evaluation.namaPPK} - Skor: ${evaluation.skorTotal} (K:${evaluation.kualitasKuantitasBarangJasa || 0}, B:${evaluation.biaya || 0}, W:${evaluation.waktu || 0}, L:${evaluation.layanan || 0}) - ${evaluation.penilaianAkhir || getRatingText(evaluation.skorTotal)}`
+        ).join(' | '),
+
+        // === ANALISIS TAMBAHAN ===
+        'Skor Tertinggi': providerEvaluations.length > 0 ? Math.max(...scores).toFixed(1) : '-',
+        'Skor Terendah': providerEvaluations.length > 0 ? Math.min(...scores).toFixed(1) : '-',
+        'Persentase Penilaian Sangat Baik': providerEvaluations.length > 0 
+          ? ((providerEvaluations.filter(p => p.skorTotal >= 2.5).length / providerEvaluations.length) * 100).toFixed(1) + '%'
+          : '0%',
+        'Persentase Penilaian Baik': providerEvaluations.length > 0 
+          ? ((providerEvaluations.filter(p => p.skorTotal >= 2 && p.skorTotal < 2.5).length / providerEvaluations.length) * 100).toFixed(1) + '%'
+          : '0%',
+        'Persentase Penilaian Cukup': providerEvaluations.length > 0 
+          ? ((providerEvaluations.filter(p => p.skorTotal >= 1 && p.skorTotal < 2).length / providerEvaluations.length) * 100).toFixed(1) + '%'
+          : '0%'
+      }
+    })
   }
 
   // Export data to CSV
@@ -1049,7 +1150,7 @@ export default function LaporanPage() {
                 <span>Penyedia Terbaik</span>
               </CardTitle>
               <CardDescription>
-                Top 3 penyedia dengan rating tertinggi berdasarkan Wilson Score Confidence Interval. Klik kartu untuk melihat detail.
+                Top 3 penyedia dengan rating tertinggi. Klik kartu untuk melihat detail.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -1127,17 +1228,14 @@ export default function LaporanPage() {
                             </div>
                             
                             <div className="flex justify-between items-center pb-2 border-b border-gray-200 dark:border-gray-700">
-                              <span className="text-xs sm:text-sm text-muted-foreground">Rating Rata-rata</span>
+                              <span className="text-xs sm:text-sm text-muted-foreground">Rating</span>
                               <div className="flex items-center">
                                 <StarRating 
                                   rating={mapScoreToStars(penyedia.rataRataSkor)} 
                                   size="sm" 
                                   showValue={false} 
-                                  className="mr-2"
+                                  className=""
                                 />
-                                <span className="font-bold text-gray-900 dark:text-gray-100 text-sm sm:text-base">
-                                  {penyedia.rataRataSkor.toFixed(1)}
-                                </span>
                               </div>
                             </div>
                             
@@ -1163,35 +1261,35 @@ export default function LaporanPage() {
                                   const avgLayanan = providerEvaluations.reduce((sum, p) => sum + p.layanan, 0) / providerEvaluations.length;
                                   
                                   const getCriteriaColor = (score: number) => {
-                                    if (score >= 2.5) return 'text-green-600 bg-green-50';
-                                    if (score >= 2.0) return 'text-blue-600 bg-blue-50';
-                                    if (score >= 1.5) return 'text-yellow-600 bg-yellow-50';
-                                    return 'text-red-600 bg-red-50';
+                                    if (score >= 2.5) return 'text-green-700 bg-green-100 hover:text-green-700 hover:bg-green-100 dark:text-green-400 dark:bg-green-900/30 dark:hover:text-green-400 dark:hover:bg-green-900/30';
+                                    if (score >= 2.0) return 'text-blue-700 bg-blue-100 hover:text-blue-700 hover:bg-blue-100 dark:text-blue-400 dark:bg-blue-900/30 dark:hover:text-blue-400 dark:hover:bg-blue-900/30';
+                                    if (score >= 1.5) return 'text-yellow-700 bg-yellow-100 hover:text-yellow-700 hover:bg-yellow-100 dark:text-yellow-400 dark:bg-yellow-900/30 dark:hover:text-yellow-400 dark:hover:bg-yellow-900/30';
+                                    return 'text-red-700 bg-red-100 hover:text-red-700 hover:bg-red-100 dark:text-red-400 dark:bg-red-900/30 dark:hover:text-red-400 dark:hover:bg-red-900/30';
                                   };
                                   
                                   return (
                                     <>
                                       <div className="flex justify-between items-center">
                                         <span className="text-slate-600 dark:text-slate-400">Kualitas:</span>
-                                        <Badge className={`text-xs px-2 py-0.5 ${getCriteriaColor(avgKualitas)}`}>
+                                        <Badge className={`text-xs px-2 py-0.5 border-0 ${getCriteriaColor(avgKualitas)}`}>
                                           {avgKualitas.toFixed(1)}
                                         </Badge>
                                       </div>
                                       <div className="flex justify-between items-center">
                                         <span className="text-slate-600 dark:text-slate-400">Biaya:</span>
-                                        <Badge className={`text-xs px-2 py-0.5 ${getCriteriaColor(avgBiaya)}`}>
+                                        <Badge className={`text-xs px-2 py-0.5 border-0 ${getCriteriaColor(avgBiaya)}`}>
                                           {avgBiaya.toFixed(1)}
                                         </Badge>
                                       </div>
                                       <div className="flex justify-between items-center">
                                         <span className="text-slate-600 dark:text-slate-400">Waktu:</span>
-                                        <Badge className={`text-xs px-2 py-0.5 ${getCriteriaColor(avgWaktu)}`}>
+                                        <Badge className={`text-xs px-2 py-0.5 border-0 ${getCriteriaColor(avgWaktu)}`}>
                                           {avgWaktu.toFixed(1)}
                                         </Badge>
                                       </div>
                                       <div className="flex justify-between items-center">
                                         <span className="text-slate-600 dark:text-slate-400">Layanan:</span>
-                                        <Badge className={`text-xs px-2 py-0.5 ${getCriteriaColor(avgLayanan)}`}>
+                                        <Badge className={`text-xs px-2 py-0.5 border-0 ${getCriteriaColor(avgLayanan)}`}>
                                           {avgLayanan.toFixed(1)}
                                         </Badge>
                                       </div>
