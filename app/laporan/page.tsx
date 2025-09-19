@@ -1049,7 +1049,7 @@ export default function LaporanPage() {
                 <span>Penyedia Terbaik</span>
               </CardTitle>
               <CardDescription>
-                Top 3 penyedia dengan rating tertinggi berdasarkan Wilson Score Confidence Interval. Klik kartu untuk melihat detail.
+                Top 3 penyedia dengan rating tertinggi. Klik kartu untuk melihat detail.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -1127,17 +1127,14 @@ export default function LaporanPage() {
                             </div>
                             
                             <div className="flex justify-between items-center pb-2 border-b border-gray-200 dark:border-gray-700">
-                              <span className="text-xs sm:text-sm text-muted-foreground">Rating Rata-rata</span>
+                              <span className="text-xs sm:text-sm text-muted-foreground">Rating</span>
                               <div className="flex items-center">
                                 <StarRating 
                                   rating={mapScoreToStars(penyedia.rataRataSkor)} 
                                   size="sm" 
                                   showValue={false} 
-                                  className="mr-2"
+                                  className=""
                                 />
-                                <span className="font-bold text-gray-900 dark:text-gray-100 text-sm sm:text-base">
-                                  {penyedia.rataRataSkor.toFixed(1)}
-                                </span>
                               </div>
                             </div>
                             
@@ -1163,35 +1160,35 @@ export default function LaporanPage() {
                                   const avgLayanan = providerEvaluations.reduce((sum, p) => sum + p.layanan, 0) / providerEvaluations.length;
                                   
                                   const getCriteriaColor = (score: number) => {
-                                    if (score >= 2.5) return 'text-green-600 bg-green-50';
-                                    if (score >= 2.0) return 'text-blue-600 bg-blue-50';
-                                    if (score >= 1.5) return 'text-yellow-600 bg-yellow-50';
-                                    return 'text-red-600 bg-red-50';
+                                    if (score >= 2.5) return 'text-green-700 bg-green-100 hover:text-green-700 hover:bg-green-100 dark:text-green-400 dark:bg-green-900/30 dark:hover:text-green-400 dark:hover:bg-green-900/30';
+                                    if (score >= 2.0) return 'text-blue-700 bg-blue-100 hover:text-blue-700 hover:bg-blue-100 dark:text-blue-400 dark:bg-blue-900/30 dark:hover:text-blue-400 dark:hover:bg-blue-900/30';
+                                    if (score >= 1.5) return 'text-yellow-700 bg-yellow-100 hover:text-yellow-700 hover:bg-yellow-100 dark:text-yellow-400 dark:bg-yellow-900/30 dark:hover:text-yellow-400 dark:hover:bg-yellow-900/30';
+                                    return 'text-red-700 bg-red-100 hover:text-red-700 hover:bg-red-100 dark:text-red-400 dark:bg-red-900/30 dark:hover:text-red-400 dark:hover:bg-red-900/30';
                                   };
                                   
                                   return (
                                     <>
                                       <div className="flex justify-between items-center">
                                         <span className="text-slate-600 dark:text-slate-400">Kualitas:</span>
-                                        <Badge className={`text-xs px-2 py-0.5 ${getCriteriaColor(avgKualitas)}`}>
+                                        <Badge className={`text-xs px-2 py-0.5 border-0 ${getCriteriaColor(avgKualitas)}`}>
                                           {avgKualitas.toFixed(1)}
                                         </Badge>
                                       </div>
                                       <div className="flex justify-between items-center">
                                         <span className="text-slate-600 dark:text-slate-400">Biaya:</span>
-                                        <Badge className={`text-xs px-2 py-0.5 ${getCriteriaColor(avgBiaya)}`}>
+                                        <Badge className={`text-xs px-2 py-0.5 border-0 ${getCriteriaColor(avgBiaya)}`}>
                                           {avgBiaya.toFixed(1)}
                                         </Badge>
                                       </div>
                                       <div className="flex justify-between items-center">
                                         <span className="text-slate-600 dark:text-slate-400">Waktu:</span>
-                                        <Badge className={`text-xs px-2 py-0.5 ${getCriteriaColor(avgWaktu)}`}>
+                                        <Badge className={`text-xs px-2 py-0.5 border-0 ${getCriteriaColor(avgWaktu)}`}>
                                           {avgWaktu.toFixed(1)}
                                         </Badge>
                                       </div>
                                       <div className="flex justify-between items-center">
                                         <span className="text-slate-600 dark:text-slate-400">Layanan:</span>
-                                        <Badge className={`text-xs px-2 py-0.5 ${getCriteriaColor(avgLayanan)}`}>
+                                        <Badge className={`text-xs px-2 py-0.5 border-0 ${getCriteriaColor(avgLayanan)}`}>
                                           {avgLayanan.toFixed(1)}
                                         </Badge>
                                       </div>

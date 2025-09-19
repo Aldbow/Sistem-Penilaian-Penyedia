@@ -20,6 +20,10 @@ interface Penilaian {
   skorTotal: number;
   penilaianAkhir?: string;
   keterangan?: string;
+  kualitasKuantitasBarangJasa?: number;
+  biaya?: number;
+  waktu?: number;
+  layanan?: number;
 }
 
 interface PenyediaWithDetails extends Penyedia {
@@ -258,43 +262,125 @@ export function LaporanModal({ isOpen, onClose, penyedia }: LaporanModalProps) {
 
               {/* Ratings Summary */}
               <div className="bg-gradient-to-r from-blue-50/50 to-purple-50/50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-2xl p-6 mb-8 backdrop-blur-sm">
-                <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-4">
+                <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-6">
                   Ringkasan Penilaian
                 </h3>
-                <div className="flex flex-col sm:flex-row items-center justify-between">
-                  <div className="flex items-center mb-4 sm:mb-0">
-                    <StarRating
-                      rating={mapScoreToStars(
-                        penyedia.rataRataSkor
-                      )}
-                      size="lg"
-                      showValue={false}
-                      className="mr-4"
-                    />
-                    <div>
-                      <div className="text-3xl font-bold text-slate-800 dark:text-slate-100">
-                        {penyedia.rataRataSkor.toFixed(1)}
-                      </div>
-                      <div
-                        className={`text-sm px-3 py-1 rounded-full font-medium inline-block ${getRatingColor(
-                          penyedia.rataRataSkor
-                        )}`}
-                      >
-                        {getRatingEvaluationText(
-                          penyedia.rataRataSkor
-                        )}
-                      </div>
-                    </div>
+                
+                {/* Overall Rating */}
+                <div className="text-center mb-6">
+                  <StarRating
+                    rating={mapScoreToStars(penyedia.rataRataSkor)}
+                    size="lg"
+                    showValue={false}
+                    className="justify-center mb-3"
+                  />
+                  <div
+                    className={`text-sm px-3 py-1 rounded-full font-medium inline-block ${getRatingColor(
+                      penyedia.rataRataSkor
+                    )}`}
+                  >
+                    {getRatingEvaluationText(penyedia.rataRataSkor)}
                   </div>
-                  <div className="text-center sm:text-right">
-                    <div className="text-3xl font-bold text-slate-800 dark:text-slate-100">
-                      {penyedia.totalPenilaian}
-                    </div>
-                    <div className="text-sm text-slate-600 dark:text-slate-300">
-                      Total Penilaian
-                    </div>
+                  <div className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+                    Telah dinilai <span className="font-semibold text-slate-800 dark:text-slate-100">{penyedia.totalPenilaian}</span> kali
                   </div>
                 </div>
+
+                {/* Criteria Averages */}
+                {penyedia.penilaian.length > 0 && (
+                  <div className="border-t border-slate-200/50 dark:border-slate-600/50 pt-6">
+                    <h4 className="text-md font-semibold text-slate-800 dark:text-slate-100 mb-4 text-center">
+                      Rata-rata per Aspek
+                    </h4>
+                    <div className="grid grid-cols-2 gap-4">
+                      {(() => {
+                        // Calculate averages for each criteria
+                        const avgKualitas = penyedia.penilaian.reduce((sum, p) => sum + (p.kualitasKuantitasBarangJasa || 0), 0) / penyedia.penilaian.length;
+                        const avgBiaya = penyedia.penilaian.reduce((sum, p) => sum + (p.biaya || 0), 0) / penyedia.penilaian.length;
+                        const avgWaktu = penyedia.penilaian.reduce((sum, p) => sum + (p.waktu || 0), 0) / penyedia.penilaian.length;
+                        const avgLayanan = penyedia.penilaian.reduce((sum, p) => sum + (p.layanan || 0), 0) / penyedia.penilaian.length;
+
+                        const getCriteriaColor = (score: number) => {
+                          if (score >= 2.5) return 'text-green-700 bg-green-100 dark:text-green-400 dark:bg-green-900/30';
+                          if (score >= 2.0) return 'text-blue-700 bg-blue-100 dark:text-blue-400 dark:bg-blue-900/30';
+                          if (score >= 1.5) return 'text-yellow-700 bg-yellow-100 dark:text-yellow-400 dark:bg-yellow-900/30';
+                          return 'text-red-700 bg-red-100 dark:text-red-400 dark:bg-red-900/30';
+                        };
+
+                        const getCriteriaText = (score: number) => {
+                          if (score >= 2.5) return 'Sangat Baik';
+                          if (score >= 2.0) return 'Baik';
+                          if (score >= 1.5) return 'Cukup';
+                          return 'Perlu Perbaikan';
+                        };
+
+                        return (
+                          <>
+                            <div className="bg-white/50 dark:bg-slate-700/30 rounded-xl p-4">
+                              <div className="text-center">
+                                <div className="text-xs text-slate-500 dark:text-slate-400 mb-2">Kualitas</div>
+                                <StarRating
+                                  rating={mapScoreToStars(avgKualitas)}
+                                  size="sm"
+                                  showValue={false}
+                                  className="justify-center mb-2"
+                                />
+                                <div className={`text-xs px-2 py-1 rounded-full font-medium ${getCriteriaColor(avgKualitas)}`}>
+                                  {getCriteriaText(avgKualitas)}
+                                </div>
+                              </div>
+                            </div>
+                            
+                            <div className="bg-white/50 dark:bg-slate-700/30 rounded-xl p-4">
+                              <div className="text-center">
+                                <div className="text-xs text-slate-500 dark:text-slate-400 mb-2">Biaya</div>
+                                <StarRating
+                                  rating={mapScoreToStars(avgBiaya)}
+                                  size="sm"
+                                  showValue={false}
+                                  className="justify-center mb-2"
+                                />
+                                <div className={`text-xs px-2 py-1 rounded-full font-medium ${getCriteriaColor(avgBiaya)}`}>
+                                  {getCriteriaText(avgBiaya)}
+                                </div>
+                              </div>
+                            </div>
+                            
+                            <div className="bg-white/50 dark:bg-slate-700/30 rounded-xl p-4">
+                              <div className="text-center">
+                                <div className="text-xs text-slate-500 dark:text-slate-400 mb-2">Waktu</div>
+                                <StarRating
+                                  rating={mapScoreToStars(avgWaktu)}
+                                  size="sm"
+                                  showValue={false}
+                                  className="justify-center mb-2"
+                                />
+                                <div className={`text-xs px-2 py-1 rounded-full font-medium ${getCriteriaColor(avgWaktu)}`}>
+                                  {getCriteriaText(avgWaktu)}
+                                </div>
+                              </div>
+                            </div>
+                            
+                            <div className="bg-white/50 dark:bg-slate-700/30 rounded-xl p-4">
+                              <div className="text-center">
+                                <div className="text-xs text-slate-500 dark:text-slate-400 mb-2">Layanan</div>
+                                <StarRating
+                                  rating={mapScoreToStars(avgLayanan)}
+                                  size="sm"
+                                  showValue={false}
+                                  className="justify-center mb-2"
+                                />
+                                <div className={`text-xs px-2 py-1 rounded-full font-medium ${getCriteriaColor(avgLayanan)}`}>
+                                  {getCriteriaText(avgLayanan)}
+                                </div>
+                              </div>
+                            </div>
+                          </>
+                        );
+                      })()}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Rating History */}
@@ -303,29 +389,29 @@ export function LaporanModal({ isOpen, onClose, penyedia }: LaporanModalProps) {
                   Riwayat Penilaian
                 </h3>
                 {penyedia.penilaian.length > 0 ? (
-                  <div className="space-y-4">
+                  <div className="space-y-3">
                     {penyedia.penilaian.map((penilaian, index) => (
                       <motion.div
                         key={penilaian.id}
-                        className="border border-gray-200/50 dark:border-gray-700/50 rounded-2xl p-5 backdrop-blur-sm bg-white/30 dark:bg-slate-700/30"
+                        className="border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-4 backdrop-blur-sm bg-white/30 dark:bg-slate-700/30"
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.3, delay: index * 0.1 }}
                       >
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3">
                           <div className="flex items-center mb-2 sm:mb-0">
-                            <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg mr-2">
-                              <User className="h-4 w-4 text-blue-600 dark:text-blue-400" aria-hidden="true" />
+                            <div className="p-1.5 bg-blue-100 dark:bg-blue-900/30 rounded-lg mr-2">
+                              <User className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" aria-hidden="true" />
                             </div>
-                            <span className="font-medium text-slate-800 dark:text-slate-100">
+                            <span className="font-medium text-slate-800 dark:text-slate-100 text-sm">
                               {penilaian.namaPPK}
                             </span>
                           </div>
                           <div className="flex items-center">
                             <div className="p-1 bg-slate-100 dark:bg-slate-700 rounded mr-1">
-                              <Calendar className="h-4 w-4 text-slate-500" aria-hidden="true" />
+                              <Calendar className="h-3.5 w-3.5 text-slate-500" aria-hidden="true" />
                             </div>
-                            <span className="text-sm text-slate-600 dark:text-slate-300">
+                            <span className="text-xs text-slate-600 dark:text-slate-300">
                               {new Date(
                                 penilaian.tanggalPenilaian
                               ).toLocaleDateString("id-ID")}
@@ -333,36 +419,26 @@ export function LaporanModal({ isOpen, onClose, penyedia }: LaporanModalProps) {
                           </div>
                         </div>
 
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between">
-                          <div className="mb-4 sm:mb-0">
-                            <StarRating
-                              rating={mapScoreToStars(penilaian.skorTotal)}
-                              size="md"
-                              showValue={false}
-                              className="mb-2"
-                            />
-                            <div
-                              className={`text-xs px-3 py-1 rounded-full font-medium inline-block ${getRatingColor(
-                                penilaian.skorTotal
-                              )}`}
-                            >
-                              {penilaian.penilaianAkhir ||
-                                getRatingEvaluationText(penilaian.skorTotal)}
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <div className="text-2xl font-bold text-slate-800 dark:text-slate-100">
-                              {penilaian.skorTotal.toFixed(1)}/3
-                            </div>
-                            <div className="text-sm text-slate-600 dark:text-slate-300">
-                              Skor Total
-                            </div>
+                        <div className="flex items-center space-x-3">
+                          <StarRating
+                            rating={mapScoreToStars(penilaian.skorTotal)}
+                            size="sm"
+                            showValue={false}
+                            className=""
+                          />
+                          <div
+                            className={`text-xs px-2 py-1 rounded-full font-medium ${getRatingColor(
+                              penilaian.skorTotal
+                            )}`}
+                          >
+                            {penilaian.penilaianAkhir ||
+                              getRatingEvaluationText(penilaian.skorTotal)}
                           </div>
                         </div>
 
                         {penilaian.keterangan && (
-                          <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
-                            <p className="text-sm text-slate-600 dark:text-slate-300">
+                          <div className="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
+                            <p className="text-xs text-slate-600 dark:text-slate-300">
                               {penilaian.keterangan}
                             </p>
                           </div>
