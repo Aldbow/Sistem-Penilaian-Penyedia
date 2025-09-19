@@ -16,6 +16,12 @@ interface Penilaian {
   id: string;
   idPenyedia: string;
   namaPPK: string;
+  satuanKerja: string;
+  metodePemilihan: string;
+  namaPaket: string;
+  jenisPengadaan: string;
+  nilaiKontrak: string;
+  namaPenyedia: string;
   tanggalPenilaian: string;
   skorTotal: number;
   penilaianAkhir?: string;
@@ -24,6 +30,8 @@ interface Penilaian {
   biaya?: number;
   waktu?: number;
   layanan?: number;
+  // Additional field for package code
+  kodePaket?: string;
 }
 
 interface PenyediaWithDetails extends Penyedia {
@@ -389,7 +397,7 @@ export function LaporanModal({ isOpen, onClose, penyedia }: LaporanModalProps) {
                   Riwayat Penilaian
                 </h3>
                 {penyedia.penilaian.length > 0 ? (
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     {penyedia.penilaian.map((penilaian, index) => (
                       <motion.div
                         key={penilaian.id}
@@ -398,6 +406,7 @@ export function LaporanModal({ isOpen, onClose, penyedia }: LaporanModalProps) {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.3, delay: index * 0.1 }}
                       >
+                        {/* Header with PPK and Date */}
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3">
                           <div className="flex items-center mb-2 sm:mb-0">
                             <div className="p-1.5 bg-blue-100 dark:bg-blue-900/30 rounded-lg mr-2">
@@ -419,7 +428,39 @@ export function LaporanModal({ isOpen, onClose, penyedia }: LaporanModalProps) {
                           </div>
                         </div>
 
-                        <div className="flex items-center space-x-3">
+                        {/* Package Information */}
+                        <div className="mb-3 p-3 bg-blue-50/50 dark:bg-blue-900/20 rounded-lg">
+                          <div className="flex items-start mb-2">
+                            <FileText className="h-4 w-4 text-blue-600 dark:text-blue-400 mt-0.5 mr-2 flex-shrink-0" />
+                            <div>
+                              <h4 className="font-medium text-slate-800 dark:text-slate-100 text-sm">
+                                {penilaian.namaPaket || "Nama Paket Tidak Tersedia"}
+                              </h4>
+                              {penilaian.kodePaket && (
+                                <p className="text-xs text-slate-600 dark:text-slate-300 mt-1">
+                                  ID Paket: {penilaian.kodePaket}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                          
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
+                            <div className="flex items-center">
+                              <Building2 className="h-3.5 w-3.5 text-slate-500 mr-1.5 flex-shrink-0" />
+                              <span className="text-xs text-slate-600 dark:text-slate-300 truncate">
+                                {penilaian.satuanKerja || "Satuan Kerja Tidak Tersedia"}
+                              </span>
+                            </div>
+                            <div className="flex items-center">
+                              <span className="text-xs text-slate-600 dark:text-slate-300">
+                                <span className="font-medium">Kontrak:</span> {penilaian.nilaiKontrak || "Tidak Tersedia"}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Rating and Evaluation */}
+                        <div className="flex flex-wrap items-center gap-3">
                           <StarRating
                             rating={mapScoreToStars(penilaian.skorTotal)}
                             size="sm"
@@ -433,6 +474,20 @@ export function LaporanModal({ isOpen, onClose, penyedia }: LaporanModalProps) {
                           >
                             {penilaian.penilaianAkhir ||
                               getRatingEvaluationText(penilaian.skorTotal)}
+                          </div>
+                        </div>
+
+                        {/* Additional Details */}
+                        <div className="grid grid-cols-2 gap-2 mt-3 text-xs">
+                          <div className="flex items-center">
+                            <span className="text-slate-600 dark:text-slate-300">
+                              <span className="font-medium">Metode:</span> {penilaian.metodePemilihan || "-"}
+                            </span>
+                          </div>
+                          <div className="flex items-center">
+                            <span className="text-slate-600 dark:text-slate-300">
+                              <span className="font-medium">Jenis:</span> {penilaian.jenisPengadaan || "-"}
+                            </span>
                           </div>
                         </div>
 
