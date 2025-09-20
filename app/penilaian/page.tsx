@@ -956,8 +956,16 @@ export default function PenilaianPage() {
                                         <h3 className="font-bold text-lg text-slate-800 dark:text-slate-100 leading-tight">
                                           {paket.namaPaket || `Paket ${paket.kodePaket}`}
                                         </h3>
+                                        {paket.tahunAnggaran && (
+                                          <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                                            Tahun Anggaran: {paket.tahunAnggaran}
+                                          </p>
+                                        )}
                                         <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                                          Kode: {paket.kodePaket} • RUP: {paket.kodeRupPaket}
+                                          Kode Paket: {paket.kodePaket}
+                                        </p>
+                                        <p className="text-sm text-slate-500 dark:text-slate-400">
+                                          Kode RUP: {paket.kodeRupPaket}
                                         </p>
                                       </div>
                                       
@@ -1025,6 +1033,11 @@ export default function PenilaianPage() {
                                         <span className="px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300">
                                           {paket.statusTender}
                                         </span>
+                                        {paket.tahunAnggaran && (
+                                          <span className="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
+                                            Tahun {paket.tahunAnggaran}
+                                          </span>
+                                        )}
                                         {paket.lokasiPekerjaan !== 'Unknown' && (
                                           <span className="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300">
                                             📍 {paket.lokasiPekerjaan}
@@ -1068,8 +1081,16 @@ export default function PenilaianPage() {
                                         <h3 className="font-bold text-lg text-slate-800 dark:text-slate-100 leading-tight">
                                           {paket.namaPaket || `Paket ${paket.kodePaket}`}
                                         </h3>
+                                        {paket.tahunAnggaran && (
+                                          <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                                            Tahun Anggaran: {paket.tahunAnggaran}
+                                          </p>
+                                        )}
                                         <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                                          Kode: {paket.kodePaket} • RUP: {paket.kodeRupPaket}
+                                          Kode Paket: {paket.kodePaket}
+                                        </p>
+                                        <p className="text-sm text-slate-500 dark:text-slate-400">
+                                          Kode RUP: {paket.kodeRupPaket}
                                         </p>
                                       </div>
                                       
@@ -1182,6 +1203,16 @@ export default function PenilaianPage() {
                             {selectedPaket.namaPaket || `Paket ${selectedPaket.kodePaket}`}
                           </p>
                         </div>
+                        {selectedPaket.tahunAnggaran && (
+                          <div>
+                            <p className="text-sm font-medium text-slate-600 dark:text-slate-300">
+                              Tahun Anggaran
+                            </p>
+                            <p className="text-lg font-semibold text-slate-800 dark:text-slate-100">
+                              {selectedPaket.tahunAnggaran}
+                            </p>
+                          </div>
+                        )}
                         <div>
                           <p className="text-sm font-medium text-slate-600 dark:text-slate-300">
                             Kode Paket
@@ -1207,6 +1238,14 @@ export default function PenilaianPage() {
                               style: 'currency', 
                               currency: 'IDR' 
                             }).format(Number(selectedPaket.nilaiKontrak) || 0)}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-slate-600 dark:text-slate-300">
+                            Tahun Anggaran
+                          </p>
+                          <p className="text-lg font-semibold text-slate-800 dark:text-slate-100">
+                            {selectedPaket.tahunAnggaran || 'Tidak tersedia'}
                           </p>
                         </div>
                         {selectedPaket.tenderInfo && (
