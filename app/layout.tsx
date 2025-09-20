@@ -307,7 +307,7 @@ export default function RootLayout({
                     <ul className="flex space-x-6">
                       <li>
                         <a
-                          href="#"
+                          href="/legal/syarat-ketentuan"
                           className="text-slate-400 hover:text-white text-sm transition-colors"
                         >
                           Syarat & Ketentuan
@@ -315,7 +315,7 @@ export default function RootLayout({
                       </li>
                       <li>
                         <a
-                          href="#"
+                          href="/legal/kebijakan-privasi"
                           className="text-slate-400 hover:text-white text-sm transition-colors"
                         >
                           Kebijakan Privasi
