@@ -223,37 +223,29 @@ export default function RootLayout({
                   {/* Resources */}
                   <div>
                     <h3 className="text-lg font-semibold mb-4">Sumber Daya</h3>
-                    <ul className="space-y-3">
+                    <ul className="space-y-2">
+                      <li>
+                        <a
+                          href="/faq"
+                          className="text-slate-300 hover:text-white transition-colors flex items-center"
+                        >
+                          <span className="ml-2">Pertanyaan Umum</span>
+                        </a>
+                      </li>
+                      <li>
+                        <a
+                          href="/docs/petunjuk-penggunaan"
+                          className="text-slate-300 hover:text-white transition-colors flex items-center"
+                        >
+                          <span className="ml-2">Petunjuk Penggunaan</span>
+                        </a>
+                      </li>
                       <li>
                         <a
                           href="#"
                           className="text-slate-300 hover:text-white transition-colors flex items-center"
                         >
                           <span className="ml-2">Dokumentasi</span>
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          href="#"
-                          className="text-slate-300 hover:text-white transition-colors flex items-center"
-                        >
-                          <span className="ml-2">Panduan Pengguna</span>
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          href="#"
-                          className="text-slate-300 hover:text-white transition-colors flex items-center"
-                        >
-                          <span className="ml-2">FAQ</span>
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          href="#"
-                          className="text-slate-300 hover:text-white transition-colors flex items-center"
-                        >
-                          <span className="ml-2">Kebijakan Privasi</span>
                         </a>
                       </li>
                     </ul>
@@ -293,6 +285,17 @@ export default function RootLayout({
                         <span className="ml-3 text-slate-300">
                           info@kemnaker.go.id
                         </span>
+                      </li>
+                      <li className="pt-2">
+                        <a 
+                          href="/contact" 
+                          className="inline-flex items-center text-blue-400 hover:text-blue-300 transition-colors text-sm font-medium"
+                        >
+                          <span>Form Kontak</span>
+                          <svg className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                          </svg>
+                        </a>
                       </li>
                     </ul>
                   </div>
