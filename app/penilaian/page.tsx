@@ -261,11 +261,11 @@ export default function PenilaianPage() {
 
   // Load paket data after PPK authentication
   useEffect(() => {
-    if (isAuthenticated && authenticatedPPK?.satuanKerjaDetail) {
+    if (isAuthenticated && authenticatedPPK?.nip) {
       const loadPaketData = async () => {
         setIsLoading(true);
         try {
-          const response = await fetch(`/api/paket?satuanKerjaDetail=${encodeURIComponent(authenticatedPPK.satuanKerjaDetail)}`);
+          const response = await fetch(`/api/paket?nipPpk=${encodeURIComponent(authenticatedPPK.nip)}`);
           if (response.ok) {
             const data = await response.json();
             setPaketList(data);
@@ -278,7 +278,7 @@ export default function PenilaianPage() {
       };
       loadPaketData();
     }
-  }, [isAuthenticated, authenticatedPPK]);
+  }, [isAuthenticated, authenticatedPPK?.nip]);
 
   // Separate paket into evaluated and unevaluated
   const evaluatedPaket = paketList.filter(paket => paket.penilaian === 'Sudah');
@@ -472,11 +472,11 @@ export default function PenilaianPage() {
           });
           setCurrentStep(1);
           // Reload paket data to refresh status
-          if (authenticatedPPK?.satuanKerjaDetail) {
+          if (authenticatedPPK?.nip) {
             const loadPaketData = async () => {
               setIsLoading(true);
               try {
-                const response = await fetch(`/api/paket?satuanKerjaDetail=${encodeURIComponent(authenticatedPPK.satuanKerjaDetail)}`);
+                const response = await fetch(`/api/paket?nipPpk=${encodeURIComponent(authenticatedPPK.nip)}`);
                 if (response.ok) {
                   const data = await response.json();
                   setPaketList(data);

@@ -5,23 +5,28 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const satuanKerjaDetail = searchParams.get('satuanKerjaDetail');
+    const nipPpk = searchParams.get('nipPpk');
 
-    if (!satuanKerjaDetail) {
+    // Check if either satuanKerjaDetail or nipPpk is provided
+    if (!satuanKerjaDetail && !nipPpk) {
       return NextResponse.json(
-        { error: 'Parameter satuanKerjaDetail diperlukan' },
+        { error: 'Parameter satuanKerjaDetail atau nipPpk diperlukan' },
         { status: 400 }
       );
     }
 
     // Check if user is admin - admin can access all packages
-    const isAdmin = satuanKerjaDetail.toUpperCase() === 'ADMIN';
+    const isAdmin = satuanKerjaDetail?.toUpperCase() === 'ADMIN';
     
     let paketList;
     if (isAdmin) {
       // Admin gets all packages with enriched data
       paketList = await googleSheetsService.getAllPaketWithTenderInfo();
-    } else {
-      // Regular PPK gets filtered packages by their satuan kerja detail
+    } else if (nipPpk) {
+      // Regular PPK gets filtered packages by their NIP PPK
+      paketList = await googleSheetsService.getPaketByNipPpk(nipPpk);
+    } else if (satuanKerjaDetail) {
+      // For backward compatibility - PPK gets filtered packages by their satuan kerja detail
       paketList = await googleSheetsService.getPaketBySatuanKerja(satuanKerjaDetail);
     }
 
