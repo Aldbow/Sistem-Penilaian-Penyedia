@@ -265,7 +265,19 @@ export default function PenilaianPage() {
       const loadPaketData = async () => {
         setIsLoading(true);
         try {
-          const response = await fetch(`/api/paket?nipPpk=${encodeURIComponent(authenticatedPPK.nip)}`);
+          // Check if user is admin
+          const isAdmin = authenticatedPPK.satuanKerjaDetail?.toUpperCase() === 'ADMIN';
+          
+          let url;
+          if (isAdmin) {
+            // For admin, use satuanKerjaDetail=ADMIN parameter
+            url = `/api/paket?satuanKerjaDetail=ADMIN`;
+          } else {
+            // For regular PPK, use nipPpk parameter
+            url = `/api/paket?nipPpk=${encodeURIComponent(authenticatedPPK.nip)}`;
+          }
+          
+          const response = await fetch(url);
           if (response.ok) {
             const data = await response.json();
             setPaketList(data);
@@ -278,7 +290,7 @@ export default function PenilaianPage() {
       };
       loadPaketData();
     }
-  }, [isAuthenticated, authenticatedPPK?.nip]);
+  }, [isAuthenticated, authenticatedPPK?.nip, authenticatedPPK?.satuanKerjaDetail]);
 
   // Separate paket into evaluated and unevaluated
   const evaluatedPaket = paketList.filter(paket => paket.penilaian === 'Sudah');
@@ -476,7 +488,19 @@ export default function PenilaianPage() {
             const loadPaketData = async () => {
               setIsLoading(true);
               try {
-                const response = await fetch(`/api/paket?nipPpk=${encodeURIComponent(authenticatedPPK.nip)}`);
+                // Check if user is admin
+                const isAdmin = authenticatedPPK.satuanKerjaDetail?.toUpperCase() === 'ADMIN';
+                
+                let url;
+                if (isAdmin) {
+                  // For admin, use satuanKerjaDetail=ADMIN parameter
+                  url = `/api/paket?satuanKerjaDetail=ADMIN`;
+                } else {
+                  // For regular PPK, use nipPpk parameter
+                  url = `/api/paket?nipPpk=${encodeURIComponent(authenticatedPPK.nip)}`;
+                }
+                
+                const response = await fetch(url);
                 if (response.ok) {
                   const data = await response.json();
                   setPaketList(data);
