@@ -81,7 +81,7 @@ export default function HomePage() {
     search(searchQuery);
   }, [searchQuery, search]);
 
-      const { stats, topPenyedia } = useMemo(() => {
+  const { stats, topPenyedia } = useMemo(() => {
     if (!dashboardData) {
       return {
         stats: {
@@ -102,7 +102,7 @@ export default function HomePage() {
     const totalPenyedia = penyedia.length;
     const totalPenilaian = penilaian.length;
     const totalPPK = ppk.length; // Get PPK count from PPK sheet
-    
+
     // Calculate current average score
     const rataRataSkor =
       penilaian.length > 0
@@ -122,48 +122,52 @@ export default function HomePage() {
     let peningkatan = "+0%";
     if (penilaian.length > 1) {
       // Sort penilaian by date
-      const sortedPenilaian = [...penilaian].sort((a, b) => 
-        new Date(a.tanggalPenilaian).getTime() - new Date(b.tanggalPenilaian).getTime()
+      const sortedPenilaian = [...penilaian].sort(
+        (a, b) =>
+          new Date(a.tanggalPenilaian).getTime() -
+          new Date(b.tanggalPenilaian).getTime()
       );
-      
+
       // Split data into two halves for comparison
       const midIndex = Math.floor(sortedPenilaian.length / 2);
       const firstHalf = sortedPenilaian.slice(0, midIndex);
       const secondHalf = sortedPenilaian.slice(midIndex);
-      
+
       // Calculate average for each half
-      const avgFirstHalf = firstHalf.length > 0 
-        ? firstHalf.reduce((sum, p) => sum + p.skorTotal, 0) / firstHalf.length 
-        : 0;
-        
-      const avgSecondHalf = secondHalf.length > 0 
-        ? secondHalf.reduce((sum, p) => sum + p.skorTotal, 0) / secondHalf.length 
-        : 0;
-      
+      const avgFirstHalf =
+        firstHalf.length > 0
+          ? firstHalf.reduce((sum, p) => sum + p.skorTotal, 0) /
+            firstHalf.length
+          : 0;
+
+      const avgSecondHalf =
+        secondHalf.length > 0
+          ? secondHalf.reduce((sum, p) => sum + p.skorTotal, 0) /
+            secondHalf.length
+          : 0;
+
       // Calculate percentage improvement
       if (avgFirstHalf > 0) {
-        const improvement = ((avgSecondHalf - avgFirstHalf) / avgFirstHalf) * 100;
-        peningkatan = `${improvement >= 0 ? '+' : ''}${improvement.toFixed(1)}%`;
+        const improvement =
+          ((avgSecondHalf - avgFirstHalf) / avgFirstHalf) * 100;
+        peningkatan = `${improvement >= 0 ? "+" : ""}${improvement.toFixed(
+          1
+        )}%`;
       }
     }
 
     // Calculate top penyedia for the current week
     const oneWeekAgo = new Date();
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-    
+
     const penyediaWithRatings = penyedia
       .map((p: any) => {
         // Filter penilaian within the last week
-        const recentPenilaian = penilaian.filter(
-          (pnl: any) => {
-            const penilaianDate = new Date(pnl.tanggalPenilaian);
-            return (
-              pnl.idPenyedia === p.id && 
-              penilaianDate >= oneWeekAgo
-            );
-          }
-        );
-        
+        const recentPenilaian = penilaian.filter((pnl: any) => {
+          const penilaianDate = new Date(pnl.tanggalPenilaian);
+          return pnl.idPenyedia === p.id && penilaianDate >= oneWeekAgo;
+        });
+
         const totalPenilaianCount = recentPenilaian.length;
         const rataRata =
           totalPenilaianCount > 0
@@ -172,7 +176,7 @@ export default function HomePage() {
                 0
               ) / totalPenilaianCount
             : 0;
-            
+
         return {
           ...p,
           totalPenilaian: totalPenilaianCount,
@@ -232,10 +236,9 @@ export default function HomePage() {
     <AnimatedLayout>
       <div className="space-y-8 p-4 sm:p-6 lg:p-8">
         <SpeedInsights />
-        
+
         {/* Hero Section */}
         <HeroSection />
-
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
@@ -284,20 +287,22 @@ export default function HomePage() {
                   <TrendingUp className="h-6 w-6 text-blue-600 mr-2" />
                   Gambaran Kinerja
                 </h2>
-                <Link 
-                  href="/laporan" 
+                <Link
+                  href="/laporan"
                   className="text-sm text-blue-600 dark:text-blue-400 hover:underline font-medium"
                 >
                   Lihat Detail
                 </Link>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {/* Best Provider of the Week */}
                 <div className="bg-white/70 dark:bg-slate-800/70 p-4 rounded-xl">
                   <div className="flex items-center mb-2">
                     <Award className="h-5 w-5 text-yellow-600 mr-2" />
-                    <h3 className="font-semibold text-slate-700 dark:text-slate-300">Terbaik Minggu Ini</h3>
+                    <h3 className="font-semibold text-slate-700 dark:text-slate-300">
+                      Terbaik Minggu Ini
+                    </h3>
                   </div>
                   {topPenyedia.length > 0 ? (
                     <>
@@ -307,7 +312,8 @@ export default function HomePage() {
                       <div className="flex items-center mt-1">
                         <Star className="h-4 w-4 text-amber-500 fill-amber-500 mr-1" />
                         <span className="text-sm font-medium">
-                          {topPenyedia[0]?.rataRataSkor?.toFixed(1) || "-"} ({topPenyedia[0]?.totalPenilaian || 0}x)
+                          {topPenyedia[0]?.rataRataSkor?.toFixed(1) || "-"} (
+                          {topPenyedia[0]?.totalPenilaian || 0}x)
                         </span>
                       </div>
                     </>
@@ -315,34 +321,40 @@ export default function HomePage() {
                     <p className="text-lg font-bold text-slate-500">-</p>
                   )}
                 </div>
-                
+
                 {/* Today's Evaluations */}
                 <div className="bg-white/70 dark:bg-slate-800/70 p-4 rounded-xl">
                   <div className="flex items-center mb-2">
                     <FileText className="h-5 w-5 text-emerald-600 mr-2" />
-                    <h3 className="font-semibold text-slate-700 dark:text-slate-300">Penilaian Hari Ini</h3>
+                    <h3 className="font-semibold text-slate-700 dark:text-slate-300">
+                      Penilaian Hari Ini
+                    </h3>
                   </div>
                   <p className="text-2xl font-bold text-emerald-600">
                     {dashboardData?.penilaian?.filter((p: any) => {
-                      const today = new Date().toISOString().split('T')[0];
+                      const today = new Date().toISOString().split("T")[0];
                       return p.tanggalPenilaian === today;
                     }).length || 0}
                   </p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">Evaluasi dilakukan hari ini</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    Evaluasi dilakukan hari ini
+                  </p>
                 </div>
-                
+
                 {/* Performance Trend */}
                 <div className="bg-white/70 dark:bg-slate-800/70 p-4 rounded-xl">
                   <div className="flex items-center mb-2">
                     <TrendingUp className="h-5 w-5 text-purple-600 mr-2" />
-                    <h3 className="font-semibold text-slate-700 dark:text-slate-300">Tren Kinerja</h3>
+                    <h3 className="font-semibold text-slate-700 dark:text-slate-300">
+                      Tren Kinerja
+                    </h3>
                   </div>
                   <p className="text-2xl font-bold text-purple-600">
                     {stats.peningkatan || "+0%"}
                   </p>
                   <p className="text-xs text-slate-500 dark:text-slate-400">
-                    {parseFloat(stats.peningkatan || "0") >= 0 
-                      ? "Meningkat dari periode sebelumnya" 
+                    {parseFloat(stats.peningkatan || "0") >= 0
+                      ? "Meningkat dari periode sebelumnya"
                       : "Menurun dari periode sebelumnya"}
                   </p>
                 </div>
@@ -352,7 +364,7 @@ export default function HomePage() {
         </motion.div>
 
         {/* Enhanced Search Section */}
-        <SearchSection 
+        <SearchSection
           searchResults={searchResults}
           isSearching={isSearching}
           searchQuery={searchQuery}
@@ -365,9 +377,187 @@ export default function HomePage() {
 
         {/* Features */}
         <FeaturesSection />
-        
+
+        {/* Contact Form */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.5, ease: "easeOut" }}
+          className="mt-8 lg:mt-12"
+        >
+          <Card className="bg-gradient-to-br from-slate-50/80 to-white/50 dark:from-slate-800/80 dark:to-slate-700/50 border-0 shadow-2xl rounded-3xl overflow-hidden backdrop-blur-sm">
+            <CardContent className="p-6 sm:p-8 lg:p-12">
+              <div className="text-center mb-10 lg:mb-12 px-4 sm:px-6">
+                <motion.h2
+                  className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-blue-700 to-blue-600 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent mb-4 lg:mb-6"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 }}
+                >
+                  Hubungi Kami
+                </motion.h2>
+                <motion.p
+                  className="text-slate-600 dark:text-slate-300 text-base sm:text-lg lg:text-xl max-w-3xl mx-auto"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  Punya pertanyaan atau masukan? Kami siap membantu Anda
+                </motion.p>
+              </div>
+
+              <div className="max-w-3xl mx-auto">
+                <form className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label
+                        htmlFor="name"
+                        className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
+                      >
+                        Nama Lengkap
+                      </label>
+                      <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                          <svg
+                            className="h-5 w-5 text-slate-400"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                            />
+                          </svg>
+                        </div>
+                        <input
+                          type="text"
+                          id="name"
+                          name="name"
+                          className="block w-full pl-10 pr-3 py-4 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-2xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 text-base"
+                          placeholder="Nama Anda"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label
+                        htmlFor="email"
+                        className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
+                      >
+                        Email
+                      </label>
+                      <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                          <svg
+                            className="h-5 w-5 text-slate-400"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                            />
+                          </svg>
+                        </div>
+                        <input
+                          type="email"
+                          id="email"
+                          name="email"
+                          className="block w-full pl-10 pr-3 py-4 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-2xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 text-base"
+                          placeholder="email@google.com"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="subject"
+                      className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
+                    >
+                      Subjek
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg
+                          className="h-5 w-5 text-slate-400"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"
+                          />
+                        </svg>
+                      </div>
+                      <input
+                        type="text"
+                        id="subject"
+                        name="subject"
+                        className="block w-full pl-10 pr-3 py-4 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-2xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 text-base"
+                        placeholder="Subjek pesan"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="message"
+                      className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
+                    >
+                      Pesan
+                    </label>
+                    <textarea
+                      id="message"
+                      name="message"
+                      rows={5}
+                      className="block w-full px-4 py-4 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-2xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 text-base resize-none"
+                      placeholder="Tulis pesan Anda di sini..."
+                    ></textarea>
+                  </div>
+
+                  <div className="flex justify-center">
+                    <motion.button
+                      type="submit"
+                      className="px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-base"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <div className="flex items-center">
+                        <svg
+                          className="h-5 w-5 mr-2"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                          />
+                        </svg>
+                        Kirim Pesan
+                      </div>
+                    </motion.button>
+                  </div>
+                </form>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
         {/* Provider Detail Modal */}
-        <ProviderModal 
+        <ProviderModal
           isOpen={!!selectedPenyedia}
           onClose={() => setSelectedPenyedia(null)}
           penyedia={selectedPenyedia}
