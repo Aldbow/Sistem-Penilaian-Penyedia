@@ -543,6 +543,44 @@ class GoogleSheetsService {
     return enrichedPaket;
   }
 
+  // Mendapatkan paket berdasarkan NIP PPK dengan data tender pengumuman
+  async getPaketByNipPpk(nipPpk: string): Promise<any[]> {
+    // Dapatkan semua paket dan tender pengumuman secara paralel
+    const [allPaket, allTenderPengumuman] = await Promise.all([
+      this.getPaket(),
+      this.getTenderPengumuman()
+    ]);
+    
+    // Buat map untuk tender pengumuman berdasarkan kdRup untuk akses cepat
+    const tenderMap = new Map<string, TenderPengumuman>();
+    allTenderPengumuman.forEach(tender => {
+      if (tender.nipPpk === nipPpk) {
+        tenderMap.set(tender.kdRup, tender);
+      }
+    });
+    
+    // Filter paket dan gabungkan dengan data tender pengumuman
+    const enrichedPaket = allPaket
+      .filter(paket => tenderMap.has(paket.kodeRupPaket))
+      .map(paket => {
+        const tenderData = tenderMap.get(paket.kodeRupPaket);
+        return {
+          ...paket,
+          tenderInfo: tenderData || null,
+          // Add derived fields for easier access
+          namaPaket: tenderData?.namaPaket || `Paket ${paket.kodePaket}`,
+          statusTender: tenderData?.statusTender || 'Unknown',
+          metodePemilihan: tenderData?.mtdPemilihan || 'Unknown',
+          jenisKontrak: tenderData?.kontrakPembayaran || 'Unknown',
+          lokasiPekerjaan: tenderData?.lokasiPekerjaan || 'Unknown',
+          tanggalPengumuman: tenderData?.tglPengumumanTender || 'Unknown',
+          urlLpse: tenderData?.urlLpse || null,
+        };
+      });
+    
+    return enrichedPaket;
+  }
+
   // Mendapatkan daftar kode satuan kerja yang valid berdasarkan satuanKerjaDetail
   async getKodeSatuanKerjaByDetail(satuanKerjaDetail: string): Promise<string[]> {
     // Dapatkan semua data SATKER

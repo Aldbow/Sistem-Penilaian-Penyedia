@@ -261,11 +261,23 @@ export default function PenilaianPage() {
 
   // Load paket data after PPK authentication
   useEffect(() => {
-    if (isAuthenticated && authenticatedPPK?.satuanKerjaDetail) {
+    if (isAuthenticated && authenticatedPPK?.nip) {
       const loadPaketData = async () => {
         setIsLoading(true);
         try {
-          const response = await fetch(`/api/paket?satuanKerjaDetail=${encodeURIComponent(authenticatedPPK.satuanKerjaDetail)}`);
+          // Check if user is admin
+          const isAdmin = authenticatedPPK.satuanKerjaDetail?.toUpperCase() === 'ADMIN';
+          
+          let url;
+          if (isAdmin) {
+            // For admin, use satuanKerjaDetail=ADMIN parameter
+            url = `/api/paket?satuanKerjaDetail=ADMIN`;
+          } else {
+            // For regular PPK, use nipPpk parameter
+            url = `/api/paket?nipPpk=${encodeURIComponent(authenticatedPPK.nip)}`;
+          }
+          
+          const response = await fetch(url);
           if (response.ok) {
             const data = await response.json();
             setPaketList(data);
@@ -278,7 +290,7 @@ export default function PenilaianPage() {
       };
       loadPaketData();
     }
-  }, [isAuthenticated, authenticatedPPK]);
+  }, [isAuthenticated, authenticatedPPK?.nip, authenticatedPPK?.satuanKerjaDetail]);
 
   // Separate paket into evaluated and unevaluated
   const evaluatedPaket = paketList.filter(paket => paket.penilaian === 'Sudah');
@@ -472,11 +484,23 @@ export default function PenilaianPage() {
           });
           setCurrentStep(1);
           // Reload paket data to refresh status
-          if (authenticatedPPK?.satuanKerjaDetail) {
+          if (authenticatedPPK?.nip) {
             const loadPaketData = async () => {
               setIsLoading(true);
               try {
-                const response = await fetch(`/api/paket?satuanKerjaDetail=${encodeURIComponent(authenticatedPPK.satuanKerjaDetail)}`);
+                // Check if user is admin
+                const isAdmin = authenticatedPPK.satuanKerjaDetail?.toUpperCase() === 'ADMIN';
+                
+                let url;
+                if (isAdmin) {
+                  // For admin, use satuanKerjaDetail=ADMIN parameter
+                  url = `/api/paket?satuanKerjaDetail=ADMIN`;
+                } else {
+                  // For regular PPK, use nipPpk parameter
+                  url = `/api/paket?nipPpk=${encodeURIComponent(authenticatedPPK.nip)}`;
+                }
+                
+                const response = await fetch(url);
                 if (response.ok) {
                   const data = await response.json();
                   setPaketList(data);
@@ -956,8 +980,16 @@ export default function PenilaianPage() {
                                         <h3 className="font-bold text-lg text-slate-800 dark:text-slate-100 leading-tight">
                                           {paket.namaPaket || `Paket ${paket.kodePaket}`}
                                         </h3>
+                                        {paket.tahunAnggaran && (
+                                          <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                                            Tahun Anggaran: {paket.tahunAnggaran}
+                                          </p>
+                                        )}
                                         <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                                          Kode: {paket.kodePaket} • RUP: {paket.kodeRupPaket}
+                                          Kode Paket: {paket.kodePaket}
+                                        </p>
+                                        <p className="text-sm text-slate-500 dark:text-slate-400">
+                                          Kode RUP: {paket.kodeRupPaket}
                                         </p>
                                       </div>
                                       
@@ -1025,6 +1057,11 @@ export default function PenilaianPage() {
                                         <span className="px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300">
                                           {paket.statusTender}
                                         </span>
+                                        {paket.tahunAnggaran && (
+                                          <span className="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
+                                            Tahun {paket.tahunAnggaran}
+                                          </span>
+                                        )}
                                         {paket.lokasiPekerjaan !== 'Unknown' && (
                                           <span className="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300">
                                             📍 {paket.lokasiPekerjaan}
@@ -1068,8 +1105,16 @@ export default function PenilaianPage() {
                                         <h3 className="font-bold text-lg text-slate-800 dark:text-slate-100 leading-tight">
                                           {paket.namaPaket || `Paket ${paket.kodePaket}`}
                                         </h3>
+                                        {paket.tahunAnggaran && (
+                                          <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                                            Tahun Anggaran: {paket.tahunAnggaran}
+                                          </p>
+                                        )}
                                         <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                                          Kode: {paket.kodePaket} • RUP: {paket.kodeRupPaket}
+                                          Kode Paket: {paket.kodePaket}
+                                        </p>
+                                        <p className="text-sm text-slate-500 dark:text-slate-400">
+                                          Kode RUP: {paket.kodeRupPaket}
                                         </p>
                                       </div>
                                       
@@ -1182,6 +1227,16 @@ export default function PenilaianPage() {
                             {selectedPaket.namaPaket || `Paket ${selectedPaket.kodePaket}`}
                           </p>
                         </div>
+                        {selectedPaket.tahunAnggaran && (
+                          <div>
+                            <p className="text-sm font-medium text-slate-600 dark:text-slate-300">
+                              Tahun Anggaran
+                            </p>
+                            <p className="text-lg font-semibold text-slate-800 dark:text-slate-100">
+                              {selectedPaket.tahunAnggaran}
+                            </p>
+                          </div>
+                        )}
                         <div>
                           <p className="text-sm font-medium text-slate-600 dark:text-slate-300">
                             Kode Paket
@@ -1207,6 +1262,14 @@ export default function PenilaianPage() {
                               style: 'currency', 
                               currency: 'IDR' 
                             }).format(Number(selectedPaket.nilaiKontrak) || 0)}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-slate-600 dark:text-slate-300">
+                            Tahun Anggaran
+                          </p>
+                          <p className="text-lg font-semibold text-slate-800 dark:text-slate-100">
+                            {selectedPaket.tahunAnggaran || 'Tidak tersedia'}
                           </p>
                         </div>
                         {selectedPaket.tenderInfo && (
