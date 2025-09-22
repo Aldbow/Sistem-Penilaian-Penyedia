@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { ArrowLeft, BookOpen, User, FileText, BarChart3, Search, Users, Shield, CheckCircle, ChevronRight, Lightbulb } from "lucide-react";
+import { GradientText } from "@/components/ui/gradient-text";
 
 const documentationSections = [
   {
@@ -180,9 +181,9 @@ export default function DocumentationPage() {
           transition={{ duration: 0.5, delay: 0.1 }}
           className="text-center mb-12"
         >
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-700 to-blue-600 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent mb-4">
+          <GradientText as="h1" className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
             Petunjuk Penggunaan
-          </h1>
+          </GradientText>
           <p className="text-lg text-slate-600 dark:text-slate-300 max-w-3xl mx-auto">
             Panduan komprehensif untuk menggunakan Sistem Penilaian Penyedia UKPBJ Kemnaker
           </p>

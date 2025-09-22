@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { ArrowLeft, Mail, Phone, MapPin, Clock, User, Building, MessageSquare, Send } from "lucide-react";
+import { GradientText } from "@/components/ui/gradient-text";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -106,9 +107,9 @@ export default function ContactPage() {
           transition={{ duration: 0.5 }}
           className="text-center mb-12"
         >
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-700 to-blue-600 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent mb-4">
+          <GradientText as="h1" className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
             Hubungi Kami
-          </h1>
+          </GradientText>
           <p className="text-lg text-slate-600 dark:text-slate-300 max-w-3xl mx-auto">
             Punya pertanyaan atau masukan? Tim kami siap membantu Anda. Silakan isi formulir di bawah 
             atau hubungi kami melalui informasi kontak yang tersedia.
