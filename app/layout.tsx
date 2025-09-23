@@ -301,31 +301,11 @@ export default function RootLayout({
                   </div>
                 </div>
 
-                <div className="border-t border-slate-700/50 mt-10 pt-6 flex flex-col md:flex-row justify-between items-center">
+                <div className="border-t border-slate-700/50 mt-10 pt-6 flex justify-center">
                   <p className="text-slate-400 text-sm">
                     © {new Date().getFullYear()} Sistem Penilaian Penyedia UKPBJ
                     Kemnaker. Hak Cipta Dilindungi.
                   </p>
-                  <div className="mt-4 md:mt-0">
-                    <ul className="flex space-x-6">
-                      <li>
-                        <a
-                          href="/legal/syarat-ketentuan"
-                          className="text-slate-400 hover:text-white text-sm transition-colors"
-                        >
-                          Syarat & Ketentuan
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          href="/legal/kebijakan-privasi"
-                          className="text-slate-400 hover:text-white text-sm transition-colors"
-                        >
-                          Kebijakan Privasi
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
                 </div>
               </div>
             </footer>
