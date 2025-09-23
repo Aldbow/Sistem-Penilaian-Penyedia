@@ -122,7 +122,7 @@ export default function ContactPage() {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl overflow-hidden"
+            className="bg-white dark:bg-slate-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col"
           >
             <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-6">
               <h2 className="text-2xl font-bold text-white flex items-center">
@@ -134,7 +134,7 @@ export default function ContactPage() {
               </p>
             </div>
             
-            <div className="p-6 sm:p-8">
+            <div className="p-6 sm:p-8 flex-grow flex flex-col">
               {submitStatus.type && (
                 <motion.div
                   initial={{ opacity: 0, y: -10 }}
@@ -155,7 +155,7 @@ export default function ContactPage() {
                 </motion.div>
               )}
               
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-6 flex flex-col flex-grow">
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                     Nama Lengkap
@@ -219,7 +219,7 @@ export default function ContactPage() {
                   </div>
                 </div>
                 
-                <div>
+                <div className="flex-grow flex flex-col">
                   <label htmlFor="message" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                     Pesan
                   </label>
@@ -229,8 +229,7 @@ export default function ContactPage() {
                     value={formData.message}
                     onChange={handleChange}
                     required
-                    rows={5}
-                    className="block w-full px-4 py-4 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-2xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 text-base resize-none"
+                    className="flex-grow w-full px-4 py-4 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-2xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 text-base resize-none"
                     placeholder="Tulis pesan Anda di sini..."
                   ></textarea>
                 </div>
