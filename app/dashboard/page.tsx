@@ -118,7 +118,7 @@ export default function DashboardPage() {
               <span>Dashboard Controls</span>
             </CardTitle>
             <CardDescription className="text-sm">
-              Kontrol untuk mengelola tampilan dashboard
+              Kontrol untuk mengelola dashboard
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -194,7 +194,7 @@ export default function DashboardPage() {
                 <h3 className="text-base lg:text-xl font-semibold text-slate-800 dark:text-slate-100">Visualisasi Interaktif</h3>
               </div>
               <p className="text-slate-600 dark:text-slate-300 text-sm lg:text-base leading-relaxed">
-                Grafik dan chart interaktif yang memudahkan analisis performa penyedia dari berbagai aspek.
+                Grafik dan chart interaktif yang memudahkan analisis penyedia dari berbagai aspek.
               </p>
             </CardContent>
           </Card>

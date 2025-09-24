@@ -9,21 +9,21 @@ export function FeaturesSection() {
     {
       icon: Search,
       title: "Pencarian Cepat",
-      description: "Cari penyedia dengan mudah menggunakan fitur pencarian yang canggih dan responsif",
+      description: "Cari penyedia dengan mudah menggunakan fitur pencarian yang responsif",
       color: "from-blue-500 to-blue-600",
       bgColor: "bg-blue-50 dark:bg-blue-900/20"
     },
     {
       icon: Users,
       title: "Penilaian PPK",
-      description: "PPK dapat memberikan penilaian untuk penyedia dengan mudah dan cepat.",
+      description: "PPK dapat memberikan penilaian untuk penyedia dengan mudah dan cepat",
       color: "from-emerald-500 to-emerald-600",
       bgColor: "bg-emerald-50 dark:bg-emerald-900/20"
     },
     {
       icon: BarChart3,
       title: "Laporan Real-time",
-      description: "Data tersinkronisasi secara real-time dengan Google Spreadsheet untuk akurasi maksimal",
+      description: "Data tersinkronisasi secara real-time dengan Google Spreadsheet dan Dashboard",
       color: "from-purple-500 to-purple-600",
       bgColor: "bg-purple-50 dark:bg-purple-900/20"
     }

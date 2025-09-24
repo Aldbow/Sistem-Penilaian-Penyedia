@@ -567,9 +567,9 @@ export default function PenilaianPage() {
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-700 to-blue-600 bg-clip-text text-transparent">
                 Validasi PPK
               </h1>
-              <p className="mt-3 text-lg sm:text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
+              {/* <p className="mt-3 text-lg sm:text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
                 Masukkan NIP dan informasi lainnya untuk mengakses sistem penilaian penyedia
-              </p>
+              </p> */}
             </div>
           </div>
         </motion.div>
@@ -587,7 +587,7 @@ export default function PenilaianPage() {
                 <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-xl">
                   <Lock className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                 </div>
-                <span>Autentikasi PPK</span>
+                {/* <span>Autentikasi PPK</span> */}
               </CardTitle>
               <CardDescription className="text-base">
                 Silakan masukkan NIP dan informasi lainnya sesuai dengan data PPK yang terdaftar
@@ -693,9 +693,7 @@ export default function PenilaianPage() {
                   </div>
                 ) : (
                   <div className="flex items-center justify-center space-x-3">
-                    <Shield className="h-5 w-5" />
-                    <span>Validasi PPK</span>
-                    <ArrowRight className="h-5 w-5" />
+                    <span>Masuk</span>
                   </div>
                 )}
               </Button>
@@ -885,7 +883,7 @@ export default function PenilaianPage() {
                   <span>Pilih Paket Kontrak</span>
                 </CardTitle>
                 <CardDescription className="text-base">
-                  Pilih paket kontrak yang akan dinilai dari satuan kerja Anda
+                  Pilih paket kontrak yang akan Anda nilai
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
