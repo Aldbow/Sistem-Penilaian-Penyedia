@@ -567,9 +567,9 @@ export default function PenilaianPage() {
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-700 to-blue-600 bg-clip-text text-transparent">
                 Validasi PPK
               </h1>
-              <p className="mt-3 text-lg sm:text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
+              {/* <p className="mt-3 text-lg sm:text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
                 Masukkan NIP dan informasi lainnya untuk mengakses sistem penilaian penyedia
-              </p>
+              </p> */}
             </div>
           </div>
         </motion.div>
@@ -587,7 +587,7 @@ export default function PenilaianPage() {
                 <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-xl">
                   <Lock className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                 </div>
-                <span>Autentikasi PPK</span>
+                {/* <span>Autentikasi PPK</span> */}
               </CardTitle>
               <CardDescription className="text-base">
                 Silakan masukkan NIP dan informasi lainnya sesuai dengan data PPK yang terdaftar
@@ -693,9 +693,7 @@ export default function PenilaianPage() {
                   </div>
                 ) : (
                   <div className="flex items-center justify-center space-x-3">
-                    <Shield className="h-5 w-5" />
-                    <span>Validasi PPK</span>
-                    <ArrowRight className="h-5 w-5" />
+                    <span>Masuk</span>
                   </div>
                 )}
               </Button>
@@ -885,7 +883,7 @@ export default function PenilaianPage() {
                   <span>Pilih Paket Kontrak</span>
                 </CardTitle>
                 <CardDescription className="text-base">
-                  Pilih paket kontrak yang akan dinilai dari satuan kerja Anda
+                  Pilih paket kontrak yang akan Anda nilai
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -1025,37 +1023,12 @@ export default function PenilaianPage() {
                                         )}
                                       </div>
 
-                                      {/* Contract Details */}
-                                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                        <div className="bg-green-50 dark:bg-green-900/20 p-3 rounded-lg">
-                                          <p className="text-xs font-medium text-green-700 dark:text-green-300 uppercase tracking-wide">
-                                            Nilai Kontrak
-                                          </p>
-                                          <p className="text-sm font-bold text-green-800 dark:text-green-200">
-                                            {new Intl.NumberFormat('id-ID', { 
-                                              style: 'currency', 
-                                              currency: 'IDR' 
-                                            }).format(Number(paket.nilaiKontrak) || 0)}
-                                          </p>
-                                        </div>
-                                        
-                                        <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg">
-                                          <p className="text-xs font-medium text-blue-700 dark:text-blue-300 uppercase tracking-wide">
-                                            Metode
-                                          </p>
-                                          <p className="text-sm font-bold text-blue-800 dark:text-blue-200">
-                                            {paket.metodePemilihan}
-                                          </p>
-                                        </div>
-                                      </div>
+                                      
 
                                       {/* Additional Info */}
                                       <div className="flex flex-wrap items-center gap-2">
                                         <span className="px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300">
                                           Belum Dinilai
-                                        </span>
-                                        <span className="px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300">
-                                          {paket.statusTender}
                                         </span>
                                         {paket.tahunAnggaran && (
                                           <span className="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
@@ -1128,12 +1101,6 @@ export default function PenilaianPage() {
                                         </div>
                                         <p className="text-xs text-slate-500 dark:text-slate-400">
                                           NPWP: {paket.npwpPenyedia}
-                                        </p>
-                                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                                          Nilai Kontrak: {new Intl.NumberFormat('id-ID', { 
-                                            style: 'currency', 
-                                            currency: 'IDR' 
-                                          }).format(Number(paket.nilaiKontrak) || 0)}
                                         </p>
                                       </div>
 

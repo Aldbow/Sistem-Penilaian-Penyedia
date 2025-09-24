@@ -18,7 +18,7 @@ const faqData = [
       {
         question: "Siapa saja yang dapat menggunakan sistem ini?",
         answer:
-          "Sistem ini hanya dapat digunakan oleh Pejabat Pembuat Komitmen (PPK) yang terdaftar dan terverifikasi dalam sistem. Pengguna harus memiliki akun dengan kredensial yang valid untuk dapat mengakses fitur penilaian.",
+          "Sistem ini dapat digunakan oleh Pejabat Pembuat Komitmen (PPK) yang terdaftar dan terverifikasi dalam sistem untuk penilaian kinerja dari penyedia yang telah berkontrak. Pengguna PPK harus memiliki akun dengan kredensial yang valid untuk dapat mengakses fitur penilaian. selain itu, semua para staff Kemnaker dapat mengakses halaman yang disediakan untuk informasi laporan penilaian.",
       },
       {
         question: "Apakah sistem ini terintegrasi dengan sistem lain?",
@@ -31,14 +31,14 @@ const faqData = [
     category: "Autentikasi",
     questions: [
       {
-        question: "Bagaimana cara login ke sistem?",
+        question: "Bagaimana cara login ke sistem penilaian kinerja penyedia?",
         answer:
           "Untuk login ke sistem, Anda perlu mengakses halaman penilaian dan memasukkan NIP, Eselon I, dan Satuan Kerja Anda. Sistem akan memverifikasi data tersebut dengan database PPK terdaftar.",
       },
       {
         question: "Apa yang harus saya lakukan jika lupa NIP?",
         answer:
-          "Jika Anda lupa NIP, silakan hubungi administrator sistem atau unit IT Kemnaker Anda. Mereka dapat membantu memverifikasi identitas Anda dan memberikan informasi NIP yang benar.",
+          "Jika Anda lupa NIP, silakan hubungi administrator sistem. Mereka dapat membantu memverifikasi identitas Anda dan memberikan informasi NIP yang benar.",
       },
       {
         question: "Mengapa saya tidak bisa login meski data sudah benar?",
@@ -63,12 +63,12 @@ const faqData = [
       {
         question: "Apakah saya bisa mengubah penilaian yang sudah disimpan?",
         answer:
-          "Penilaian yang sudah disimpan tidak dapat diubah untuk menjaga integritas data. Namun, Anda dapat memberikan penjelasan tambahan melalui fitur komentar jika diperlukan koreksi atau klarifikasi.",
+          "Penilaian yang sudah disimpan tidak dapat diubah untuk menjaga integritas data.",
       },
       {
         question: "Bagaimana jika terjadi pemutusan kontrak?",
         answer:
-          "Jika terjadi pemutusan kontrak sepihak oleh PPK karena kesalahan penyedia, sistem menyediakan pertanyaan khusus untuk menangani kasus ini. Penyedia akan otomatis mendapat penilaian sesuai dengan prosedur yang berlaku.",
+          "Jika terjadi pemutusan kontrak sepihak karena kesalahan penyedia, sistem menyediakan pertanyaan khusus untuk menangani kasus ini. Penyedia akan otomatis mendapat penilaian sesuai dengan prosedur yang berlaku.",
       },
     ],
   },
@@ -79,11 +79,6 @@ const faqData = [
         question: "Berapa lama data penilaian akan tersedia?",
         answer:
           "Data penilaian tersedia secara real-time setelah disimpan. Anda dapat mengakses laporan dan statistik kapan saja melalui halaman Dashboard dan Laporan di sistem.",
-      },
-      {
-        question: "Apakah data penilaian bersifat rahasia?",
-        answer:
-          "Ya, data penilaian bersifat rahasia dan hanya dapat diakses oleh PPK yang berwenang serta administrator sistem. Data digunakan sesuai dengan ketentuan privasi dan keamanan yang berlaku.",
       },
       {
         question: "Bagaimana cara mengunduh laporan penilaian?",
@@ -108,7 +103,7 @@ const faqData = [
       {
         question: "Apa yang harus saya lakukan jika menemui error pada sistem?",
         answer:
-          "Jika menemui error, pertama refresh halaman dan pastikan koneksi internet Anda stabil. Jika error masih terjadi, catat detail error dan langkah-langkah yang dilakukan, lalu hubungi tim support melalui email support@kemnaker.go.id.",
+          "Jika menemui error, pertama refresh halaman dan pastikan koneksi internet Anda stabil. Jika error masih terjadi, catat detail error dan langkah-langkah yang dilakukan, lalu hubungi administrator sistem untuk bantuan.",
       },
     ],
   },
@@ -118,7 +113,7 @@ const faqData = [
       {
         question: "Bagaimana cara menghubungi support jika ada pertanyaan?",
         answer:
-          "Anda dapat menghubungi tim support melalui email support@kemnaker.go.id atau melalui form kontak yang tersedia di halaman beranda. Tim support akan merespon dalam waktu 1x24 jam kerja.",
+          "Anda dapat menghubungi tim support melalui email atau melalui form kontak yang tersedia di halaman beranda. Admin akan merespon dalam waktu 1x24 jam kerja.",
       },
       {
         question: "Apakah tersedia panduan penggunaan sistem?",
@@ -128,7 +123,7 @@ const faqData = [
       {
         question: "Bagaimana cara memberikan masukan untuk perbaikan sistem?",
         answer:
-          "Kami sangat menghargai masukan dari pengguna. Anda dapat memberikan masukan melalui form kontak di halaman beranda, atau mengirim email langsung ke feedback@kemnaker.go.id. Setiap masukan akan dipertimbangkan untuk pengembangan sistem.",
+          "Kami sangat menghargai masukan dari pengguna. Anda dapat memberikan masukan melalui form kontak di halaman beranda, atau mengirim email langsung. Setiap masukan akan dipertimbangkan untuk pengembangan sistem.",
       },
     ],
   },

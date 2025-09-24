@@ -72,14 +72,14 @@ export default function ContactPage() {
     {
       icon: <MapPin className="h-6 w-6" />,
       title: "Alamat",
-      content: "Jl. Jenderal Gatot Subroto No. 51",
-      description: "Jakarta Selatan 12190, Indonesia"
+      content: "Jl. Jendral Gatot Subroto Kav. 51",
+      description: "Daerah Khusus Ibukota Jakarta 12950, Indonesia"
     },
     {
       icon: <Clock className="h-6 w-6" />,
       title: "Jam Kerja",
       content: "Senin - Jumat",
-      description: "08:00 - 17:00 WIB"
+      description: "08:00 - 16:00 WIB"
     }
   ];
 
@@ -111,7 +111,7 @@ export default function ContactPage() {
             Hubungi Kami
           </GradientText>
           <p className="text-lg text-slate-600 dark:text-slate-300 max-w-3xl mx-auto">
-            Punya pertanyaan atau masukan? Tim kami siap membantu Anda. Silakan isi formulir di bawah 
+            Punya pertanyaan atau masukan? Kami siap membantu Anda. Silakan isi formulir di bawah 
             atau hubungi kami melalui informasi kontak yang tersedia.
           </p>
         </motion.div>
@@ -307,7 +307,7 @@ export default function ContactPage() {
               <div className="space-y-4">
                 <div className="flex justify-between items-center pb-3 border-b border-slate-200 dark:border-slate-600">
                   <span className="text-slate-600 dark:text-slate-300">Senin - Jumat</span>
-                  <span className="font-medium text-slate-800 dark:text-white">08:00 - 17:00 WIB</span>
+                  <span className="font-medium text-slate-800 dark:text-white">08:00 - 16:00 WIB</span>
                 </div>
                 <div className="flex justify-between items-center pb-3 border-b border-slate-200 dark:border-slate-600">
                   <span className="text-slate-600 dark:text-slate-300">Istirahat</span>

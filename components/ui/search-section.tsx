@@ -79,7 +79,7 @@ export function SearchSection({
         <CardContent className="p-6 md:p-8">
           <div className="text-center mb-8">
             <motion.h2 
-              className="text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-700 to-blue-600 bg-clip-text text-transparent mb-3"
+              className="text-2xl sm:text-3xl lg:text-3xl font-bold bg-gradient-to-r from-blue-700 to-blue-600 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent mb-4 lg:mb-4"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
@@ -92,8 +92,7 @@ export function SearchSection({
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
-              Cari penyedia berdasarkan nama perusahaan atau NPWP dengan
-              pencarian yang cepat dan akurat
+              Cari penyedia berdasarkan nama perusahaan atau NPWP
             </motion.p>
           </div>
 

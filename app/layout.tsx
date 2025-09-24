@@ -20,7 +20,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Sistem Penilaian Penyedia UKPBJ Kemnaker",
   description:
-    "Sistem penilaian penyedia barang/jasa untuk PPK sesuai standar UKPBJ Kemnaker",
+    "Sistem penilaian penyedia barang/jasa untuk PPK sesuai standar LKPP",
   icons: {
     icon: [
       { url: "/favicon.ico" },
@@ -119,7 +119,7 @@ export default function RootLayout({
                     </div>
                     <p className="text-slate-300 text-sm leading-relaxed">
                       Sistem penilaian penyedia barang/jasa untuk Pejabat
-                      Pembuat Komitmen sesuai standar UKPBJ Kemnaker.
+                      Pembuat Komitmen sesuai dari standar LKPP.
                     </p>
                     <div className="flex space-x-4">
                       <a
@@ -258,8 +258,7 @@ export default function RootLayout({
                       <li className="flex items-start">
                         <MapPin className="h-5 w-5 text-slate-400 mt-0.5 flex-shrink-0" />
                         <span className="ml-3 text-slate-300">
-                          Jl. Jenderal Gatot Subroto No. 51, Jakarta Selatan
-                          12190
+                          Jl. Jendral Gatot Subroto Kav. 51, Daerah Khusus Ibukota Jakarta 12950
                         </span>
                       </li>
                       <li className="flex items-center">
@@ -304,7 +303,7 @@ export default function RootLayout({
                 <div className="border-t border-slate-700/50 mt-10 pt-6 flex justify-center">
                   <p className="text-slate-400 text-sm">
                     © {new Date().getFullYear()} Sistem Penilaian Penyedia UKPBJ
-                    Kemnaker. Hak Cipta Dilindungi.
+                    Kemnaker.
                   </p>
                 </div>
               </div>
