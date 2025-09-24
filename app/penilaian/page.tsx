@@ -1023,37 +1023,12 @@ export default function PenilaianPage() {
                                         )}
                                       </div>
 
-                                      {/* Contract Details */}
-                                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                        <div className="bg-green-50 dark:bg-green-900/20 p-3 rounded-lg">
-                                          <p className="text-xs font-medium text-green-700 dark:text-green-300 uppercase tracking-wide">
-                                            Nilai Kontrak
-                                          </p>
-                                          <p className="text-sm font-bold text-green-800 dark:text-green-200">
-                                            {new Intl.NumberFormat('id-ID', { 
-                                              style: 'currency', 
-                                              currency: 'IDR' 
-                                            }).format(Number(paket.nilaiKontrak) || 0)}
-                                          </p>
-                                        </div>
-                                        
-                                        <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg">
-                                          <p className="text-xs font-medium text-blue-700 dark:text-blue-300 uppercase tracking-wide">
-                                            Metode
-                                          </p>
-                                          <p className="text-sm font-bold text-blue-800 dark:text-blue-200">
-                                            {paket.metodePemilihan}
-                                          </p>
-                                        </div>
-                                      </div>
+                                      
 
                                       {/* Additional Info */}
                                       <div className="flex flex-wrap items-center gap-2">
                                         <span className="px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300">
                                           Belum Dinilai
-                                        </span>
-                                        <span className="px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300">
-                                          {paket.statusTender}
                                         </span>
                                         {paket.tahunAnggaran && (
                                           <span className="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
@@ -1126,12 +1101,6 @@ export default function PenilaianPage() {
                                         </div>
                                         <p className="text-xs text-slate-500 dark:text-slate-400">
                                           NPWP: {paket.npwpPenyedia}
-                                        </p>
-                                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                                          Nilai Kontrak: {new Intl.NumberFormat('id-ID', { 
-                                            style: 'currency', 
-                                            currency: 'IDR' 
-                                          }).format(Number(paket.nilaiKontrak) || 0)}
                                         </p>
                                       </div>
 
