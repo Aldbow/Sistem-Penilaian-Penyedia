@@ -707,30 +707,28 @@ export default function PenilaianPage() {
   // If authenticated, show the evaluation form
   return (
     <div className="space-y-8 p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto">
-      {/* Header with PPK Info */}
+      {/* Header with prominent centered icon */}
       <motion.div 
-        className="text-center space-y-4"
+        className="flex flex-col items-center space-y-6"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
-          <motion.div 
-            className="w-16 h-16 bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl flex items-center justify-center shadow-xl"
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-          >
-            <FileText className="h-8 w-8 text-white" />
-          </motion.div>
-          <div>
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-700 to-blue-600 bg-clip-text text-transparent">
-              Penilaian Penyedia
-            </h1>
-            <p className="mt-3 text-lg sm:text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto">
-              Berikan penilaian terhadap penyedia barang/jasa berdasarkan kriteria LKPP
-            </p>
-          </div>
+        <motion.div 
+          className="w-20 h-20 bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl flex items-center justify-center shadow-xl"
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+        >
+          <FileText className="h-10 w-10 text-white" />
+        </motion.div>
+        <div className="text-center space-y-3">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-700 to-blue-600 bg-clip-text text-transparent">
+            Penilaian Penyedia
+          </h1>
+          <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto">
+            Berikan penilaian terhadap penyedia barang/jasa berdasarkan kriteria LKPP
+          </p>
         </div>
       </motion.div>
 
@@ -876,11 +874,11 @@ export default function PenilaianPage() {
           >
             <Card className="border-2 border-dashed border-blue-300/50 bg-gradient-to-br from-white/80 to-blue-50/30 dark:from-slate-800/80 dark:to-slate-900/30 shadow-xl rounded-3xl overflow-hidden backdrop-blur-sm">
               <CardHeader>
-                <CardTitle className="flex items-center space-x-3 text-xl lg:text-2xl">
-                  <div className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-100 text-blue-600 font-bold text-base">
+                <CardTitle className="flex items-center gap-3 text-xl lg:text-2xl">
+                  <div className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-100 text-blue-600 font-bold text-base flex-shrink-0">
                     1
                   </div>
-                  <span>Pilih Paket Kontrak</span>
+                  <span className="font-bold">Pilih Paket Kontrak</span>
                 </CardTitle>
                 <CardDescription className="text-base">
                   Pilih paket kontrak yang akan Anda nilai
@@ -951,7 +949,7 @@ export default function PenilaianPage() {
                       </div>
 
                       {/* Content based on active tab */}
-                      <div className="max-h-96 overflow-y-auto pr-2">
+                      <div className="max-h-[40rem] overflow-y-auto pr-2">
                         {activeTab === 'unevaluated' && (
                           <>
                             {filteredUnevaluatedPaket.length > 0 ? (
@@ -1159,11 +1157,11 @@ export default function PenilaianPage() {
             <Card className="bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 border-blue-200 dark:border-blue-700 rounded-3xl shadow-xl">
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center space-x-3 text-xl lg:text-2xl">
-                    <div className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-100 text-blue-600 font-bold text-base">
+                  <CardTitle className="flex items-center gap-3 text-xl lg:text-2xl">
+                    <div className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-100 text-blue-600 font-bold text-base flex-shrink-0">
                       2
                     </div>
-                    <span>Informasi Paket & Penyedia Terpilih</span>
+                    <span className="font-bold">Informasi Paket & Penyedia Terpilih</span>
                   </CardTitle>
                   <Button
                     variant="outline"
@@ -1389,11 +1387,11 @@ export default function PenilaianPage() {
           >
             <Card className="border-2 border-dashed border-orange-300/50 bg-gradient-to-br from-white/80 to-orange-50/30 dark:from-slate-800/80 dark:to-slate-900/30 shadow-xl rounded-3xl overflow-hidden backdrop-blur-sm">
               <CardHeader>
-                <CardTitle className="flex items-center space-x-3 text-xl lg:text-2xl">
-                  <div className="flex items-center justify-center w-10 h-10 rounded-full bg-orange-100 text-orange-600 font-bold text-base">
+                <CardTitle className="flex items-center gap-3 text-xl lg:text-2xl">
+                  <div className="flex items-center justify-center w-10 h-10 rounded-full bg-orange-100 text-orange-600 font-bold text-base flex-shrink-0">
                     3
                   </div>
-                  <span>Pertanyaan Pemutusan Kontrak</span>
+                  <span className="font-bold">Pertanyaan Pemutusan Kontrak</span>
                 </CardTitle>
                 <CardDescription className="text-base">
                   Jawab pertanyaan berikut sebelum melanjutkan ke penilaian
@@ -1539,11 +1537,11 @@ export default function PenilaianPage() {
           >
             <Card className="border-2 border-dashed border-purple-300/50 bg-gradient-to-br from-white/80 to-purple-50/30 dark:from-slate-800/80 dark:to-slate-900/30 shadow-xl rounded-3xl overflow-hidden backdrop-blur-sm">
               <CardHeader>
-                <CardTitle className="flex items-center space-x-3 text-xl lg:text-2xl">
-                  <div className="flex items-center justify-center w-10 h-10 rounded-full bg-purple-100 text-purple-600 font-bold text-base">
+                <CardTitle className="flex items-center gap-3 text-xl lg:text-2xl">
+                  <div className="flex items-center justify-center w-10 h-10 rounded-full bg-purple-100 text-purple-600 font-bold text-base flex-shrink-0">
                     4
                   </div>
-                  <span>Berikan Penilaian</span>
+                  <span className="font-bold">Berikan Penilaian</span>
                 </CardTitle>
                 <CardDescription className="text-base">
                   Berikan skor 1-3 untuk setiap kriteria penilaian sesuai standar LKPP
