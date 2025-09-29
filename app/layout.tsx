@@ -240,14 +240,6 @@ export default function RootLayout({
                           <span className="ml-2">Petunjuk Penggunaan</span>
                         </a>
                       </li>
-                      <li>
-                        <a
-                          href="#"
-                          className="text-slate-300 hover:text-white transition-colors flex items-center"
-                        >
-                          <span className="ml-2">Dokumentasi</span>
-                        </a>
-                      </li>
                     </ul>
                   </div>
 
