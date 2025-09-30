@@ -828,6 +828,263 @@ class GoogleSheetsService {
       throw error;
     }
   }
+
+  // Export comprehensive report data to Laporan sheet
+  async exportToLaporan(data: any[]): Promise<void> {
+    try {
+      if (!data || data.length === 0) {
+        console.log('No data to export');
+        return;
+      }
+
+      // Prepare headers from the first data object
+      const headers = Object.keys(data[0]);
+      
+      // Prepare values array - first row is headers, then all data rows
+      const values = [headers, ...data.map(item => headers.map(header => item[header] || ''))];
+
+      // Clear the Laporan sheet first (if it exists) or create it
+      await this.sheets.spreadsheets.values.clear({
+        spreadsheetId: process.env.GOOGLE_SHEET_ID,
+        range: 'Laporan!A:ZZ',  // Clear a large range to ensure we clear the sheet
+      });
+
+      // Write the header and data to the Laporan sheet
+      await this.sheets.spreadsheets.values.update({
+        spreadsheetId: process.env.GOOGLE_SHEET_ID,
+        range: 'Laporan!A1',  // Start from A1
+        valueInputOption: 'RAW',
+        resource: { values },
+      });
+
+      console.log(`Successfully exported ${data.length} records to Laporan sheet`);
+    } catch (error) {
+      console.error('Error exporting to Laporan sheet:', error);
+      throw error;
+    }
+  }
+  
+  // Generate comprehensive report data similar to the prepareExportData function in laporan page
+  async generateLaporanData(): Promise<any[]> {
+    try {
+      // Get all necessary data
+      const [penyedia, penilaian, ppk] = await Promise.all([
+        this.getPenyedia(),
+        this.getPenilaian(),
+        this.getPPK()
+      ]);
+
+      // Calculate Wilson Score Confidence Interval
+      const calculateWilsonScore = (successRate: number, totalSamples: number, confidence: number = 1.96): number => {
+        if (totalSamples === 0) return 0;
+        
+        const p = successRate;
+        const n = totalSamples;
+        const z = confidence; // 1.96 for 95% confidence interval
+        
+        const numerator = p + (z * z) / (2 * n) - z * Math.sqrt((p * (1 - p) + (z * z) / (4 * n)) / n);
+        const denominator = 1 + (z * z) / n;
+        
+        return Math.max(0, numerator / denominator);
+      };
+
+      // Convert LKPP score (1-3) to Wilson Score
+      const calculateProviderWilsonScore = (rataRataSkor: number, totalPenilaian: number): number => {
+        if (totalPenilaian === 0) return 0;
+        
+        // Convert score 1-3 to success rate (0-1)
+        // Score 1 = 0% success, Score 2 = 50% success, Score 3 = 100% success
+        const successRate = Math.max(0, Math.min(1, (rataRataSkor - 1) / 2));
+        
+        const wilsonScore = calculateWilsonScore(successRate, totalPenilaian);
+        
+        // Convert back to 1-3 scale
+        return 1 + (wilsonScore * 2);
+      };
+
+      // Get rating text based on LKPP scale
+      const getRatingText = (rating: number) => {
+        if (rating === 3) return 'Sangat Baik';
+        if (rating >= 2 && rating < 3) return 'Baik';
+        if (rating >= 1 && rating < 2) return 'Cukup';
+        if (rating === 0) return 'Buruk';
+        return 'Cukup'; // fallback
+      };
+
+      // Helper function to get criteria rating
+      const getCriteriaRating = (score: number) => {
+        if (score >= 2.5) return 'Sangat Baik';
+        if (score >= 2.0) return 'Baik';
+        if (score >= 1.5) return 'Cukup';
+        return 'Perlu Perbaikan';
+      };
+
+      // Combine data for each provider
+      const combinedData = penyedia.map(p => {
+        const penilaianPenyedia = penilaian.filter(pnl => pnl.idPenyedia === p.id);
+        const totalPenilaian = penilaianPenyedia.length;
+        const rataRataSkor = totalPenilaian > 0 
+          ? penilaianPenyedia.reduce((sum, pnl) => sum + pnl.skorTotal, 0) / totalPenilaian
+          : 0;
+          
+        // Sort penilaian by date without mutating the original array
+        const sortedPenilaian = [...penilaianPenyedia].sort((a, b) => 
+          new Date(b.tanggalPenilaian).getTime() - new Date(a.tanggalPenilaian).getTime()
+        );
+        
+        const penilaianTerbaru = totalPenilaian > 0
+          ? sortedPenilaian[0].tanggalPenilaian
+          : '-';
+
+        // Calculate criteria averages
+        const avgKualitas = penilaianPenyedia.length > 0 
+          ? penilaianPenyedia.reduce((sum, p) => sum + (p.kualitasKuantitasBarangJasa || 0), 0) / penilaianPenyedia.length
+          : 0;
+        const avgBiaya = penilaianPenyedia.length > 0 
+          ? penilaianPenyedia.reduce((sum, p) => sum + (p.biaya || 0), 0) / penilaianPenyedia.length
+          : 0;
+        const avgWaktu = penilaianPenyedia.length > 0 
+          ? penilaianPenyedia.reduce((sum, p) => sum + (p.waktu || 0), 0) / penilaianPenyedia.length
+          : 0;
+        const avgLayanan = penilaianPenyedia.length > 0 
+          ? penilaianPenyedia.reduce((sum, p) => sum + (p.layanan || 0), 0) / penilaianPenyedia.length
+          : 0;
+
+        // Calculate standard deviation for consistency analysis
+        const scores = penilaianPenyedia.map(p => p.skorTotal);
+        const mean = rataRataSkor;
+        const variance = scores.length > 1 
+          ? scores.reduce((sum, score) => sum + Math.pow(score - mean, 2), 0) / (scores.length - 1)
+          : 0;
+        const stdDev = Math.sqrt(variance);
+
+        // Get unique PPKs who evaluated this provider
+        const uniquePPKs = Array.from(new Set(penilaianPenyedia.map(p => p.namaPPK))).length;
+
+        // Calculate trend (compare first half vs second half of evaluations)
+        let trend = 'Stabil';
+        if (penilaianPenyedia.length >= 4) {
+          const sortedEvals = [...penilaianPenyedia].sort((a, b) => 
+            new Date(a.tanggalPenilaian).getTime() - new Date(b.tanggalPenilaian).getTime()
+          );
+          const midIndex = Math.floor(sortedEvals.length / 2);
+          const firstHalf = sortedEvals.slice(0, midIndex);
+          const secondHalf = sortedEvals.slice(midIndex);
+          
+          const avgFirst = firstHalf.reduce((sum, p) => sum + p.skorTotal, 0) / firstHalf.length;
+          const avgSecond = secondHalf.reduce((sum, p) => sum + p.skorTotal, 0) / secondHalf.length;
+          
+          if (avgSecond > avgFirst + 0.2) trend = 'Meningkat';
+          else if (avgSecond < avgFirst - 0.2) trend = 'Menurun';
+        }
+
+        // Get evaluation period
+        const dates = penilaianPenyedia.map(p => new Date(p.tanggalPenilaian));
+        const earliestDate = dates.length > 0 ? new Date(Math.min(...dates.map(d => d.getTime()))) : null;
+        const latestDate = dates.length > 0 ? new Date(Math.max(...dates.map(d => d.getTime()))) : null;
+
+        // Calculate Wilson Score
+        const wilsonScore = calculateProviderWilsonScore(rataRataSkor, totalPenilaian);
+
+        return {
+          // === INFORMASI DASAR PENYEDIA ===
+          'ID Penyedia': p.id,
+          'Nama Perusahaan': p.namaPerusahaan,
+          'NPWP': p.npwp,
+
+          // === STATISTIK PENILAIAN KESELURUHAN ===
+          'Total Penilaian': totalPenilaian,
+          'Rata-rata Skor Keseluruhan': rataRataSkor.toFixed(2),
+          'Rating Kategori': getRatingText(rataRataSkor),
+          'Wilson Score': wilsonScore.toFixed(3),
+          'Penilaian Terbaru': penilaianTerbaru !== '-' 
+            ? new Date(penilaianTerbaru).toLocaleDateString('id-ID')
+            : 'Belum ada',
+
+          // === ANALISIS PER ASPEK PENILAIAN ===
+          'Rata-rata Kualitas': avgKualitas.toFixed(2),
+          'Rating Kualitas': getCriteriaRating(avgKualitas),
+          'Rata-rata Biaya': avgBiaya.toFixed(2),
+          'Rating Biaya': getCriteriaRating(avgBiaya),
+          'Rata-rata Waktu': avgWaktu.toFixed(2),
+          'Rating Waktu': getCriteriaRating(avgWaktu),
+          'Rata-rata Layanan': avgLayanan.toFixed(2),
+          'Rating Layanan': getCriteriaRating(avgLayanan),
+
+          // === METADATA UNTUK ANALISIS ===
+          'Jumlah PPK Penilai': uniquePPKs,
+          'Konsistensi Penilaian (StdDev)': stdDev.toFixed(3),
+          'Trend Penilaian': trend,
+          'Periode Evaluasi Awal': earliestDate ? earliestDate.toLocaleDateString('id-ID') : '-',
+          'Periode Evaluasi Akhir': latestDate ? latestDate.toLocaleDateString('id-ID') : '-',
+          'Rentang Evaluasi (Hari)': earliestDate && latestDate 
+            ? Math.ceil((latestDate.getTime() - earliestDate.getTime()) / (1000 * 60 * 60 * 24))
+            : 0,
+
+          // === DETAIL RIWAYAT PENILAIAN (untuk analisis mendalam) ===
+          'Riwayat Penilaian': penilaianPenyedia.map((evaluation, index) => 
+            `[${index + 1}] ${new Date(evaluation.tanggalPenilaian).toLocaleDateString('id-ID')} - ${evaluation.namaPPK} - Skor: ${evaluation.skorTotal} (K:${evaluation.kualitasKuantitasBarangJasa || 0}, B:${evaluation.biaya || 0}, W:${evaluation.waktu || 0}, L:${evaluation.layanan || 0}) - ${evaluation.penilaianAkhir || getRatingText(evaluation.skorTotal)}`
+          ).join(' | '),
+
+          // === ANALISIS TAMBAHAN ===
+          'Skor Tertinggi': penilaianPenyedia.length > 0 ? Math.max(...scores).toFixed(1) : '-',
+          'Skor Terendah': penilaianPenyedia.length > 0 ? Math.min(...scores).toFixed(1) : '-',
+          'Persentase Penilaian Sangat Baik': penilaianPenyedia.length > 0 
+            ? ((penilaianPenyedia.filter(p => p.skorTotal >= 2.5).length / penilaianPenyedia.length) * 100).toFixed(1) + '%'
+            : '0%',
+          'Persentase Penilaian Baik': penilaianPenyedia.length > 0 
+            ? ((penilaianPenyedia.filter(p => p.skorTotal >= 2 && p.skorTotal < 2.5).length / penilaianPenyedia.length) * 100).toFixed(1) + '%'
+            : '0%',
+          'Persentase Penilaian Cukup': penilaianPenyedia.length > 0 
+            ? ((penilaianPenyedia.filter(p => p.skorTotal >= 1 && p.skorTotal < 2).length / penilaianPenyedia.length) * 100).toFixed(1) + '%'
+            : '0%'
+        }
+      });
+
+      return combinedData;
+    } catch (error) {
+      console.error('Error generating laporan data:', error);
+      throw error;
+    }
+  }
+  
+  // Update Laporan sheet with comprehensive report data
+  async updateLaporanSheet(): Promise<void> {
+    try {
+      // Generate the latest report data
+      const data = await this.generateLaporanData();
+      
+      if (!data || data.length === 0) {
+        console.log('No data to update in Laporan sheet');
+        return;
+      }
+
+      // Prepare headers from the first data object
+      const headers = Object.keys(data[0]);
+      
+      // Prepare values array - first row is headers, then all data rows
+      const values = [headers, ...data.map(item => headers.map(header => item[header] || ''))];
+
+      // Clear the Laporan sheet first (if it exists) or create it
+      await this.sheets.spreadsheets.values.clear({
+        spreadsheetId: process.env.GOOGLE_SHEET_ID,
+        range: 'Laporan!A:ZZ',  // Clear a large range to ensure we clear the sheet
+      });
+
+      // Write the header and data to the Laporan sheet
+      await this.sheets.spreadsheets.values.update({
+        spreadsheetId: process.env.GOOGLE_SHEET_ID,
+        range: 'Laporan!A1',  // Start from A1
+        valueInputOption: 'RAW',
+        resource: { values },
+      });
+
+      console.log(`Successfully updated Laporan sheet with ${data.length} records`);
+    } catch (error) {
+      console.error('Error updating Laporan sheet:', error);
+      throw error;
+    }
+  }
 }
 
 export const googleSheetsService = new GoogleSheetsService();

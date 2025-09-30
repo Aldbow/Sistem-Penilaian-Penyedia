@@ -51,6 +51,14 @@ export async function POST(request: NextRequest) {
       await googleSheetsService.updatePenilaianStatus(body.kodePaket, body.kodePenyedia, 'Sudah');
     }
     
+    // Update the Laporan sheet with the latest comprehensive data
+    try {
+      await googleSheetsService.updateLaporanSheet();
+    } catch (error) {
+      console.error('Error updating Laporan sheet:', error);
+      // Don't fail the entire request if Laporan update fails, just log the error
+    }
+    
     return NextResponse.json({ message: 'Penilaian berhasil disimpan' });
   } catch (error) {
     console.error('Error adding penilaian:', error);

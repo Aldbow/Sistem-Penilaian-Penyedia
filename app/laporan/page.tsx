@@ -486,6 +486,33 @@ export default function LaporanPage() {
     document.body.removeChild(link)
   }
 
+  // Export data to Google Sheets Laporan tab
+  const exportToLaporan = async () => {
+    try {
+      const data = prepareExportData();
+      const response = await fetch('/api/laporan', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        // Show success message
+        alert(`Berhasil mengekspor ${data.length} record ke sheet Laporan!`);
+      } else {
+        // Show error message
+        alert(`Gagal mengekspor data: ${result.error}`);
+      }
+    } catch (error) {
+      console.error('Error exporting to Laporan:', error);
+      alert('Terjadi kesalahan saat mengekspor data ke sheet Laporan');
+    }
+  }
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-96">
@@ -929,6 +956,10 @@ export default function LaporanPage() {
                       <DropdownMenuItem onClick={exportToExcel}>
                         <FileSpreadsheet className="h-5 w-5 mr-2" />
                         Export Excel
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={exportToLaporan}>
+                        <FileSpreadsheet className="h-5 w-5 mr-2" />
+                        Export ke Laporan (Google Sheets)
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
