@@ -453,7 +453,20 @@ export function LaporanModal({ isOpen, onClose, penyedia }: LaporanModalProps) {
                             </div>
                             <div className="flex items-center">
                               <span className="text-xs text-slate-600 dark:text-slate-300">
-                                <span className="font-medium">Kontrak:</span> {penilaian.nilaiKontrak || "Tidak Tersedia"}
+                                <span className="font-medium">Status:</span> {penilaian.status || "Tidak Tersedia"}
+                              </span>
+                            </div>
+                          </div>
+                          
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
+                            <div className="flex items-center">
+                              <span className="text-xs text-slate-600 dark:text-slate-300">
+                                <span className="font-medium">Metode:</span> {penilaian.metodePemilihan || "-"}
+                              </span>
+                            </div>
+                            <div className="flex items-center">
+                              <span className="text-xs text-slate-600 dark:text-slate-300">
+                                <span className="font-medium">Jenis:</span> {penilaian.jenisPengadaan || "-"}
                               </span>
                             </div>
                           </div>
@@ -476,28 +489,6 @@ export function LaporanModal({ isOpen, onClose, penyedia }: LaporanModalProps) {
                               getRatingEvaluationText(penilaian.skorTotal)}
                           </div>
                         </div>
-
-                        {/* Additional Details */}
-                        <div className="grid grid-cols-2 gap-2 mt-3 text-xs">
-                          <div className="flex items-center">
-                            <span className="text-slate-600 dark:text-slate-300">
-                              <span className="font-medium">Metode:</span> {penilaian.metodePemilihan || "-"}
-                            </span>
-                          </div>
-                          <div className="flex items-center">
-                            <span className="text-slate-600 dark:text-slate-300">
-                              <span className="font-medium">Jenis:</span> {penilaian.jenisPengadaan || "-"}
-                            </span>
-                          </div>
-                        </div>
-
-                        {penilaian.keterangan && (
-                          <div className="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
-                            <p className="text-xs text-slate-600 dark:text-slate-300">
-                              {penilaian.keterangan}
-                            </p>
-                          </div>
-                        )}
                       </motion.div>
                     ))}
                   </div>
