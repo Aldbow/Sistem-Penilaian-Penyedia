@@ -829,40 +829,7 @@ class GoogleSheetsService {
     }
   }
 
-  // Export comprehensive report data to Laporan sheet
-  async exportToLaporan(data: any[]): Promise<void> {
-    try {
-      if (!data || data.length === 0) {
-        console.log('No data to export');
-        return;
-      }
-
-      // Prepare headers from the first data object
-      const headers = Object.keys(data[0]);
-      
-      // Prepare values array - first row is headers, then all data rows
-      const values = [headers, ...data.map(item => headers.map(header => item[header] || ''))];
-
-      // Clear the Laporan sheet first (if it exists) or create it
-      await this.sheets.spreadsheets.values.clear({
-        spreadsheetId: process.env.GOOGLE_SHEET_ID,
-        range: 'Laporan!A:ZZ',  // Clear a large range to ensure we clear the sheet
-      });
-
-      // Write the header and data to the Laporan sheet
-      await this.sheets.spreadsheets.values.update({
-        spreadsheetId: process.env.GOOGLE_SHEET_ID,
-        range: 'Laporan!A1',  // Start from A1
-        valueInputOption: 'RAW',
-        resource: { values },
-      });
-
-      console.log(`Successfully exported ${data.length} records to Laporan sheet`);
-    } catch (error) {
-      console.error('Error exporting to Laporan sheet:', error);
-      throw error;
-    }
-  }
+  
   
   // Generate comprehensive report data similar to the prepareExportData function in laporan page
   async generateLaporanData(): Promise<any[]> {

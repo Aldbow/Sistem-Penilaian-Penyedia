@@ -30,6 +30,7 @@ interface Penilaian {
   biaya?: number;
   waktu?: number;
   layanan?: number;
+  status?: string;
   // Additional field for package code
   kodePaket?: string;
 }
