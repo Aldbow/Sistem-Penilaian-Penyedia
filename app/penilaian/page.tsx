@@ -1192,16 +1192,14 @@ export default function PenilaianPage() {
                             {selectedPaket.namaPaket || `Paket ${selectedPaket.kodePaket}`}
                           </p>
                         </div>
-                        {selectedPaket.tahunAnggaran && (
-                          <div>
-                            <p className="text-sm font-medium text-slate-600 dark:text-slate-300">
-                              Tahun Anggaran
-                            </p>
-                            <p className="text-lg font-semibold text-slate-800 dark:text-slate-100">
-                              {selectedPaket.tahunAnggaran}
-                            </p>
-                          </div>
-                        )}
+                        <div>
+                          <p className="text-sm font-medium text-slate-600 dark:text-slate-300">
+                            Tahun Anggaran
+                          </p>
+                          <p className="text-lg font-semibold text-slate-800 dark:text-slate-100">
+                            {selectedPaket.tahunAnggaran || 'Tidak tersedia'}
+                          </p>
+                        </div>
                         <div>
                           <p className="text-sm font-medium text-slate-600 dark:text-slate-300">
                             Kode Paket
@@ -1229,21 +1227,14 @@ export default function PenilaianPage() {
                             }).format(Number(selectedPaket.nilaiKontrak) || 0)}
                           </p>
                         </div>
-                        <div>
-                          <p className="text-sm font-medium text-slate-600 dark:text-slate-300">
-                            Tahun Anggaran
-                          </p>
-                          <p className="text-lg font-semibold text-slate-800 dark:text-slate-100">
-                            {selectedPaket.tahunAnggaran || 'Tidak tersedia'}
-                          </p>
-                        </div>
+
                         {selectedPaket.tenderInfo && (
                           <>
                             <div>
                               <p className="text-sm font-medium text-slate-600 dark:text-slate-300">
                                 Metode Pemilihan
                               </p>
-                              <p className="text-base text-slate-800 dark:text-slate-100">
+                              <p className="text-lg font-semibold text-slate-800 dark:text-slate-100">
                                 {selectedPaket.metodePemilihan || 'Unknown'}
                               </p>
                             </div>
@@ -1251,15 +1242,17 @@ export default function PenilaianPage() {
                               <p className="text-sm font-medium text-slate-600 dark:text-slate-300">
                                 Status Tender
                               </p>
-                              <span className="inline-flex px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
-                                {selectedPaket.statusTender || 'Unknown'}
-                              </span>
+                              <p className="text-lg font-semibold text-slate-800 dark:text-slate-100">
+                                <span className="inline-flex px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
+                                  {selectedPaket.statusTender || 'Unknown'}
+                                </span>
+                              </p>
                             </div>
                             <div>
                               <p className="text-sm font-medium text-slate-600 dark:text-slate-300">
                                 Lokasi Pekerjaan
                               </p>
-                              <p className="text-base text-slate-800 dark:text-slate-100">
+                              <p className="text-lg font-semibold text-slate-800 dark:text-slate-100">
                                 {selectedPaket.lokasiPekerjaan || 'Unknown'}
                               </p>
                             </div>
