@@ -949,7 +949,7 @@ export default function PenilaianPage() {
                       </div>
 
                       {/* Content based on active tab */}
-                      <div className="max-h-[40rem] overflow-y-auto pr-2">
+                      <div className="max-h-[60rem] overflow-y-auto pr-2">
                         {activeTab === 'unevaluated' && (
                           <>
                             {filteredUnevaluatedPaket.length > 0 ? (
