@@ -960,14 +960,35 @@ export default function PenilaianPage() {
                                   animate={{ opacity: 1, y: 0 }}
                                   transition={{ duration: 0.2 }}
                                   onClick={() => {
-                                    setSelectedPaket(paket);
-                                    // Remove automatic navigation to step 2
+                                    // Check if status contains "Gagal" or "Batal" (case insensitive)
+                                    const isStatusGagalOrBatal = paket.statusTender && 
+                                      (paket.statusTender.toLowerCase().includes('gagal') || 
+                                       paket.statusTender.toLowerCase().includes('batal'));
+                                    // Only allow selection if the package status is not "Gagal" or "Batal"
+                                    if (!isStatusGagalOrBatal) {
+                                      setSelectedPaket(paket);
+                                      // Remove automatic navigation to step 2
+                                    }
                                   }}
-                                  className={`p-6 rounded-2xl border-2 cursor-pointer transition-all duration-300 mb-4 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 ${
-                                    selectedPaket?.kodePaket === paket.kodePaket && selectedPaket?.kodePenyedia === paket.kodePenyedia
-                                      ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 ring-2 ring-blue-500 ring-opacity-50 shadow-lg"
-                                      : "border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-500 shadow-sm"
-                                  }`}
+                                  className={`p-6 rounded-2xl border-2 ${(() => {
+                                    const isStatusGagalOrBatal = paket.statusTender && 
+                                      (paket.statusTender.toLowerCase().includes('gagal') || 
+                                       paket.statusTender.toLowerCase().includes('batal'));
+                                    return isStatusGagalOrBatal 
+                                      ? 'bg-gray-100/40 dark:bg-gray-900/30 opacity-70 cursor-not-allowed' 
+                                      : 'cursor-pointer hover:bg-blue-50/50 dark:hover:bg-blue-900/20';
+                                  })()} transition-all duration-300 mb-4 ${(() => {
+                                    const isStatusGagalOrBatal = paket.statusTender && 
+                                      (paket.statusTender.toLowerCase().includes('gagal') || 
+                                       paket.statusTender.toLowerCase().includes('batal'));
+                                    if (isStatusGagalOrBatal) {
+                                      return 'border-gray-300 dark:border-gray-600';
+                                    } else if (selectedPaket?.kodePaket === paket.kodePaket && selectedPaket?.kodePenyedia === paket.kodePenyedia) {
+                                      return 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 ring-2 ring-blue-500 ring-opacity-50 shadow-lg';
+                                    } else {
+                                      return 'border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-500 shadow-sm';
+                                    }
+                                  })()}`}
                                 >
                                   <div className="flex items-start justify-between">
                                     <div className="flex-1 min-w-0 space-y-4">
@@ -990,7 +1011,12 @@ export default function PenilaianPage() {
                                       </div>
                                       
                                       {/* Provider Info */}
-                                      <div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-lg">
+                                      <div className={`bg-slate-50 dark:bg-slate-800 p-4 rounded-lg ${(() => {
+                                        const isStatusGagalOrBatal = paket.statusTender && 
+                                          (paket.statusTender.toLowerCase().includes('gagal') || 
+                                           paket.statusTender.toLowerCase().includes('batal'));
+                                        return isStatusGagalOrBatal ? 'opacity-70' : '';
+                                      })()}`}>
                                         <div className="flex items-center space-x-2 mb-2">
                                           <Building2 className="h-4 w-4 text-slate-500" />
                                           <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
@@ -1009,7 +1035,14 @@ export default function PenilaianPage() {
                                             </div>
                                             <div>
                                               <span className="text-slate-500 dark:text-slate-400">Status:</span>
-                                              <span className="ml-2 px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
+                                              <span className={`ml-2 px-2 py-1 rounded-full text-xs ${(() => {
+                                                const isStatusGagalOrBatal = paket.statusTender && 
+                                                  (paket.statusTender.toLowerCase().includes('gagal') || 
+                                                   paket.statusTender.toLowerCase().includes('batal'));
+                                                return isStatusGagalOrBatal 
+                                                  ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300' 
+                                                  : 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300';
+                                              })()}`}>
                                                 {paket.statusTender || 'Unknown'}
                                               </span>
                                             </div>
@@ -1025,15 +1058,47 @@ export default function PenilaianPage() {
 
                                       {/* Additional Info */}
                                       <div className="flex flex-wrap items-center gap-2">
-                                        <span className="px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300">
-                                          Belum Dinilai
+                                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${(() => {
+                                          const isStatusGagalOrBatal = paket.statusTender && 
+                                            (paket.statusTender.toLowerCase().includes('gagal') || 
+                                             paket.statusTender.toLowerCase().includes('batal'));
+                                          return isStatusGagalOrBatal 
+                                            ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300' 
+                                            : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300';
+                                        })()}`}>
+                                          {(() => {
+                                            const isStatusGagalOrBatal = paket.statusTender && 
+                                              (paket.statusTender.toLowerCase().includes('gagal') || 
+                                               paket.statusTender.toLowerCase().includes('batal'));
+                                            return isStatusGagalOrBatal ? `${paket.statusTender || 'Status Gagal/Batal'}` : 'Belum Dinilai';
+                                          })()}
                                         </span>
                                       </div>
                                     </div>
                                     
-                                    {selectedPaket?.kodePaket === paket.kodePaket && selectedPaket?.kodePenyedia === paket.kodePenyedia && (
-                                      <CheckCircle className="h-6 w-6 text-blue-500 flex-shrink-0 ml-3" />
-                                    )}
+                                    {/* Check if status contains "Gagal" or "Batal" (case insensitive) */}
+                                    {(() => {
+                                      const isStatusGagalOrBatal = paket.statusTender && 
+                                        (paket.statusTender.toLowerCase().includes('gagal') || 
+                                         paket.statusTender.toLowerCase().includes('batal'));
+                                      
+
+                                      return (
+                                        <>
+                                          {isStatusGagalOrBatal && (
+                                            <div className="relative">
+                                              <Lock className="h-6 w-6 text-slate-400 flex-shrink-0 ml-3" />
+                                              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                                                !
+                                              </span>
+                                            </div>
+                                          )}
+                                          {!isStatusGagalOrBatal && selectedPaket?.kodePaket === paket.kodePaket && selectedPaket?.kodePenyedia === paket.kodePenyedia && (
+                                            <CheckCircle className="h-6 w-6 text-blue-500 flex-shrink-0 ml-3" />
+                                          )}
+                                        </>
+                                      );
+                                    })()}
                                   </div>
                                 </motion.div>
                               ))
