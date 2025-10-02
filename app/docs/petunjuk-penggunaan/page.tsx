@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import Image from "next/image";
 import { ArrowLeft, BookOpen, Shield, FileText, BarChart3, Search, Users, CheckCircle, ChevronRight, Lightbulb, Building2, TrendingUp, Star, Mail, HelpCircle, Smartphone, Globe, Database, Lock, Layers, User, Building, FileBarChart, Filter, Download, RefreshCw, Eye, Calendar, Clock, Handshake, Scale, Coins, Package, Tag, Ruler, History, BookText, Gavel, FileSpreadsheet, Network, Award, Target, ShieldCheck } from "lucide-react";
 import { GradientText } from "@/components/ui/gradient-text";
 
@@ -19,20 +18,7 @@ const documentationSections = [
           <p className="text-slate-600 dark:text-slate-300 mb-6">
             Pengembangan Sistem Penilaian Penyedia UKPBJ Kemnaker dilatarbelakangi oleh kebutuhan mendesak untuk meningkatkan transparansi, akuntabilitas, dan efisiensi dalam proses pengadaan barang/jasa di lingkungan Kementerian Ketenagakerjaan.
           </p>
-          <div className="relative h-48 w-full rounded-xl overflow-hidden mb-6">
-            <Image 
-              src="/img/pengadaan-banner.jpg" 
-              alt="Proses Pengadaan Barang/Jasa" 
-              fill
-              className="object-cover"
-              priority
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-            <div className="absolute bottom-4 left-4 text-white">
-              <h4 className="text-lg font-semibold">Proses Pengadaan Barang/Jasa</h4>
-              <p className="text-sm opacity-90">Meningkatkan efisiensi dan transparansi dalam pengadaan</p>
-            </div>
-          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="bg-white dark:bg-slate-800/50 p-4 rounded-lg border border-slate-200 dark:border-slate-700">
               <h4 className="font-semibold text-slate-800 dark:text-white mb-2 flex items-center">
@@ -115,30 +101,6 @@ const documentationSections = [
         </div>
         
         <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
-          <h3 className="text-lg font-semibold text-slate-800 dark:text-white mb-4">2.2 Peraturan Lainnya</h3>
-          <ul className="space-y-4">
-            <li className="border-l-4 border-green-500 pl-4 py-2 bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
-              <h4 className="font-medium text-slate-800 dark:text-white">Peraturan LKPP Nomor 7 Tahun 2021</h4>
-              <p className="text-slate-600 dark:text-slate-400 mt-1">
-                tentang Pemilihan Penyedia Barang/Jasa dengan Penunjukan Langsung, Seleksi Sederhana, Seleksi Umum, Seleksi Terbatas, Kontak Pengadaan Barang/Jasa, dan Pengadaan Langsung
-              </p>
-            </li>
-            <li className="border-l-4 border-purple-500 pl-4 py-2 bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg">
-              <h4 className="font-medium text-slate-800 dark:text-white">Peraturan LKPP Nomor 8 Tahun 2021</h4>
-              <p className="text-slate-600 dark:text-slate-400 mt-1">
-                tentang Manajemen Dan Rekayasa, Tata Letak Dan Penataan Ruang, Pemeliharaan Bangunan Gedung Negara
-              </p>
-            </li>
-            <li className="border-l-4 border-indigo-500 pl-4 py-2 bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-lg">
-              <h4 className="font-medium text-slate-800 dark:text-white">Peraturan Menteri PAN-RB Nomor 51 Tahun 2021</h4>
-              <p className="text-slate-600 dark:text-slate-400 mt-1">
-                tentang Pedoman Evaluasi Pengadaan Barang/Jasa Pemerintah
-              </p>
-            </li>
-          </ul>
-        </div>
-        
-        <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
           <h3 className="text-lg font-semibold text-slate-800 dark:text-white mb-4">2.3 Hubungan dengan Sistem Penilaian</h3>
           <p className="text-slate-600 dark:text-slate-300 mb-4">
             Sistem Penilaian Penyedia UKPBJ Kemnaker dirancang sesuai dengan ketentuan yang tertuang dalam berbagai peraturan tersebut, khususnya dalam hal:
@@ -172,23 +134,11 @@ const documentationSections = [
     content: (
       <div className="space-y-6">
         <h3 className="text-xl font-semibold text-slate-800 dark:text-white">3.1 Deskripsi Sistem</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="space-y-6">
           <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
             <p className="text-slate-600 dark:text-slate-300">
               Sistem Penilaian Penyedia UKPBJ Kemnaker adalah aplikasi web modern yang dirancang khusus untuk memfasilitasi Pejabat Pembuat Komitmen (PPK) dalam melakukan evaluasi terhadap penyedia barang/jasa sesuai dengan standar LKPP (Lembaga Kebijakan Pengadaan Barang/Jasa Pemerintah). Sistem ini terintegrasi secara real-time dengan Google Spreadsheet untuk memudahkan proses penilaian dan pelaporan.
             </p>
-          </div>
-          <div className="relative h-48 rounded-xl overflow-hidden">
-            <Image 
-              src="/img/sistem-penilaian.jpg" 
-              alt="Sistem Penilaian Penyedia" 
-              fill
-              className="object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-            <div className="absolute bottom-4 left-4 text-white">
-              <h4 className="font-semibold">Sistem Penilaian Penyedia</h4>
-            </div>
           </div>
         </div>
         
@@ -247,19 +197,7 @@ const documentationSections = [
     content: (
       <div className="space-y-6">
         <h3 className="text-xl font-semibold text-slate-800 dark:text-white">4.1 Tampilan Halaman Utama</h3>
-        <div className="relative h-64 rounded-xl overflow-hidden mb-6">
-          <Image 
-            src="/img/halaman-utama.jpg" 
-            alt="Tampilan Halaman Utama Sistem" 
-            fill
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-          <div className="absolute bottom-4 left-4 text-white">
-            <h4 className="text-lg font-semibold">Tampilan Halaman Utama</h4>
-            <p className="text-sm opacity-90">Antarmuka modern dan intuitif</p>
-          </div>
-        </div>
+
         <p className="text-slate-600 dark:text-slate-300">
           Saat pertama mengakses sistem, Anda akan melihat tampilan utama yang terdiri dari:
         </p>
@@ -353,19 +291,7 @@ const documentationSections = [
     content: (
       <div className="space-y-6">
         <h3 className="text-xl font-semibold text-slate-800 dark:text-white">5.1 Penilaian Penyedia</h3>
-        <div className="relative h-48 rounded-xl overflow-hidden mb-6">
-          <Image 
-            src="/img/penilaian-proses.jpg" 
-            alt="Proses Penilaian Penyedia" 
-            fill
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-          <div className="absolute bottom-4 left-4 text-white">
-            <h4 className="font-semibold">Proses Penilaian Penyedia</h4>
-            <p className="text-sm opacity-90">Evaluasi kinerja secara objektif dan terstruktur</p>
-          </div>
-        </div>
+
         <p className="text-slate-600 dark:text-slate-300">
           Fitur penilaian memungkinkan PPK memberikan penilaian terhadap penyedia barang/jasa. Proses penilaian terdiri dari beberapa langkah utama:
         </p>
@@ -415,7 +341,7 @@ const documentationSections = [
             <div className="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-lg border border-yellow-200 dark:border-yellow-700">
               <h4 className="font-semibold text-yellow-800 dark:text-yellow-200 flex items-center">
                 <Lightbulb className="h-5 w-5 mr-2" />
-                Catatan Penting: Sistem hanya akan menampilkan paket kontrak yang sesuai dengan satuan kerja Anda, kecuali Anda memiliki akses admin.
+                Catatan Penting: Sistem hanya akan menampilkan paket kontrak yang sesuai dengan satuan kerja Anda.
               </h4>
             </div>
 
@@ -757,19 +683,7 @@ const documentationSections = [
     content: (
       <div className="space-y-6">
         <h3 className="text-xl font-semibold text-slate-800 dark:text-white">6.1 Laporan Penilaian</h3>
-        <div className="relative h-48 rounded-xl overflow-hidden mb-6">
-          <Image 
-            src="/img/laporan-dashboard.jpg" 
-            alt="Laporan dan Dashboard Sistem" 
-            fill
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-          <div className="absolute bottom-4 left-4 text-white">
-            <h4 className="font-semibold">Laporan & Dashboard Analitik</h4>
-            <p className="text-sm opacity-90">Visualisasi data dan analisis kinerja</p>
-          </div>
-        </div>
+
         <p className="text-slate-600 dark:text-slate-300">
           Halaman laporan menyediakan informasi komprehensif tentang hasil penilaian:
         </p>
@@ -944,19 +858,7 @@ const documentationSections = [
     content: (
       <div className="space-y-6">
         <h3 className="text-xl font-semibold text-slate-800 dark:text-white">7.1 Fitur Pencarian</h3>
-        <div className="relative h-48 rounded-xl overflow-hidden mb-6">
-          <Image 
-            src="/img/fitur-pencarian.jpg" 
-            alt="Fitur Pencarian Sistem" 
-            fill
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-          <div className="absolute bottom-4 left-4 text-white">
-            <h4 className="font-semibold">Fitur Pencarian Canggih</h4>
-            <p className="text-sm opacity-90">Temukan data yang Anda butuhkan dengan cepat</p>
-          </div>
-        </div>
+
         <p className="text-slate-600 dark:text-slate-300">
           Sistem menyediakan fitur pencarian yang komprehensif:
         </p>
@@ -1006,19 +908,7 @@ const documentationSections = [
     content: (
       <div className="space-y-6">
         <h3 className="text-xl font-semibold text-slate-800 dark:text-white">8.1 Proses Login dan Logout PPK</h3>
-        <div className="relative h-48 rounded-xl overflow-hidden mb-6">
-          <Image 
-            src="/img/login-process.jpg" 
-            alt="Proses Login dan Logout" 
-            fill
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-          <div className="absolute bottom-4 left-4 text-white">
-            <h4 className="font-semibold">Proses Otentikasi Keamanan</h4>
-            <p className="text-sm opacity-90">Login dan logout yang aman untuk PPK</p>
-          </div>
-        </div>
+
         
         <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
           <h3 className="text-lg font-semibold text-slate-800 dark:text-white mb-4">8.1.1 Login PPK</h3>
@@ -1111,19 +1001,7 @@ const documentationSections = [
     content: (
       <div className="space-y-6">
         <h3 className="text-xl font-semibold text-slate-800 dark:text-white">9.1 Terminologi Utama</h3>
-        <div className="relative h-48 rounded-xl overflow-hidden mb-6">
-          <Image 
-            src="/img/terminologi.jpg" 
-            alt="Konsep dan Terminologi" 
-            fill
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-          <div className="absolute bottom-4 left-4 text-white">
-            <h4 className="font-semibold">Pengertian dan Istilah Kunci</h4>
-            <p className="text-sm opacity-90">Pahami konsep dasar sistem</p>
-          </div>
-        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
             <h3 className="text-lg font-semibold text-slate-800 dark:text-white mb-4">Definisi Umum</h3>
@@ -1226,111 +1104,13 @@ const documentationSections = [
     )
   },
   {
-    id: "lanjutan",
-    title: "Fitur Lanjutan",
-    icon: <Layers className="h-6 w-6" />,
-    content: (
-      <div className="space-y-6">
-        <h3 className="text-xl font-semibold text-slate-800 dark:text-white">10.1 Penilaian oleh Admin</h3>
-        <div className="relative h-48 rounded-xl overflow-hidden mb-6">
-          <Image 
-            src="/img/admin-akses.jpg" 
-            alt="Fitur Akses Admin" 
-            fill
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-          <div className="absolute bottom-4 left-4 text-white">
-            <h4 className="font-semibold">Hak Akses Administratif</h4>
-            <p className="text-sm opacity-90">Manajemen sistem dan aksesibilitas tingkat lanjut</p>
-          </div>
-        </div>
-        <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-2xl border border-blue-200 dark:border-blue-700">
-          <p className="text-slate-600 dark:text-slate-300">
-            User dengan <code className="bg-slate-100 dark:bg-slate-700 px-1 rounded">satuanKerjaDetail = "ADMIN"</code> memiliki akses ke semua paket:
-          </p>
-          <ul className="mt-3 space-y-2 text-slate-600 dark:text-slate-300 ml-4">
-            <li className="flex items-start">
-              <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 mr-2 flex-shrink-0" />
-              <span>Dapat menilai semua penyedia tanpa batasan unit kerja</span>
-            </li>
-            <li className="flex items-start">
-              <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 mr-2 flex-shrink-0" />
-              <span>Digunakan untuk testing dan manajemen sistem</span>
-            </li>
-          </ul>
-        </div>
-
-        <h3 className="text-xl font-semibold text-slate-800 dark:text-white mt-8">10.2 Fitur Responsif Mobile</h3>
-        <div className="bg-gradient-to-r from-green-50 to-teal-50 dark:from-green-900/20 dark:to-teal-900/20 p-6 rounded-2xl border border-green-200 dark:border-teal-700">
-          <div className="flex items-start">
-            <Smartphone className="h-5 w-5 text-green-500 mt-0.5 mr-2 flex-shrink-0" />
-            <div>
-              <p className="text-slate-600 dark:text-slate-300">
-                Sistem dapat diakses melalui smartphone dan tablet:
-              </p>
-              <ul className="mt-2 space-y-1 text-slate-600 dark:text-slate-400 ml-1">
-                <li className="flex items-start">
-                  <ChevronRight className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                  <span>Desain responsif untuk pengalaman pengguna optimal</span>
-                </li>
-                <li className="flex items-start">
-                  <ChevronRight className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                  <span>Fitur dan fungsi tetap tersedia secara penuh di perangkat mobile</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <h3 className="text-xl font-semibold text-slate-800 dark:text-white mt-8">10.3 Integrasi Google Sheets</h3>
-        <div className="bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 p-6 rounded-2xl border border-purple-200 dark:border-indigo-700">
-          <div className="flex items-start">
-            <Database className="h-5 w-5 text-purple-500 mt-0.5 mr-2 flex-shrink-0" />
-            <div>
-              <p className="text-slate-600 dark:text-slate-300">
-                Sistem terintegrasi langsung dengan Google Sheets:
-              </p>
-              <ul className="mt-2 space-y-1 text-slate-600 dark:text-slate-400 ml-1">
-                <li className="flex items-start">
-                  <ChevronRight className="h-4 w-4 text-purple-500 mr-2 mt-0.5 flex-shrink-0" />
-                  <span>Data disimpan secara real-time di Google Sheets</span>
-                </li>
-                <li className="flex items-start">
-                  <ChevronRight className="h-4 w-4 text-purple-500 mr-2 mt-0.5 flex-shrink-0" />
-                  <span>Sinkronisasi otomatis antara sistem dan database</span>
-                </li>
-                <li className="flex items-start">
-                  <ChevronRight className="h-4 w-4 text-purple-500 mr-2 mt-0.5 flex-shrink-0" />
-                  <span>Memungkinkan manajemen data yang mudah melalui antarmuka Google Sheets</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-    )
-  },
-  {
     id: "bantuan",
     title: "Dukungan & Bantuan",
     icon: <Mail className="h-6 w-6" />,
     content: (
       <div className="space-y-6">
         <h3 className="text-xl font-semibold text-slate-800 dark:text-white">11.1 Halaman FAQ</h3>
-        <div className="relative h-48 rounded-xl overflow-hidden mb-6">
-          <Image 
-            src="/img/dukungan-bantuan.jpg" 
-            alt="Dukungan dan Bantuan" 
-            fill
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-          <div className="absolute bottom-4 left-4 text-white">
-            <h4 className="font-semibold">Pusat Bantuan dan Dukungan</h4>
-            <p className="text-sm opacity-90">Temukan jawaban dan bantuan yang Anda butuhkan</p>
-          </div>
-        </div>
+
         <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
           <p className="text-slate-600 dark:text-slate-300 mb-4">
             Kunjungi halaman <strong>FAQ</strong> untuk jawaban atas pertanyaan umum:
@@ -1455,19 +1235,7 @@ const documentationSections = [
     content: (
       <div className="space-y-6">
         <h3 className="text-xl font-semibold text-slate-800 dark:text-white">12.1 Tips Penggunaan Efektif</h3>
-        <div className="relative h-48 rounded-xl overflow-hidden mb-6">
-          <Image 
-            src="/img/tips-trik.jpg" 
-            alt="Tips dan Trik Penggunaan Sistem" 
-            fill
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-          <div className="absolute bottom-4 left-4 text-white">
-            <h4 className="font-semibold">Tips Efektif Penggunaan Sistem</h4>
-            <p className="text-sm opacity-90">Optimalkan pengalaman Anda dengan sistem</p>
-          </div>
-        </div>
+
         <div className="bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 p-6 rounded-2xl border border-amber-200 dark:border-amber-700">
           <ul className="space-y-3 text-slate-600 dark:text-slate-400">
             <li className="flex items-start">
@@ -1519,11 +1287,9 @@ const documentationSections = [
           </ul>
         </div>
 
+        <h3 className="text-xl font-semibold text-slate-800 dark:text-white mt-8">12.3 Tips Tambahan</h3>
         <div className="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 p-6 rounded-2xl border border-indigo-200 dark:border-purple-700">
-          <h3 className="text-lg font-semibold text-slate-800 dark:text-white mb-4">12.3 Tips Tambahan</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <h4 className="font-medium text-slate-800 dark:text-white mb-3">Untuk PPK</h4>
               <ul className="space-y-2 text-slate-600 dark:text-slate-400">
                 <li className="flex items-center">
                   <ChevronRight className="h-4 w-4 text-indigo-500 mr-2" />
@@ -1538,25 +1304,7 @@ const documentationSections = [
                   <span>Gunakan kriteria dengan objektif dan konsisten</span>
                 </li>
               </ul>
-            </div>
-            <div>
-              <h4 className="font-medium text-slate-800 dark:text-white mb-3">Untuk Administrator</h4>
-              <ul className="space-y-2 text-slate-600 dark:text-slate-400">
-                <li className="flex items-center">
-                  <ChevronRight className="h-4 w-4 text-indigo-500 mr-2" />
-                  <span>Periksa secara berkala integritas data</span>
-                </li>
-                <li className="flex items-center">
-                  <ChevronRight className="h-4 w-4 text-indigo-500 mr-2" />
-                  <span>Pantau aktivitas pengguna secara berkala</span>
-                </li>
-                <li className="flex items-center">
-                  <ChevronRight className="h-4 w-4 text-indigo-500 mr-2" />
-                  <span>Verifikasi validitas data yang masuk</span>
-                </li>
-              </ul>
-            </div>
-          </div>
+            </div>            
         </div>
       </div>
     )
@@ -1568,19 +1316,6 @@ const documentationSections = [
     content: (
       <div className="space-y-6">
         <div className="bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 p-8 rounded-2xl border border-blue-200 dark:border-blue-700">
-          <div className="relative h-64 rounded-xl overflow-hidden mb-6">
-            <Image 
-              src="/img/kesimpulan.jpg" 
-              alt="Kesimpulan dan Harapan" 
-              fill
-              className="object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-            <div className="absolute bottom-4 left-4 text-white">
-              <h4 className="text-xl font-bold">Sistem Penilaian Penyedia UKPBJ</h4>
-              <p className="text-sm opacity-90">Memastikan kualitas dan akuntabilitas dalam pengadaan barang/jasa</p>
-            </div>
-          </div>
           <h3 className="text-2xl font-bold text-slate-800 dark:text-white mb-4">Sistem Penilaian Penyedia UKPBJ Kemnaker</h3>
           <p className="text-lg text-slate-600 dark:text-slate-300 mb-6">
             adalah alat yang penting untuk memastikan kualitas dan akuntabilitas dalam proses pengadaan barang/jasa.
@@ -1615,46 +1350,6 @@ const documentationSections = [
                   <h5 className="font-medium text-slate-800 dark:text-white">Transparansi</h5>
                   <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">Jaga transparansi dalam proses penilaian</p>
                 </div>
-              </div>
-            </div>
-          </div>
-          
-          <div className="mt-8 pt-6 border-t border-slate-200 dark:border-slate-700">
-            <h4 className="font-semibold text-slate-800 dark:text-white mb-4">Dampak dan Manfaat Sistem:</h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <h5 className="font-medium text-slate-800 dark:text-white mb-3">Untuk PPK:</h5>
-                <ul className="space-y-2 text-slate-600 dark:text-slate-400">
-                  <li className="flex items-start">
-                    <ChevronRight className="h-4 w-4 text-blue-500 mt-1 mr-2 flex-shrink-0" />
-                    <span>Memudahkan proses penilaian dengan antarmuka yang intuitif</span>
-                  </li>
-                  <li className="flex items-start">
-                    <ChevronRight className="h-4 w-4 text-blue-500 mt-1 mr-2 flex-shrink-0" />
-                    <span>Menyediakan data historis untuk pengambilan keputusan yang lebih baik</span>
-                  </li>
-                  <li className="flex items-start">
-                    <ChevronRight className="h-4 w-4 text-blue-500 mt-1 mr-2 flex-shrink-0" />
-                    <span>Meningkatkan efisiensi dan efektivitas dalam pengadaan barang/jasa</span>
-                  </li>
-                </ul>
-              </div>
-              <div>
-                <h5 className="font-medium text-slate-800 dark:text-white mb-3">Untuk Penyedia:</h5>
-                <ul className="space-y-2 text-slate-600 dark:text-slate-400">
-                  <li className="flex items-start">
-                    <ChevronRight className="h-4 w-4 text-blue-500 mt-1 mr-2 flex-shrink-0" />
-                    <span>Mendapatkan umpan balik yang objektif dan transparan</span>
-                  </li>
-                  <li className="flex items-start">
-                    <ChevronRight className="h-4 w-4 text-blue-500 mt-1 mr-2 flex-shrink-0" />
-                    <span>Meningkatkan kualitas layanan dan kinerja secara berkelanjutan</span>
-                  </li>
-                  <li className="flex items-start">
-                    <ChevronRight className="h-4 w-4 text-blue-500 mt-1 mr-2 flex-shrink-0" />
-                    <span>Menumbuhkan rasa percaya terhadap proses pengadaan yang adil</span>
-                  </li>
-                </ul>
               </div>
             </div>
           </div>
