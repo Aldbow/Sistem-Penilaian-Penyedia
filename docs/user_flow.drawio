@@ -1,17 +1,13 @@
 <mxfile host="65bd71144e">
     <diagram id="J0CxmrGqX70ax98WDTyq" name="Page-1">
-        <mxGraphModel dx="1649" dy="1113" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" background="none" math="0" shadow="0">
+        <mxGraphModel dx="1154" dy="779" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" background="none" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
-                <mxCell id="45" style="edgeStyle=none;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="42" target="43">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="42" value="Start" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.terminator;whiteSpace=wrap;" vertex="1" parent="1">
-                    <mxGeometry x="272" y="50" width="70" height="40" as="geometry"/>
-                </mxCell>
-                <mxCell id="43" value="&lt;div style=&quot;line-height: 160%;&quot;&gt;PPK Login&lt;div&gt;Masukkan NIP, Eselon I, dan Satuan Kerja&lt;/div&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;absoluteArcSize=1;arcSize=14;strokeWidth=2;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
-                    <mxGeometry x="220" y="130" width="174" height="100" as="geometry"/>
+                <mxCell id="45" style="edgeStyle=none;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="91" target="43">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="370" y="100" as="sourcePoint"/>
+                    </mxGeometry>
                 </mxCell>
                 <mxCell id="53" value="Gagal / Data tidak terdaftar" style="edgeStyle=none;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="44" target="48">
                     <mxGeometry relative="1" as="geometry">
@@ -19,6 +15,9 @@
                             <mxPoint x="145" y="325"/>
                         </Array>
                     </mxGeometry>
+                </mxCell>
+                <mxCell id="43" value="&lt;div style=&quot;line-height: 160%;&quot;&gt;PPK Login&lt;div&gt;Masukkan NIP, Eselon I, dan Satuan Kerja&lt;/div&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;absoluteArcSize=1;arcSize=14;strokeWidth=2;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+                    <mxGeometry x="220" y="130" width="174" height="100" as="geometry"/>
                 </mxCell>
                 <mxCell id="66" style="edgeStyle=none;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="44" target="65">
                     <mxGeometry relative="1" as="geometry">
@@ -32,26 +31,26 @@
                         <mxPoint as="offset"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="44" value="Validasi Data" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.decision;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
-                    <mxGeometry x="252" y="270" width="110" height="110" as="geometry"/>
-                </mxCell>
-                <mxCell id="46" style="edgeStyle=none;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="43" target="44">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
                 <mxCell id="74" style="edgeStyle=none;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="47" target="57">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="47" value="Tampilkan daftar paket" style="rounded=1;whiteSpace=wrap;html=1;absoluteArcSize=1;arcSize=14;strokeWidth=2;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
-                    <mxGeometry x="520" y="426.4" width="142" height="67.2" as="geometry"/>
-                </mxCell>
-                <mxCell id="48" value="Akses ditolak kembali ke halaman login" style="rounded=1;whiteSpace=wrap;html=1;absoluteArcSize=1;arcSize=14;strokeWidth=2;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
-                    <mxGeometry x="70" y="410" width="150" height="80" as="geometry"/>
+                <mxCell id="44" value="Validasi Data" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.decision;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+                    <mxGeometry x="252" y="270" width="110" height="110" as="geometry"/>
                 </mxCell>
                 <mxCell id="55" value="Selesai" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.terminator;whiteSpace=wrap;" vertex="1" parent="1">
                     <mxGeometry x="110" y="535" width="70" height="40" as="geometry"/>
                 </mxCell>
+                <mxCell id="47" value="Tampilkan daftar paket" style="rounded=1;whiteSpace=wrap;html=1;absoluteArcSize=1;arcSize=14;strokeWidth=2;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+                    <mxGeometry x="520" y="426.4" width="142" height="67.2" as="geometry"/>
+                </mxCell>
+                <mxCell id="46" style="edgeStyle=none;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="43" target="44">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
                 <mxCell id="56" style="edgeStyle=none;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="48" target="55">
                     <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="48" value="Akses ditolak kembali ke halaman login" style="rounded=1;whiteSpace=wrap;html=1;absoluteArcSize=1;arcSize=14;strokeWidth=2;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+                    <mxGeometry x="70" y="410" width="150" height="80" as="geometry"/>
                 </mxCell>
                 <mxCell id="57" value="Pilih paket untuk dinilai" style="rounded=1;whiteSpace=wrap;html=1;absoluteArcSize=1;arcSize=14;strokeWidth=2;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
                     <mxGeometry x="521.75" y="535.65" width="138.5" height="38.7" as="geometry"/>
@@ -139,11 +138,8 @@
                 <mxCell id="85" value="Penilaian disimpan" style="rounded=1;whiteSpace=wrap;html=1;absoluteArcSize=1;arcSize=14;strokeWidth=2;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
                     <mxGeometry x="521.75" y="840" width="138.5" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="89" value="Selesai" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.terminator;whiteSpace=wrap;" vertex="1" parent="1">
-                    <mxGeometry x="556" y="940" width="70" height="40" as="geometry"/>
-                </mxCell>
-                <mxCell id="90" style="edgeStyle=none;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="85" target="89">
-                    <mxGeometry relative="1" as="geometry"/>
+                <mxCell id="91" value="Start" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.terminator;whiteSpace=wrap;" vertex="1" parent="1">
+                    <mxGeometry x="272" y="50" width="70" height="40" as="geometry"/>
                 </mxCell>
             </root>
         </mxGraphModel>
