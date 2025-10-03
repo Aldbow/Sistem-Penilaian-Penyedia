@@ -707,7 +707,7 @@ export default function LaporanPage() {
                             <ChevronDown className="h-4 w-4 sm:ml-2" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="start" className="w-56">
+                        <DropdownMenuContent align="start" className="w-[var(--radix-dropdown-menu-trigger-width)]">
                           <DropdownMenuItem onSelect={() => {
                             setFilterStatus('all');
                             setCurrentPage(1);
@@ -767,7 +767,7 @@ export default function LaporanPage() {
                             <ChevronDown className="h-4 w-4 sm:ml-2" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="start" className="w-56">
+                        <DropdownMenuContent align="start" className="w-[var(--radix-dropdown-menu-trigger-width)]">
                           <DropdownMenuItem onSelect={() => {
                             setStarFilter('all');
                             setCurrentPage(1);
@@ -809,7 +809,7 @@ export default function LaporanPage() {
                             <ChevronDown className="h-4 w-4 sm:ml-2" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="start" className="w-56">
+                        <DropdownMenuContent align="start" className="w-[var(--radix-dropdown-menu-trigger-width)]">
                           <DropdownMenuLabel>Urutkan Berdasarkan Nama</DropdownMenuLabel>
                           <DropdownMenuItem onSelect={() => {
                             setSortOption('a-z');
@@ -932,7 +932,7 @@ export default function LaporanPage() {
                           </div>
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent>
+                      <DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)]">
                         <DropdownMenuItem onClick={exportToCSV}>
                           <FileText className="h-5 w-5 mr-2" />
                           Export CSV
