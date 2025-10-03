@@ -735,7 +735,7 @@ export default function LaporanPage() {
                       {/* Status Filter Dropdown */}
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="outline" className="flex items-center justify-between space-x-2 text-base px-4 py-3 rounded-xl w-full sm:w-auto">
+                          <Button variant="outline" className="flex items-center justify-between space-x-2 text-base px-5 py-3.5 rounded-xl w-full sm:w-auto">
                             <div className="flex items-center space-x-2">
                               <Filter className="h-5 w-5" />
                               <span>Status</span>
@@ -743,7 +743,7 @@ export default function LaporanPage() {
                             <ChevronDown className="h-4 w-4 sm:ml-2" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="start" className="w-[var(--radix-dropdown-menu-trigger-width)]">
+                        <DropdownMenuContent align="start" className="w-[var(--radix-dropdown-menu-trigger-width)] max-h-96 overflow-y-auto">
                           <DropdownMenuItem onSelect={() => {
                             setFilterStatus('all');
                             setCurrentPage(1);
@@ -795,7 +795,7 @@ export default function LaporanPage() {
                       {/* Star Filter Dropdown */}
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="outline" className="flex items-center justify-between space-x-2 text-base px-4 py-3 rounded-xl w-full sm:w-auto">
+                          <Button variant="outline" className="flex items-center justify-between space-x-2 text-base px-5 py-3.5 rounded-xl w-full sm:w-auto">
                             <div className="flex items-center space-x-2">
                               <Star className="h-5 w-5" />
                               <span>Penilaian</span>
@@ -803,7 +803,7 @@ export default function LaporanPage() {
                             <ChevronDown className="h-4 w-4 sm:ml-2" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="start" className="w-[var(--radix-dropdown-menu-trigger-width)]">
+                        <DropdownMenuContent align="start" className="w-[var(--radix-dropdown-menu-trigger-width)] max-h-96 overflow-y-auto">
                           <DropdownMenuItem onSelect={() => {
                             setStarFilter('all');
                             setCurrentPage(1);
@@ -837,7 +837,7 @@ export default function LaporanPage() {
                       {/* Sort Options Dropdown */}
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="outline" className="flex items-center justify-between space-x-2 text-base px-4 py-3 rounded-xl w-full sm:w-auto">
+                          <Button variant="outline" className="flex items-center justify-between space-x-2 text-base px-5 py-3.5 rounded-xl w-full sm:w-auto">
                             <div className="flex items-center space-x-2">
                               <TrendingUp className="h-5 w-5" />
                               <span>Urutkan</span>
@@ -845,7 +845,7 @@ export default function LaporanPage() {
                             <ChevronDown className="h-4 w-4 sm:ml-2" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="start" className="w-[var(--radix-dropdown-menu-trigger-width)]">
+                        <DropdownMenuContent align="start" className="w-[var(--radix-dropdown-menu-trigger-width)] max-h-96 overflow-y-auto">
                           <DropdownMenuLabel>Urutkan Berdasarkan Nama</DropdownMenuLabel>
                           <DropdownMenuItem onSelect={() => {
                             setSortOption('a-z');
@@ -960,7 +960,7 @@ export default function LaporanPage() {
 
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="outline" className="flex items-center justify-between space-x-2 text-base px-4 py-3 rounded-xl w-full sm:w-auto">
+                        <Button variant="outline" className="flex items-center justify-between space-x-2 text-base px-5 py-3.5 rounded-xl w-full sm:w-auto">
                           <div className="flex items-center space-x-2">
                             <Download className="h-5 w-5" />
                             <span className="hidden sm:inline">Export Data</span>
@@ -968,7 +968,7 @@ export default function LaporanPage() {
                           </div>
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)]">
+                      <DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)] max-h-96 overflow-y-auto">
                         <DropdownMenuItem onClick={exportToCSV}>
                           <FileText className="h-5 w-5 mr-2" />
                           Export CSV
