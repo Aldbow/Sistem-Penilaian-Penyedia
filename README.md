@@ -230,24 +230,20 @@ graph TD
     A([Start]) --> B[PPK Login<br/>Masukkan NIP, Eselon I, Satuan Kerja]
     B --> C{Validasi Data}
     C -->|Gagal| D[Akses Ditolak<br/>Kembali ke Login]
-    C -->|Berhasil| E[Tampilkan Daftar Paket]
+    C -->|Berhasil| E[Tampilkan Daftar Paket<br/>Terfilter Berdasarkan Unit Kerja]
     D --> Z([Selesai])
     
-    E --> F{Admin?}
-    F -->|Ya| G[Tampilkan Semua Paket]
-    F -->|Tidak| H[Tampilkan Paket Terfilter<br/>Berdasarkan Unit Kerja]
-    G --> I[Pilih Paket untuk Dinilai]
-    H --> I
-    I --> J{Paket Sudah Dinilai?}
-    J -->|Ya| K[Tidak Dapat Dinilai Lagi<br/>Hanya Bisa Lihat Detail]
-    J -->|Tidak| L[Kontrak Diputus?]
-    K --> P[Selesai - Status Tetap Sudah Dinilai]
-    L -->|Ya| M[Nilai Otomatis 0<br/>Semua Kriteria]
-    L -->|Tidak| N[Isi Form Penilaian<br/>4 Kriteria LKPP]
-    M --> O[Simpan Penilaian<br/>Status: Buruk]
-    N --> O
-    O --> P
-    P --> Q([Selesai])
+    E --> F[Pilih Paket untuk Dinilai]
+    F --> G{Paket Sudah Dinilai?}
+    G -->|Ya| H[Tidak Dapat Dinilai Lagi<br/>Hanya Bisa Lihat Detail]
+    G -->|Tidak| I[Kontrak Diputus?]
+    H --> M[Selesai - Status Tetap Sudah Dinilai]
+    I -->|Ya| J[Nilai Otomatis 0<br/>Semua Kriteria]
+    I -->|Tidak| K[Isi Form Penilaian<br/>4 Kriteria LKPP]
+    J --> L[Simpan Penilaian<br/>Status: Buruk]
+    K --> L
+    L --> M
+    M --> N([Selesai])
     
     %% Styling
     classDef startEnd fill:#e1f5fe,stroke:#01579b,stroke-width:2px
@@ -256,11 +252,11 @@ graph TD
     classDef success fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
     classDef failed fill:#ffebee,stroke:#c62828,stroke-width:2px
     
-    class A,Z startEnd
-    class B,E,I,N,O process
-    class C,F,J,L decision
-    class D,K failed
-    class M,P success
+    class A,N startEnd
+    class B,E,F,K,L process
+    class C,G,I decision
+    class D,H failed
+    class J,M success
 ```
 
 ## 🗄️ Struktur Database
