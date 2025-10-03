@@ -725,7 +725,7 @@ export default function LaporanPage() {
                     onChange={(e) => {
                       setSearchQuery(e.target.value);
                     }}
-                    className="pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none dark:bg-slate-700 dark:text-white w-full text-base transition-all duration-300 hover:border-emerald-500 hover:shadow-sm hover:shadow-emerald-500/20 dark:hover:border-emerald-500 focus:hover:shadow-emerald-500/30"
+                    className="pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:border-emerald-500 dark:bg-slate-700 dark:text-white w-full text-base transition-all duration-300 hover:border-emerald-500 hover:shadow-sm hover:shadow-emerald-500/20 dark:hover:border-emerald-500"
                   />
                 </div>
                 
@@ -735,7 +735,7 @@ export default function LaporanPage() {
                       {/* Status Filter Dropdown */}
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="outline" className="flex items-center justify-between space-x-2 text-base px-5 py-3.5 rounded-xl w-full sm:w-auto">
+                          <Button variant="outline" className="flex items-center justify-between space-x-2 text-base px-5 py-3.5 rounded-xl w-full sm:w-auto focus:outline-none focus:ring-0">
                             <div className="flex items-center space-x-2">
                               <Filter className="h-5 w-5" />
                               <span>Status</span>
@@ -743,11 +743,11 @@ export default function LaporanPage() {
                             <ChevronDown className="h-4 w-4 sm:ml-2" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="start" className="w-[var(--radix-dropdown-menu-trigger-width)] max-h-96 overflow-y-auto">
+                        <DropdownMenuContent align="start" className="w-[var(--radix-dropdown-menu-trigger-width)] max-h-96 overflow-y-auto focus:outline-none focus:ring-0">
                           <DropdownMenuItem onSelect={() => {
                             setFilterStatus('all');
                             setCurrentPage(1);
-                          }}>
+                          }} className="focus:outline-none focus:ring-0">
                             <div className="flex items-center">
                               <div className={`w-3 h-3 rounded-full mr-2 ${filterStatus === 'all' ? 'bg-emerald-500' : 'bg-gray-300'}`}></div>
                               <span>Semua Status</span>
@@ -756,7 +756,7 @@ export default function LaporanPage() {
                           <DropdownMenuItem onSelect={() => {
                             setFilterStatus('excellent');
                             setCurrentPage(1);
-                          }}>
+                          }} className="focus:outline-none focus:ring-0">
                             <div className="flex items-center">
                               <div className={`w-3 h-3 rounded-full mr-2 ${filterStatus === 'excellent' ? 'bg-emerald-500' : 'bg-gray-300'}`}></div>
                               <span>Sangat Baik</span>
@@ -765,7 +765,7 @@ export default function LaporanPage() {
                           <DropdownMenuItem onSelect={() => {
                             setFilterStatus('good');
                             setCurrentPage(1);
-                          }}>
+                          }} className="focus:outline-none focus:ring-0">
                             <div className="flex items-center">
                               <div className={`w-3 h-3 rounded-full mr-2 ${filterStatus === 'good' ? 'bg-emerald-500' : 'bg-gray-300'}`}></div>
                               <span>Baik</span>
@@ -774,7 +774,7 @@ export default function LaporanPage() {
                           <DropdownMenuItem onSelect={() => {
                             setFilterStatus('average');
                             setCurrentPage(1);
-                          }}>
+                          }} className="focus:outline-none focus:ring-0">
                             <div className="flex items-center">
                               <div className={`w-3 h-3 rounded-full mr-2 ${filterStatus === 'average' ? 'bg-emerald-500' : 'bg-gray-300'}`}></div>
                               <span>Cukup</span>
@@ -783,7 +783,7 @@ export default function LaporanPage() {
                           <DropdownMenuItem onSelect={() => {
                             setFilterStatus('poor');
                             setCurrentPage(1);
-                          }}>
+                          }} className="focus:outline-none focus:ring-0">
                             <div className="flex items-center">
                               <div className={`w-3 h-3 rounded-full mr-2 ${filterStatus === 'poor' ? 'bg-emerald-500' : 'bg-gray-300'}`}></div>
                               <span>Buruk</span>
@@ -795,7 +795,7 @@ export default function LaporanPage() {
                       {/* Star Filter Dropdown */}
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="outline" className="flex items-center justify-between space-x-2 text-base px-5 py-3.5 rounded-xl w-full sm:w-auto">
+                          <Button variant="outline" className="flex items-center justify-between space-x-2 text-base px-5 py-3.5 rounded-xl w-full sm:w-auto focus:outline-none focus:ring-0">
                             <div className="flex items-center space-x-2">
                               <Star className="h-5 w-5" />
                               <span>Penilaian</span>
@@ -803,11 +803,11 @@ export default function LaporanPage() {
                             <ChevronDown className="h-4 w-4 sm:ml-2" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="start" className="w-[var(--radix-dropdown-menu-trigger-width)] max-h-96 overflow-y-auto">
+                        <DropdownMenuContent align="start" className="w-[var(--radix-dropdown-menu-trigger-width)] max-h-96 overflow-y-auto focus:outline-none focus:ring-0">
                           <DropdownMenuItem onSelect={() => {
                             setStarFilter('all');
                             setCurrentPage(1);
-                          }}>
+                          }} className="focus:outline-none focus:ring-0">
                             <div className="flex items-center">
                               <div className={`w-3 h-3 rounded-full mr-2 ${starFilter === 'all' ? 'bg-emerald-500' : 'bg-gray-300'}`}></div>
                               <span>Semua Penyedia</span>
@@ -816,7 +816,7 @@ export default function LaporanPage() {
                           <DropdownMenuItem onSelect={() => {
                             setStarFilter('rated');
                             setCurrentPage(1);
-                          }}>
+                          }} className="focus:outline-none focus:ring-0">
                             <div className="flex items-center">
                               <div className={`w-3 h-3 rounded-full mr-2 ${starFilter === 'rated' ? 'bg-emerald-500' : 'bg-gray-300'}`}></div>
                               <span>Sudah Dinilai</span>
@@ -825,7 +825,7 @@ export default function LaporanPage() {
                           <DropdownMenuItem onSelect={() => {
                             setStarFilter('unrated');
                             setCurrentPage(1);
-                          }}>
+                          }} className="focus:outline-none focus:ring-0">
                             <div className="flex items-center">
                               <div className={`w-3 h-3 rounded-full mr-2 ${starFilter === 'unrated' ? 'bg-emerald-500' : 'bg-gray-300'}`}></div>
                               <span>Belum Dinilai</span>
@@ -837,7 +837,7 @@ export default function LaporanPage() {
                       {/* Sort Options Dropdown */}
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="outline" className="flex items-center justify-between space-x-2 text-base px-5 py-3.5 rounded-xl w-full sm:w-auto">
+                          <Button variant="outline" className="flex items-center justify-between space-x-2 text-base px-5 py-3.5 rounded-xl w-full sm:w-auto focus:outline-none focus:ring-0">
                             <div className="flex items-center space-x-2">
                               <TrendingUp className="h-5 w-5" />
                               <span>Urutkan</span>
@@ -845,12 +845,12 @@ export default function LaporanPage() {
                             <ChevronDown className="h-4 w-4 sm:ml-2" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="start" className="w-[var(--radix-dropdown-menu-trigger-width)] max-h-96 overflow-y-auto">
+                        <DropdownMenuContent align="start" className="w-[var(--radix-dropdown-menu-trigger-width)] max-h-96 overflow-y-auto focus:outline-none focus:ring-0">
                           <DropdownMenuLabel>Urutkan Berdasarkan Nama</DropdownMenuLabel>
                           <DropdownMenuItem onSelect={() => {
                             setSortOption('a-z');
                             setCurrentPage(1);
-                          }}>
+                          }} className="focus:outline-none focus:ring-0">
                             <div className="flex items-center">
                               <div className={`w-3 h-3 rounded-full mr-2 ${sortOption === 'a-z' ? 'bg-emerald-500' : 'bg-gray-300'}`}></div>
                               <span>A-Z</span>
@@ -859,7 +859,7 @@ export default function LaporanPage() {
                           <DropdownMenuItem onSelect={() => {
                             setSortOption('z-a');
                             setCurrentPage(1);
-                          }}>
+                          }} className="focus:outline-none focus:ring-0">
                             <div className="flex items-center">
                               <div className={`w-3 h-3 rounded-full mr-2 ${sortOption === 'z-a' ? 'bg-emerald-500' : 'bg-gray-300'}`}></div>
                               <span>Z-A</span>
@@ -870,7 +870,7 @@ export default function LaporanPage() {
                           <DropdownMenuItem onSelect={() => {
                             setStarSort('none');
                             setCurrentPage(1);
-                          }}>
+                          }} className="focus:outline-none focus:ring-0">
                             <div className="flex items-center">
                               <div className={`w-3 h-3 rounded-full mr-2 ${starSort === 'none' ? 'bg-emerald-500' : 'bg-gray-300'}`}></div>
                               <span>Tanpa Sortir Bintang</span>
@@ -879,7 +879,7 @@ export default function LaporanPage() {
                           <DropdownMenuItem onSelect={() => {
                             setStarSort('high-low');
                             setCurrentPage(1);
-                          }}>
+                          }} className="focus:outline-none focus:ring-0">
                             <div className="flex items-center">
                               <div className={`w-3 h-3 rounded-full mr-2 ${starSort === 'high-low' ? 'bg-emerald-500' : 'bg-gray-300'}`}></div>
                               <span>Bintang Tinggi-Rendah</span>
@@ -888,7 +888,7 @@ export default function LaporanPage() {
                           <DropdownMenuItem onSelect={() => {
                             setStarSort('low-high');
                             setCurrentPage(1);
-                          }}>
+                          }} className="focus:outline-none focus:ring-0">
                             <div className="flex items-center">
                               <div className={`w-3 h-3 rounded-full mr-2 ${starSort === 'low-high' ? 'bg-emerald-500' : 'bg-gray-300'}`}></div>
                               <span>Bintang Rendah-Tinggi</span>
@@ -899,7 +899,7 @@ export default function LaporanPage() {
                           <DropdownMenuItem onSelect={() => {
                             setDateSort('none');
                             setCurrentPage(1);
-                          }}>
+                          }} className="focus:outline-none focus:ring-0">
                             <div className="flex items-center">
                               <div className={`w-3 h-3 rounded-full mr-2 ${dateSort === 'none' ? 'bg-emerald-500' : 'bg-gray-300'}`}></div>
                               <span>Tanpa Sortir Tanggal</span>
@@ -908,7 +908,7 @@ export default function LaporanPage() {
                           <DropdownMenuItem onSelect={() => {
                             setDateSort('newest');
                             setCurrentPage(1);
-                          }}>
+                          }} className="focus:outline-none focus:ring-0">
                             <div className="flex items-center">
                               <div className={`w-3 h-3 rounded-full mr-2 ${dateSort === 'newest' ? 'bg-emerald-500' : 'bg-gray-300'}`}></div>
                               <span>Terbaru</span>
@@ -917,7 +917,7 @@ export default function LaporanPage() {
                           <DropdownMenuItem onSelect={() => {
                             setDateSort('oldest');
                             setCurrentPage(1);
-                          }}>
+                          }} className="focus:outline-none focus:ring-0">
                             <div className="flex items-center">
                               <div className={`w-3 h-3 rounded-full mr-2 ${dateSort === 'oldest' ? 'bg-emerald-500' : 'bg-gray-300'}`}></div>
                               <span>Terlama</span>
@@ -928,7 +928,7 @@ export default function LaporanPage() {
                           <DropdownMenuItem onSelect={() => {
                             setMostRatedFilter(!mostRatedFilter);
                             setCurrentPage(1);
-                          }}>
+                          }} className="focus:outline-none focus:ring-0">
                             <div className="flex items-center">
                               <div className={`w-3 h-3 rounded-full mr-2 ${mostRatedFilter ? 'bg-emerald-500' : 'bg-gray-300'}`}></div>
                               <span>Paling Banyak Dinilai</span>
@@ -941,7 +941,7 @@ export default function LaporanPage() {
                       {(filterStatus !== 'all' || starFilter !== 'all' || sortOption !== 'a-z' || starSort !== 'none' || mostRatedFilter || dateSort !== 'none') && (
                         <Button 
                           variant="ghost" 
-                          className="flex items-center space-x-2 text-base px-4 py-3 rounded-xl text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 w-full sm:w-auto"
+                          className="flex items-center space-x-2 text-base px-4 py-3 rounded-xl text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 w-full sm:w-auto focus:outline-none focus:ring-0"
                           onClick={() => {
                             setFilterStatus('all');
                             setStarFilter('all');
@@ -960,7 +960,7 @@ export default function LaporanPage() {
 
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="outline" className="flex items-center justify-between space-x-2 text-base px-5 py-3.5 rounded-xl w-full sm:w-auto">
+                        <Button variant="outline" className="flex items-center justify-between space-x-2 text-base px-5 py-3.5 rounded-xl w-full sm:w-auto focus:outline-none focus:ring-0">
                           <div className="flex items-center space-x-2">
                             <Download className="h-5 w-5" />
                             <span className="hidden sm:inline">Export Data</span>
@@ -968,12 +968,12 @@ export default function LaporanPage() {
                           </div>
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)] max-h-96 overflow-y-auto">
-                        <DropdownMenuItem onClick={exportToCSV}>
+                      <DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)] max-h-96 overflow-y-auto focus:outline-none focus:ring-0">
+                        <DropdownMenuItem onClick={exportToCSV} className="focus:outline-none focus:ring-0">
                           <FileText className="h-5 w-5 mr-2" />
                           Export CSV
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={exportToExcel}>
+                        <DropdownMenuItem onClick={exportToExcel} className="focus:outline-none focus:ring-0">
                           <FileSpreadsheet className="h-5 w-5 mr-2" />
                           Export Excel
                         </DropdownMenuItem>
@@ -1125,7 +1125,7 @@ export default function LaporanPage() {
                       id="itemsPerPage"
                       value={itemsPerPage}
                       onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
-                      className="px-2 py-1 sm:px-3 sm:py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none dark:bg-slate-700 dark:text-white text-sm w-full sm:w-auto transition-all duration-300 hover:border-emerald-500 hover:shadow-sm hover:shadow-emerald-500/20"
+                      className="px-2 py-1 sm:px-3 sm:py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:border-emerald-500 dark:bg-slate-700 dark:text-white text-sm w-full sm:w-auto transition-all duration-300 hover:border-emerald-500 hover:shadow-sm hover:shadow-emerald-500/20"
                     >
                       <option value={5}>5</option>
                       <option value={10}>10</option>
