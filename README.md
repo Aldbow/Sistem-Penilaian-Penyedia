@@ -223,6 +223,37 @@ graph LR
     D --> I[Real-time Dashboard]
 ```
 
+### 📊 **Flowchart User**
+
+```mermaid
+graph TD
+    subgraph "Tahap A: Autentikasi Pengguna"
+        A(Mulai) --> B[1. User memasukkan data login <br>(username & password)];
+        B --> C{2. Apakah data sesuai <br>dengan yang terdaftar?};
+        C -- Tidak Sesuai --> D[Akses ditolak, <br>proses berhenti];
+        D --> Z(Selesai);
+    end
+
+    subgraph "Tahap B: Proses Penilaian"
+        C -- Ya, Sesuai --> E[3. User memilih paket pekerjaan <br>yang akan dinilai];
+        E --> F{4. Cek status paket: <br>Selesai normal atau <br>ada pemutusan kontrak?};
+        F -- Ada Pemutusan Kontrak --> G[Nilai otomatis diatur menjadi 0];
+        F -- Selesai Normal --> H[User mengisi formulir penilaian <br>secara manual];
+    end
+
+    subgraph "Tahap C: Finalisasi"
+        G --> I(5. Proses Penilaian Selesai);
+        H --> I;
+        I --> Z;
+    end
+
+    style A fill:#f9f,stroke:#333,stroke-width:2px
+    style Z fill:#f9f,stroke:#333,stroke-width:2px
+    style D fill:#ffbaba,stroke:#d8000c,stroke-width:2px
+    style G fill:#f8d7da,stroke:#721c24,stroke-width:2px
+    style H fill:#d4edda,stroke:#155724,stroke-width:2px
+```
+
 ## 🗄️ Struktur Database
 
 Sistem menggunakan **Google Sheets** sebagai database dengan 6 sheet utama:
