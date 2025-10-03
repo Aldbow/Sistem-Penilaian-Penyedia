@@ -1056,9 +1056,9 @@ export default function LaporanPage() {
                           <div className="flex-1">
                             <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 mb-4">
                               <motion.div 
-                                className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center group-hover:shadow-xl group-hover:scale-110 transition-all duration-300"
-                                whileHover={{ scale: 1.1 }}
-                                transition={{ type: "spring", stiffness: 400 }}
+                                className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center transition-all duration-200"
+                                whileHover={{ scale: 1.05 }}
+                                transition={{ type: "spring", stiffness: 500, damping: 15 }}
                               >
                                 <Building2 className="h-6 w-6 text-white" />
                               </motion.div>
