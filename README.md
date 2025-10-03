@@ -227,31 +227,40 @@ graph LR
 
 ```mermaid
 graph TD
-    subgraph "Tahap A: Autentikasi Pengguna"
-        A(Mulai) --> B[1. User memasukkan data login <br>(username & password)];
-        B --> C{2. Apakah data sesuai <br>dengan yang terdaftar?};
-        C -- Tidak Sesuai --> D[Akses ditolak, <br>proses berhenti];
-        D --> Z(Selesai);
-    end
-
-    subgraph "Tahap B: Proses Penilaian"
-        C -- Ya, Sesuai --> E[3. User memilih paket pekerjaan <br>yang akan dinilai];
-        E --> F{4. Cek status paket: <br>Selesai normal atau <br>ada pemutusan kontrak?};
-        F -- Ada Pemutusan Kontrak --> G[Nilai otomatis diatur menjadi 0];
-        F -- Selesai Normal --> H[User mengisi formulir penilaian <br>secara manual];
-    end
-
-    subgraph "Tahap C: Finalisasi"
-        G --> I(5. Proses Penilaian Selesai);
-        H --> I;
-        I --> Z;
-    end
-
-    style A fill:#f9f,stroke:#333,stroke-width:2px
-    style Z fill:#f9f,stroke:#333,stroke-width:2px
-    style D fill:#ffbaba,stroke:#d8000c,stroke-width:2px
-    style G fill:#f8d7da,stroke:#721c24,stroke-width:2px
-    style H fill:#d4edda,stroke:#155724,stroke-width:2px
+    A([Start]) --> B[PPK Login<br/>Masukkan NIP, Eselon I, Satuan Kerja]
+    B --> C{Validasi Data}
+    C -->|Gagal| D[Akses Ditolak<br/>Kembali ke Login]
+    C -->|Berhasil| E[Tampilkan Daftar Paket]
+    D --> Z([Selesai])
+    
+    E --> F{Admin?}
+    F -->|Ya| G[Tampilkan Semua Paket]
+    F -->|Tidak| H[Tampilkan Paket Terfilter<br/>Berdasarkan Unit Kerja]
+    G --> I[Pilih Paket untuk Dinilai]
+    H --> I
+    I --> J{Paket Sudah Dinilai?}
+    J -->|Ya| K[Tidak Dapat Dinilai Lagi<br/>Hanya Bisa Lihat Detail]
+    J -->|Tidak| L[Kontrak Diputus?]
+    K --> P[Selesai - Status Tetap Sudah Dinilai]
+    L -->|Ya| M[Nilai Otomatis 0<br/>Semua Kriteria]
+    L -->|Tidak| N[Isi Form Penilaian<br/>4 Kriteria LKPP]
+    M --> O[Simpan Penilaian<br/>Status: Buruk]
+    N --> O
+    O --> P
+    P --> Q([Selesai])
+    
+    %% Styling
+    classDef startEnd fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef process fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef decision fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef success fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    classDef failed fill:#ffebee,stroke:#c62828,stroke-width:2px
+    
+    class A,Z startEnd
+    class B,E,I,N,O process
+    class C,F,J,L decision
+    class D,K failed
+    class M,P success
 ```
 
 ## 🗄️ Struktur Database
