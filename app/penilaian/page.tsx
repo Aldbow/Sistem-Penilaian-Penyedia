@@ -1502,7 +1502,7 @@ export default function PenilaianPage() {
                           </div>
                           <div>
                             <h4 className="font-semibold text-red-800 dark:text-red-200 mb-2">
-                              Pemutusan Kontrak Terdeteksi
+                              Terjadi pemutusan kontrak
                             </h4>
                             <p className="text-red-700 dark:text-red-300 text-sm">
                               Karena terjadi pemutusan kontrak sepihak, semua aspek penilaian akan otomatis mendapat skor 0 dan penilaian akhir akan menjadi "Buruk". Silakan berikan keterangan mengenai pemutusan kontrak tersebut.
