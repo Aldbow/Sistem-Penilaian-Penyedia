@@ -489,8 +489,9 @@ export function ProviderModal({ isOpen, onClose, penyedia }: ProviderModalProps)
                               Komentar
                             </h4>
                             
-                            {/* Comments */}
-                            <div className="space-y-2">
+                            {/* Comments Grid - Format 2 2 1 */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                              {/* Quality and Quantity */}
                               {penilaian.komentarKualitasKuantitasBarangJasa && (
                                 <div className="bg-slate-50/50 dark:bg-slate-600/20 rounded-lg p-3">
                                   <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Komentar Kualitas & Kuantitas</div>
@@ -498,6 +499,7 @@ export function ProviderModal({ isOpen, onClose, penyedia }: ProviderModalProps)
                                 </div>
                               )}
                               
+                              {/* Cost */}
                               {penilaian.komentarBiaya && (
                                 <div className="bg-slate-50/50 dark:bg-slate-600/20 rounded-lg p-3">
                                   <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Komentar Biaya</div>
@@ -505,6 +507,7 @@ export function ProviderModal({ isOpen, onClose, penyedia }: ProviderModalProps)
                                 </div>
                               )}
                               
+                              {/* Time */}
                               {penilaian.komentarWaktu && (
                                 <div className="bg-slate-50/50 dark:bg-slate-600/20 rounded-lg p-3">
                                   <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Komentar Waktu</div>
@@ -512,13 +515,17 @@ export function ProviderModal({ isOpen, onClose, penyedia }: ProviderModalProps)
                                 </div>
                               )}
                               
+                              {/* Service */}
                               {penilaian.komentarLayanan && (
                                 <div className="bg-slate-50/50 dark:bg-slate-600/20 rounded-lg p-3">
                                   <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Komentar Layanan</div>
                                   <p className="text-sm text-slate-700 dark:text-slate-200">{penilaian.komentarLayanan}</p>
                                 </div>
                               )}
-                              
+                            </div>
+                            
+                            {/* General and Final Comments - Full Width */}
+                            <div className="space-y-2 mt-2">
                               {penilaian.keterangan && (
                                 <div className="bg-slate-50/50 dark:bg-slate-600/20 rounded-lg p-3">
                                   <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Komentar Umum</div>
