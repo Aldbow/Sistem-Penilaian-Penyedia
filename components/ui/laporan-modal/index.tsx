@@ -495,13 +495,12 @@ export function LaporanModal({ isOpen, onClose, penyedia }: LaporanModalProps) {
                           </div>
                         </div>
                         
-                        {/* Comments Section */}
+                        {/* Comments Section - Only show if there are actual comments */}
                         {(penilaian.keterangan || 
                           penilaian.komentarKualitasKuantitasBarangJasa || 
                           penilaian.komentarBiaya || 
                           penilaian.komentarWaktu || 
-                          penilaian.komentarLayanan || 
-                          penilaian.penilaianAkhir) && (
+                          penilaian.komentarLayanan) && (
                           <div className="border-t border-gray-200/50 dark:border-gray-600/50 pt-3 mt-3">
                             <h4 className="text-sm font-medium text-slate-700 dark:text-slate-200 mb-2 flex items-center">
                               <FileText className="h-4 w-4 mr-1.5 text-blue-500" />
@@ -518,8 +517,7 @@ export function LaporanModal({ isOpen, onClose, penyedia }: LaporanModalProps) {
                               ].filter(Boolean);
                               
                               const generalComments = [
-                                penilaian.keterangan,
-                                penilaian.penilaianAkhir && !penilaian.keterangan ? penilaian.penilaianAkhir : null
+                                penilaian.keterangan
                               ].filter(Boolean);
                               
                               if (aspectComments.length === 0) {
@@ -529,7 +527,7 @@ export function LaporanModal({ isOpen, onClose, penyedia }: LaporanModalProps) {
                                     {generalComments.map((comment, index) => (
                                       <div key={index} className="bg-slate-50/50 dark:bg-slate-600/20 rounded-lg p-3">
                                         <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">
-                                          {index === 0 && penilaian.keterangan ? "Komentar" : "Komentar Akhir"}
+                                          {"Komentar"}
                                         </div>
                                         <p className="text-sm text-slate-700 dark:text-slate-200">{comment}</p>
                                       </div>
@@ -570,7 +568,7 @@ export function LaporanModal({ isOpen, onClose, penyedia }: LaporanModalProps) {
                                     {generalComments.map((comment, index) => (
                                       <div key={`general-${index}`} className="bg-slate-50/50 dark:bg-slate-600/20 rounded-lg p-3">
                                         <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">
-                                          {index === 0 && penilaian.keterangan ? "Komentar" : "Komentar Akhir"}
+                                          {"Komentar"}
                                         </div>
                                         <p className="text-sm text-slate-700 dark:text-slate-200">{comment}</p>
                                       </div>
@@ -614,7 +612,7 @@ export function LaporanModal({ isOpen, onClose, penyedia }: LaporanModalProps) {
                                       {generalComments.map((comment, index) => (
                                         <div key={`general-${index}`} className="bg-slate-50/50 dark:bg-slate-600/20 rounded-lg p-3">
                                           <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">
-                                            {index === 0 && penilaian.keterangan ? "Komentar" : "Komentar Akhir"}
+                                            {"Komentar"}
                                           </div>
                                           <p className="text-sm text-slate-700 dark:text-slate-200">{comment}</p>
                                         </div>
@@ -659,7 +657,7 @@ export function LaporanModal({ isOpen, onClose, penyedia }: LaporanModalProps) {
                                       {generalComments.map((comment, index) => (
                                         <div key={`general-${index}`} className="bg-slate-50/50 dark:bg-slate-600/20 rounded-lg p-3">
                                           <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">
-                                            {index === 0 && penilaian.keterangan ? "Komentar" : "Komentar Akhir"}
+                                            {"Komentar"}
                                           </div>
                                           <p className="text-sm text-slate-700 dark:text-slate-200">{comment}</p>
                                         </div>
