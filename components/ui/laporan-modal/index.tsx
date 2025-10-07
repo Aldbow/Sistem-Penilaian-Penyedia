@@ -551,13 +551,6 @@ export function LaporanModal({ isOpen, onClose, penyedia }: LaporanModalProps) {
                                   <p className="text-sm text-slate-700 dark:text-slate-200">{penilaian.keterangan}</p>
                                 </div>
                               )}
-                              
-                              {penilaian.penilaianAkhir && !penilaian.keterangan && (
-                                <div className="bg-slate-50/50 dark:bg-slate-600/20 rounded-lg p-3">
-                                  <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Komentar Akhir</div>
-                                  <p className="text-sm text-slate-700 dark:text-slate-200">{penilaian.penilaianAkhir}</p>
-                                </div>
-                              )}
                             </div>
                           </div>
                         )}

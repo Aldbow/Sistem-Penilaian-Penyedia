@@ -147,6 +147,11 @@ export default function PenilaianPage() {
     { value: 3, label: "Sangat Baik", color: "text-green-600 bg-green-100", textColor: "text-green-800 dark:text-green-200" },
   ];
 
+  // Clear search term when component mounts to ensure clean state
+  useEffect(() => {
+    setSearchTerm("");
+  }, []);
+  
   // Load PPK options on component mount
   useEffect(() => {
     const loadPPKOptions = async () => {
@@ -340,6 +345,7 @@ export default function PenilaianPage() {
       keterangan: "",
     });
     setCurrentStep(1);
+    setSearchTerm(""); // Clear search term on logout to ensure clean state
   };
 
 
