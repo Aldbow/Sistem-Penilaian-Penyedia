@@ -27,9 +27,13 @@ interface Penilaian {
   penilaianAkhir?: string;
   keterangan?: string;
   kualitasKuantitasBarangJasa?: number;
+  komentarKualitasKuantitasBarangJasa?: string;
   biaya?: number;
+  komentarBiaya?: string;
   waktu?: number;
+  komentarWaktu?: string;
   layanan?: number;
+  komentarLayanan?: string;
   status?: string;
   // Additional field for package code
   kodePaket?: string;
@@ -455,7 +459,7 @@ export function ProviderModal({ isOpen, onClose, penyedia }: ProviderModalProps)
                         </div>
 
                         {/* Rating and Evaluation */}
-                        <div className="flex flex-wrap items-center gap-3">
+                        <div className="flex flex-wrap items-center gap-3 mb-3">
                           <StarRating
                             rating={mapScoreToStars(penilaian.skorTotal)}
                             size="sm"
@@ -471,6 +475,66 @@ export function ProviderModal({ isOpen, onClose, penyedia }: ProviderModalProps)
                               getFinalEvaluationText(penilaian.skorTotal)}
                           </div>
                         </div>
+                        
+                        {/* Comments Section */}
+                        {(penilaian.keterangan || 
+                          penilaian.komentarKualitasKuantitasBarangJasa || 
+                          penilaian.komentarBiaya || 
+                          penilaian.komentarWaktu || 
+                          penilaian.komentarLayanan || 
+                          penilaian.penilaianAkhir) && (
+                          <div className="border-t border-gray-200/50 dark:border-gray-600/50 pt-3 mt-3">
+                            <h4 className="text-sm font-medium text-slate-700 dark:text-slate-200 mb-2 flex items-center">
+                              <FileText className="h-4 w-4 mr-1.5 text-blue-500" />
+                              Komentar
+                            </h4>
+                            
+                            {/* Comments */}
+                            <div className="space-y-2">
+                              {penilaian.komentarKualitasKuantitasBarangJasa && (
+                                <div className="bg-slate-50/50 dark:bg-slate-600/20 rounded-lg p-3">
+                                  <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Komentar Kualitas & Kuantitas</div>
+                                  <p className="text-sm text-slate-700 dark:text-slate-200">{penilaian.komentarKualitasKuantitasBarangJasa}</p>
+                                </div>
+                              )}
+                              
+                              {penilaian.komentarBiaya && (
+                                <div className="bg-slate-50/50 dark:bg-slate-600/20 rounded-lg p-3">
+                                  <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Komentar Biaya</div>
+                                  <p className="text-sm text-slate-700 dark:text-slate-200">{penilaian.komentarBiaya}</p>
+                                </div>
+                              )}
+                              
+                              {penilaian.komentarWaktu && (
+                                <div className="bg-slate-50/50 dark:bg-slate-600/20 rounded-lg p-3">
+                                  <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Komentar Waktu</div>
+                                  <p className="text-sm text-slate-700 dark:text-slate-200">{penilaian.komentarWaktu}</p>
+                                </div>
+                              )}
+                              
+                              {penilaian.komentarLayanan && (
+                                <div className="bg-slate-50/50 dark:bg-slate-600/20 rounded-lg p-3">
+                                  <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Komentar Layanan</div>
+                                  <p className="text-sm text-slate-700 dark:text-slate-200">{penilaian.komentarLayanan}</p>
+                                </div>
+                              )}
+                              
+                              {penilaian.keterangan && (
+                                <div className="bg-slate-50/50 dark:bg-slate-600/20 rounded-lg p-3">
+                                  <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Komentar Umum</div>
+                                  <p className="text-sm text-slate-700 dark:text-slate-200">{penilaian.keterangan}</p>
+                                </div>
+                              )}
+                              
+                              {penilaian.penilaianAkhir && !penilaian.keterangan && (
+                                <div className="bg-slate-50/50 dark:bg-slate-600/20 rounded-lg p-3">
+                                  <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Komentar Akhir</div>
+                                  <p className="text-sm text-slate-700 dark:text-slate-200">{penilaian.penilaianAkhir}</p>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
                       </motion.div>
                     ))}
                   </div>
