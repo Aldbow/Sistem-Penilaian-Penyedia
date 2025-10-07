@@ -508,50 +508,167 @@ export function LaporanModal({ isOpen, onClose, penyedia }: LaporanModalProps) {
                               Komentar
                             </h4>
                             
-                            {/* Comments Grid - Format 2 2 1 */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                              {/* Quality and Quantity */}
-                              {penilaian.komentarKualitasKuantitasBarangJasa && (
-                                <div className="bg-slate-50/50 dark:bg-slate-600/20 rounded-lg p-3">
-                                  <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Kualitas & Kuantitas</div>
-                                  <p className="text-sm text-slate-700 dark:text-slate-200">{penilaian.komentarKualitasKuantitasBarangJasa}</p>
-                                </div>
-                              )}
+                            {/* Count how many aspect comments are available */}
+                            {(() => {
+                              const aspectComments = [
+                                penilaian.komentarKualitasKuantitasBarangJasa,
+                                penilaian.komentarBiaya,
+                                penilaian.komentarWaktu,
+                                penilaian.komentarLayanan
+                              ].filter(Boolean);
                               
-                              {/* Cost */}
-                              {penilaian.komentarBiaya && (
-                                <div className="bg-slate-50/50 dark:bg-slate-600/20 rounded-lg p-3">
-                                  <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Biaya</div>
-                                  <p className="text-sm text-slate-700 dark:text-slate-200">{penilaian.komentarBiaya}</p>
-                                </div>
-                              )}
+                              const generalComments = [
+                                penilaian.keterangan,
+                                penilaian.penilaianAkhir && !penilaian.keterangan ? penilaian.penilaianAkhir : null
+                              ].filter(Boolean);
                               
-                              {/* Time */}
-                              {penilaian.komentarWaktu && (
-                                <div className="bg-slate-50/50 dark:bg-slate-600/20 rounded-lg p-3">
-                                  <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Waktu</div>
-                                  <p className="text-sm text-slate-700 dark:text-slate-200">{penilaian.komentarWaktu}</p>
-                                </div>
-                              )}
-                              
-                              {/* Service */}
-                              {penilaian.komentarLayanan && (
-                                <div className="bg-slate-50/50 dark:bg-slate-600/20 rounded-lg p-3">
-                                  <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Layanan</div>
-                                  <p className="text-sm text-slate-700 dark:text-slate-200">{penilaian.komentarLayanan}</p>
-                                </div>
-                              )}
-                            </div>
-                            
-                            {/* General and Final Comments - Full Width */}
-                            <div className="space-y-2 mt-2">
-                              {penilaian.keterangan && (
-                                <div className="bg-slate-50/50 dark:bg-slate-600/20 rounded-lg p-3">
-                                  <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Komentar</div>
-                                  <p className="text-sm text-slate-700 dark:text-slate-200">{penilaian.keterangan}</p>
-                                </div>
-                              )}
-                            </div>
+                              if (aspectComments.length === 0) {
+                                // If no aspect comments, just show general comments
+                                return (
+                                  <div className="space-y-2">
+                                    {generalComments.map((comment, index) => (
+                                      <div key={index} className="bg-slate-50/50 dark:bg-slate-600/20 rounded-lg p-3">
+                                        <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">
+                                          {index === 0 && penilaian.keterangan ? "Komentar" : "Komentar Akhir"}
+                                        </div>
+                                        <p className="text-sm text-slate-700 dark:text-slate-200">{comment}</p>
+                                      </div>
+                                    ))}
+                                  </div>
+                                );
+                              } else if (aspectComments.length === 1) {
+                                // If only 1 aspect comment, show it full width
+                                return (
+                                  <div className="space-y-3">
+                                    {/* Aspect comment */}
+                                    {penilaian.komentarKualitasKuantitasBarangJasa && (
+                                      <div className="bg-slate-50/50 dark:bg-slate-600/20 rounded-lg p-3">
+                                        <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Kualitas & Kuantitas</div>
+                                        <p className="text-sm text-slate-700 dark:text-slate-200">{penilaian.komentarKualitasKuantitasBarangJasa}</p>
+                                      </div>
+                                    )}
+                                    {penilaian.komentarBiaya && !penilaian.komentarKualitasKuantitasBarangJasa && (
+                                      <div className="bg-slate-50/50 dark:bg-slate-600/20 rounded-lg p-3">
+                                        <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Biaya</div>
+                                        <p className="text-sm text-slate-700 dark:text-slate-200">{penilaian.komentarBiaya}</p>
+                                      </div>
+                                    )}
+                                    {penilaian.komentarWaktu && !penilaian.komentarKualitasKuantitasBarangJasa && !penilaian.komentarBiaya && (
+                                      <div className="bg-slate-50/50 dark:bg-slate-600/20 rounded-lg p-3">
+                                        <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Waktu</div>
+                                        <p className="text-sm text-slate-700 dark:text-slate-200">{penilaian.komentarWaktu}</p>
+                                      </div>
+                                    )}
+                                    {penilaian.komentarLayanan && !penilaian.komentarKualitasKuantitasBarangJasa && !penilaian.komentarBiaya && !penilaian.komentarWaktu && (
+                                      <div className="bg-slate-50/50 dark:bg-slate-600/20 rounded-lg p-3">
+                                        <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Layanan</div>
+                                        <p className="text-sm text-slate-700 dark:text-slate-200">{penilaian.komentarLayanan}</p>
+                                      </div>
+                                    )}
+                                    
+                                    {/* General comments */}
+                                    {generalComments.map((comment, index) => (
+                                      <div key={`general-${index}`} className="bg-slate-50/50 dark:bg-slate-600/20 rounded-lg p-3">
+                                        <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">
+                                          {index === 0 && penilaian.keterangan ? "Komentar" : "Komentar Akhir"}
+                                        </div>
+                                        <p className="text-sm text-slate-700 dark:text-slate-200">{comment}</p>
+                                      </div>
+                                    ))}
+                                  </div>
+                                );
+                              } else if (aspectComments.length === 2) {
+                                // If 2 aspect comments, show them side by side (1-1 becomes 1 1)
+                                return (
+                                  <div>
+                                    {/* Aspect comments grid */}
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                      {penilaian.komentarKualitasKuantitasBarangJasa && (
+                                        <div className="bg-slate-50/50 dark:bg-slate-600/20 rounded-lg p-3">
+                                          <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Kualitas & Kuantitas</div>
+                                          <p className="text-sm text-slate-700 dark:text-slate-200">{penilaian.komentarKualitasKuantitasBarangJasa}</p>
+                                        </div>
+                                      )}
+                                      {penilaian.komentarBiaya && (
+                                        <div className="bg-slate-50/50 dark:bg-slate-600/20 rounded-lg p-3">
+                                          <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Biaya</div>
+                                          <p className="text-sm text-slate-700 dark:text-slate-200">{penilaian.komentarBiaya}</p>
+                                        </div>
+                                      )}
+                                      {penilaian.komentarWaktu && (
+                                        <div className="bg-slate-50/50 dark:bg-slate-600/20 rounded-lg p-3">
+                                          <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Waktu</div>
+                                          <p className="text-sm text-slate-700 dark:text-slate-200">{penilaian.komentarWaktu}</p>
+                                        </div>
+                                      )}
+                                      {penilaian.komentarLayanan && (
+                                        <div className="bg-slate-50/50 dark:bg-slate-600/20 rounded-lg p-3">
+                                          <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Layanan</div>
+                                          <p className="text-sm text-slate-700 dark:text-slate-200">{penilaian.komentarLayanan}</p>
+                                        </div>
+                                      )}
+                                    </div>
+                                    
+                                    {/* General comments */}
+                                    <div className="space-y-2 mt-3">
+                                      {generalComments.map((comment, index) => (
+                                        <div key={`general-${index}`} className="bg-slate-50/50 dark:bg-slate-600/20 rounded-lg p-3">
+                                          <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">
+                                            {index === 0 && penilaian.keterangan ? "Komentar" : "Komentar Akhir"}
+                                          </div>
+                                          <p className="text-sm text-slate-700 dark:text-slate-200">{comment}</p>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                );
+                              } else {
+                                // 3 or 4 aspect comments: use 2-2 layout for aspects and 1 for each general comment
+                                return (
+                                  <div>
+                                    {/* Aspect comments grid - 2x2 format */}
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                      {penilaian.komentarKualitasKuantitasBarangJasa && (
+                                        <div className="bg-slate-50/50 dark:bg-slate-600/20 rounded-lg p-3">
+                                          <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Kualitas & Kuantitas</div>
+                                          <p className="text-sm text-slate-700 dark:text-slate-200">{penilaian.komentarKualitasKuantitasBarangJasa}</p>
+                                        </div>
+                                      )}
+                                      {penilaian.komentarBiaya && (
+                                        <div className="bg-slate-50/50 dark:bg-slate-600/20 rounded-lg p-3">
+                                          <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Biaya</div>
+                                          <p className="text-sm text-slate-700 dark:text-slate-200">{penilaian.komentarBiaya}</p>
+                                        </div>
+                                      )}
+                                      {penilaian.komentarWaktu && (
+                                        <div className="bg-slate-50/50 dark:bg-slate-600/20 rounded-lg p-3">
+                                          <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Waktu</div>
+                                          <p className="text-sm text-slate-700 dark:text-slate-200">{penilaian.komentarWaktu}</p>
+                                        </div>
+                                      )}
+                                      {penilaian.komentarLayanan && (
+                                        <div className="bg-slate-50/50 dark:bg-slate-600/20 rounded-lg p-3">
+                                          <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Layanan</div>
+                                          <p className="text-sm text-slate-700 dark:text-slate-200">{penilaian.komentarLayanan}</p>
+                                        </div>
+                                      )}
+                                    </div>
+                                    
+                                    {/* General comments - full width below */}
+                                    <div className="space-y-2 mt-3">
+                                      {generalComments.map((comment, index) => (
+                                        <div key={`general-${index}`} className="bg-slate-50/50 dark:bg-slate-600/20 rounded-lg p-3">
+                                          <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">
+                                            {index === 0 && penilaian.keterangan ? "Komentar" : "Komentar Akhir"}
+                                          </div>
+                                          <p className="text-sm text-slate-700 dark:text-slate-200">{comment}</p>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                );
+                              }
+                            })()}
                           </div>
                         )}
                       </motion.div>
